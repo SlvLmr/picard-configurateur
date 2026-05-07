@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Header() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/40 border-b border-foreground/5">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/75 border-b border-border/60">
       <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
@@ -10,7 +10,7 @@ export function Header() {
         >
           Picard <span className="text-accent">Serrures</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-foreground/70">
+        <nav className="hidden md:flex items-center gap-10 text-sm text-muted-foreground">
           <Link href="#modeles" className="hover:text-foreground transition-colors">
             Modèles
           </Link>
@@ -23,7 +23,7 @@ export function Header() {
         </nav>
         <Link
           href="/configurateur"
-          className="text-sm font-medium text-accent hover:text-accent/80 transition-colors"
+          className="text-sm font-medium text-foreground hover:text-accent transition-colors"
         >
           Configurer →
         </Link>

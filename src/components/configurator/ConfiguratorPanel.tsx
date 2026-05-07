@@ -36,7 +36,7 @@ export function ConfiguratorPanel() {
   return (
     <div className="flex flex-col h-full">
       {/* Stepper */}
-      <div className="px-6 pt-6 pb-4 border-b border-foreground/5 overflow-x-auto scrollbar-hidden">
+      <div className="px-6 pt-6 pb-4 border-b border-border overflow-x-auto scrollbar-hidden">
         <div className="flex gap-1">
           {STEPS.map((s, i) => (
             <button
@@ -45,11 +45,18 @@ export function ConfiguratorPanel() {
               className={cn(
                 "shrink-0 px-3 h-8 rounded-full text-xs font-medium tracking-wide transition-colors",
                 step === s.id
-                  ? "bg-foreground/10 text-foreground"
+                  ? "bg-foreground text-background"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <span className="text-accent mr-1.5">{i + 1}</span>
+              <span
+                className={cn(
+                  "mr-1.5",
+                  step === s.id ? "text-accent-foreground/70" : "text-accent",
+                )}
+              >
+                {i + 1}
+              </span>
               {s.label}
             </button>
           ))}
@@ -77,7 +84,7 @@ export function ConfiguratorPanel() {
       </div>
 
       {/* Sticky footer with price */}
-      <div className="border-t border-foreground/5 px-6 py-5 bg-background">
+      <div className="border-t border-border px-6 py-5 bg-background">
         <div className="flex items-end justify-between mb-4">
           <div>
             <SectionLabel>Votre configuration</SectionLabel>
@@ -111,7 +118,7 @@ function OptionTile({
         "relative w-full text-left rounded-xl border p-4 transition-all duration-300",
         selected
           ? "border-accent bg-accent/5"
-          : "border-foreground/10 hover:border-foreground/30",
+          : "border-border hover:border-foreground/40",
       )}
     >
       {selected && (
@@ -146,7 +153,7 @@ function ModelStep() {
             {m.highlights.map((h) => (
               <span
                 key={h}
-                className="text-[10px] px-2 py-0.5 rounded-full border border-foreground/10 text-muted-foreground"
+                className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground"
               >
                 {h}
               </span>
@@ -172,7 +179,7 @@ function ColorStep() {
               "group relative rounded-xl border p-3 transition-all duration-300",
               config.colorId === c.id
                 ? "border-accent bg-accent/5"
-                : "border-foreground/10 hover:border-foreground/30",
+                : "border-border hover:border-foreground/40",
             )}
           >
             <div
@@ -320,7 +327,7 @@ function DecorStep({ view }: { view: "exterieur" | "interieur" }) {
               "group relative rounded-xl overflow-hidden border transition-all duration-300",
               selectedId === d.id
                 ? "border-accent ring-2 ring-accent/40"
-                : "border-foreground/10 hover:border-foreground/30",
+                : "border-border hover:border-foreground/40",
             )}
           >
             <div

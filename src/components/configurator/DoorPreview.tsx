@@ -25,7 +25,7 @@ export function DoorPreview() {
   const model = DOOR_MODELS.find((m) => m.id === config.modelId);
 
   return (
-    <div className="relative w-full h-full overflow-hidden rounded-2xl bg-muted">
+    <div className="relative w-full h-full overflow-hidden rounded-3xl bg-muted shadow-[0_30px_80px_-30px_rgba(17,17,19,0.25)] ring-1 ring-border">
       {/* Decor placeholder background. Will be replaced by Nano Banana images. */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -36,13 +36,13 @@ export function DoorPreview() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
             "absolute inset-0 bg-gradient-to-br",
-            decor?.gradient ?? "from-stone-300 to-stone-700",
+            decor?.gradient ?? "from-stone-200 to-stone-400",
           )}
         />
       </AnimatePresence>
 
-      {/* Subtle vignette */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
+      {/* Subtle vignette for product focus */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10 pointer-events-none" />
 
       {/* The door, centered */}
       <div className="absolute inset-0 flex items-end justify-center pb-[6%]">
@@ -54,7 +54,7 @@ export function DoorPreview() {
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Door frame */}
-          <div className="absolute -inset-2 rounded-sm bg-gradient-to-b from-stone-900 to-stone-950 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)]" />
+          <div className="absolute -inset-2 rounded-sm bg-gradient-to-b from-stone-900 to-stone-950 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)]" />
 
           {/* Door body */}
           <motion.div
@@ -129,12 +129,12 @@ export function DoorPreview() {
       </div>
 
       {/* Decor info */}
-      <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white/90 text-xs font-medium">
+      <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-white/85 backdrop-blur-md text-foreground text-xs font-medium shadow-sm ring-1 ring-border">
         {decor?.name}
       </div>
 
       {/* View indicator */}
-      <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white/90 text-xs uppercase tracking-[0.18em]">
+      <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-white/85 backdrop-blur-md text-foreground text-xs uppercase tracking-[0.18em] shadow-sm ring-1 ring-border">
         Vue {view === "exterieur" ? "extérieure" : "intérieure"}
       </div>
     </div>

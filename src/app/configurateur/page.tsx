@@ -8,7 +8,7 @@ export default function ConfiguratorPage() {
   return (
     <main className="h-screen w-screen flex flex-col bg-background text-foreground overflow-hidden">
       {/* Top bar */}
-      <header className="shrink-0 h-16 px-6 flex items-center justify-between border-b border-foreground/5">
+      <header className="shrink-0 h-16 px-6 flex items-center justify-between border-b border-border">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -33,7 +33,7 @@ export default function ConfiguratorPage() {
         </div>
 
         {/* Panel */}
-        <aside className="w-full lg:w-[440px] shrink-0 border-t lg:border-t-0 lg:border-l border-foreground/5 bg-background">
+        <aside className="w-full lg:w-[440px] shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-background">
           <ConfiguratorPanel />
         </aside>
       </div>

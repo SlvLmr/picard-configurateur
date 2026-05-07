@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="border-t border-foreground/5 py-12 px-6">
+    <footer className="border-t border-border py-12 px-6 bg-background">
       <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-muted-foreground">
         <div className="font-display text-foreground">
           Picard <span className="text-accent">Serrures</span>
