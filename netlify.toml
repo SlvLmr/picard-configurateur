@@ -5,16 +5,8 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Identity widget powers the Decap CMS login flow.
-# Enable Identity + Git Gateway in the Netlify dashboard:
-#   Site settings → Identity → Enable
-#   Identity → Services → Git Gateway → Enable
-#   Identity → Registration → set to "Invite only"
-#   Identity → Invite users → invite the admin emails
-
-# Decap admin: serve /admin/index.html for any /admin/* path so the
-# CMS router (uses hash-based URLs) works correctly on direct refresh.
+# SPA fallback so React Router handles /admin/* on direct access / refresh.
 [[redirects]]
-  from = "/admin/*"
-  to = "/admin/index.html"
+  from = "/*"
+  to = "/index.html"
   status = 200
