@@ -197,52 +197,41 @@ export default DoorCanvas;
 function StudioBackdrop() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Warm cream wall (top 72%) → darker stone floor (bottom 28%) */}
-      <div className="absolute inset-x-0 top-0 h-[72%] bg-gradient-to-b from-[#F4ECDF] via-[#EDE2D0] to-[#E0D2BC]" />
-      <div className="absolute inset-x-0 bottom-0 top-[72%] bg-gradient-to-b from-[#C4B49C] via-[#A89880] to-[#8A7A64]" />
+      {/* Off-white neutral base */}
+      <div className="absolute inset-0 bg-[#F5F5F7]" />
 
-      {/* Vertical wall panelling (slats every 80px) */}
+      {/* Subtle dot grid */}
       <div
-        className="absolute inset-x-0 top-0 h-[72%] opacity-60"
+        className="absolute inset-0"
         style={{
-          backgroundImage:
-            'repeating-linear-gradient(90deg, rgba(26,26,46,0.07) 0px, rgba(26,26,46,0.07) 1px, transparent 1px, transparent 80px)',
+          backgroundImage: 'radial-gradient(circle, rgba(60,60,67,0.08) 1px, transparent 1px)',
+          backgroundSize: '26px 26px',
         }}
       />
 
-      {/* Floor grain (horizontal hairlines) */}
+      {/* Top ambient glow */}
       <div
-        className="absolute inset-x-0 bottom-0 top-[72%] opacity-50"
+        className="absolute inset-0"
         style={{
-          backgroundImage:
-            'repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 9px)',
+          background: 'radial-gradient(ellipse at 50% -10%, rgba(255,255,255,0.85), transparent 55%)',
         }}
       />
 
-      {/* Wall-floor join line + cast shadow */}
-      <div className="absolute inset-x-0 top-[72%] h-px bg-picard-navy/25" />
+      {/* Soft floor shadow under product */}
       <div
-        className="absolute inset-x-0 top-[72%] h-6"
+        className="absolute inset-x-0 bottom-0 h-[45%]"
         style={{
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.20), rgba(0,0,0,0))',
+          background:
+            'radial-gradient(ellipse at 50% 100%, rgba(60,60,67,0.14), transparent 65%)',
         }}
       />
 
-      {/* Soft overhead-left warm light */}
+      {/* Edge vignette */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse at 22% -8%, rgba(255,232,190,0.45), transparent 55%)',
-        }}
-      />
-
-      {/* Centre vignette focus */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse at center 45%, transparent 50%, rgba(26,26,46,0.14) 100%)',
+            'radial-gradient(ellipse at center, transparent 60%, rgba(60,60,67,0.06) 100%)',
         }}
       />
     </div>
