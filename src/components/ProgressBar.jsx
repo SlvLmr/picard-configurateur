@@ -15,15 +15,9 @@ export default function ProgressBar({ step, onBack, onHome }) {
           className="hidden items-center transition hover:opacity-70 sm:flex"
         >
           <img
-            src={`${import.meta.env.BASE_URL}picard-logo.svg`}
+            src={`${import.meta.env.BASE_URL}LOGO-PICARD-SERRURES-MIDNIGHT.png`}
             alt="Picard Serrures"
-            className="h-8 w-auto"
-            onError={(e) => {
-              if (!e.currentTarget.dataset.fallback) {
-                e.currentTarget.dataset.fallback = '1';
-                e.currentTarget.src = `${import.meta.env.BASE_URL}picard-logo.png`;
-              }
-            }}
+            className="h-9 w-auto"
           />
         </button>
 

@@ -30,15 +30,9 @@ export default function Intro({ onStart, onResume }) {
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-8 sm:px-10">
         <a href={import.meta.env.BASE_URL} className="flex items-center" aria-label="Picard Serrures, accueil">
           <img
-            src={`${import.meta.env.BASE_URL}picard-logo.svg`}
+            src={`${import.meta.env.BASE_URL}LOGO-PICARD-SERRURES-MIDNIGHT.png`}
             alt="Picard Serrures — Depuis 1720"
-            className="h-10 w-auto sm:h-12"
-            onError={(e) => {
-              if (!e.currentTarget.dataset.fallback) {
-                e.currentTarget.dataset.fallback = '1';
-                e.currentTarget.src = `${import.meta.env.BASE_URL}picard-logo.png`;
-              }
-            }}
+            className="h-12 w-auto sm:h-14"
           />
         </a>
         <span className="hidden text-xs uppercase tracking-[0.28em] text-picard-navy/60 md:block">
