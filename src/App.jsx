@@ -86,29 +86,27 @@ function PersonalizationStep({ cfg, isMobile, tourOpen, onStartTour, onCloseTour
   const { state, set, next, back, toggleAccessory, selections } = cfg;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-      <div className="mb-6 flex flex-col gap-2 sm:mb-8">
-        <span className="text-xs uppercase tracking-[0.28em] text-picard-navy/55">
-          Étape 01 — Personnalisation
-        </span>
-        <h2 className="font-display text-3xl text-picard-navy sm:text-4xl lg:text-5xl">
-          Composez chaque détail.
-        </h2>
-      </div>
-
-      <div className="flex items-center gap-3 pb-5">
-        <ViewToggle view={state.view} onChange={(v) => set({ view: v })} />
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3 sm:mb-7">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[11px] uppercase tracking-[0.28em] text-picard-navy/55">
+            Étape 01 — Personnalisation
+          </span>
+          <h2 className="font-display text-3xl text-picard-navy sm:text-4xl">
+            Composez chaque détail.
+          </h2>
+        </div>
         <button
           type="button"
           onClick={onStartTour}
-          className="ml-auto inline-flex items-center gap-2 rounded-full border border-picard-navy/15 bg-white px-3.5 py-2 text-xs font-medium text-picard-navy transition hover:border-picard-navy/35 sm:hidden"
+          className="inline-flex items-center gap-2 rounded-full border border-picard-navy/15 bg-white px-4 py-2 text-xs font-medium text-picard-navy transition hover:border-picard-navy/35"
         >
           <Compass size={14} />
           Visite guidée
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.7fr_1fr]">
         <div className="relative">
           <DoorCanvas
             ambiance={selections.ambiance}
@@ -121,13 +119,14 @@ function PersonalizationStep({ cfg, isMobile, tourOpen, onStartTour, onCloseTour
             finish={selections.finish}
             accessoryIds={state.accessoryIds}
             view={state.view}
+            onViewChange={(v) => set({ view: v })}
             showHotspots
             activeHotspotId={activeHotspot}
             onHotspotChange={setActiveHotspot}
             inStudio
           />
         </div>
-        <div className={isMobile ? 'h-[60vh]' : 'h-[640px]'}>
+        <div className={isMobile ? 'h-[60vh]' : 'h-[680px]'}>
           <PersonalizationPanel
             state={state}
             selections={selections}
@@ -161,30 +160,6 @@ function PersonalizationStep({ cfg, isMobile, tourOpen, onStartTour, onCloseTour
         onClose={onCloseTour}
         onFocusHotspot={setActiveHotspot}
       />
-    </div>
-  );
-}
-
-function ViewToggle({ view, onChange }) {
-  return (
-    <div className="inline-flex rounded-full border border-picard-navy/15 bg-white p-1">
-      {[
-        { id: 'exterior', label: 'Extérieur' },
-        { id: 'interior', label: 'Intérieur' },
-      ].map((opt) => (
-        <button
-          key={opt.id}
-          type="button"
-          onClick={() => onChange(opt.id)}
-          className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-            view === opt.id
-              ? 'bg-picard-navy text-picard-cream'
-              : 'text-picard-navy/65 hover:text-picard-navy'
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
     </div>
   );
 }

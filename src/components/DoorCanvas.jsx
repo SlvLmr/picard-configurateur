@@ -16,6 +16,7 @@ const DoorCanvas = forwardRef(function DoorCanvas(
     finish,
     accessoryIds,
     view,
+    onViewChange,
     showHotspots,
     activeHotspotId,
     onHotspotChange,
@@ -89,7 +90,7 @@ const DoorCanvas = forwardRef(function DoorCanvas(
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
-            className={`relative h-[80%] w-[56%] rounded-md ${overRealPhoto ? 'p-[3px]' : 'p-[6px]'} ${
+            className={`relative h-[86%] w-[60%] rounded-md ${overRealPhoto ? 'p-[3px]' : 'p-[5px]'} ${
               interactive && overRealPhoto ? 'cursor-move touch-none' : ''
             }`}
             style={{
@@ -123,10 +124,32 @@ const DoorCanvas = forwardRef(function DoorCanvas(
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
 
-      <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/55 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-picard-navy/75 backdrop-blur">
-        <span className="h-1.5 w-1.5 rounded-full bg-picard-gold" />
-        {view === 'exterior' ? 'Vue extérieur' : 'Vue intérieur'}
-      </div>
+      {onViewChange ? (
+        <div className="absolute right-4 top-4 z-20 inline-flex items-center rounded-full border border-white/45 bg-white/85 p-1 shadow-sm backdrop-blur">
+          {[
+            { id: 'exterior', label: 'Extérieur' },
+            { id: 'interior', label: 'Intérieur' },
+          ].map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => onViewChange(opt.id)}
+              className={`rounded-full px-3.5 py-1 text-xs font-medium transition ${
+                view === opt.id
+                  ? 'bg-picard-navy text-picard-cream shadow-sm'
+                  : 'text-picard-navy/60 hover:text-picard-navy'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/65 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-picard-navy/75 backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-picard-gold" />
+          {view === 'exterior' ? 'Extérieur' : 'Intérieur'}
+        </div>
+      )}
 
       {interactive && overRealPhoto && (
         <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/40 bg-white/85 px-2 py-1 text-picard-navy backdrop-blur">
@@ -174,34 +197,52 @@ export default DoorCanvas;
 function StudioBackdrop() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Wall to floor gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-stone-50 via-white to-stone-200" />
-      {/* Subtle dot grid (paper-like texture) */}
+      {/* Warm cream wall (top 72%) → darker stone floor (bottom 28%) */}
+      <div className="absolute inset-x-0 top-0 h-[72%] bg-gradient-to-b from-[#F4ECDF] via-[#EDE2D0] to-[#E0D2BC]" />
+      <div className="absolute inset-x-0 bottom-0 top-[72%] bg-gradient-to-b from-[#C4B49C] via-[#A89880] to-[#8A7A64]" />
+
+      {/* Vertical wall panelling (slats every 80px) */}
       <div
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-x-0 top-0 h-[72%] opacity-60"
         style={{
-          backgroundImage: 'radial-gradient(circle, rgba(26,26,46,0.05) 1px, transparent 1px)',
-          backgroundSize: '22px 22px',
+          backgroundImage:
+            'repeating-linear-gradient(90deg, rgba(26,26,46,0.07) 0px, rgba(26,26,46,0.07) 1px, transparent 1px, transparent 80px)',
         }}
       />
-      {/* Soft warm light from upper-left */}
+
+      {/* Floor grain (horizontal hairlines) */}
+      <div
+        className="absolute inset-x-0 bottom-0 top-[72%] opacity-50"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 9px)',
+        }}
+      />
+
+      {/* Wall-floor join line + cast shadow */}
+      <div className="absolute inset-x-0 top-[72%] h-px bg-picard-navy/25" />
+      <div
+        className="absolute inset-x-0 top-[72%] h-6"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.20), rgba(0,0,0,0))',
+        }}
+      />
+
+      {/* Soft overhead-left warm light */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse at 28% -10%, rgba(184,134,11,0.10), transparent 55%)',
+            'radial-gradient(ellipse at 22% -8%, rgba(255,232,190,0.45), transparent 55%)',
         }}
       />
-      {/* Floor line at ~70% (where wall meets floor) */}
-      <div className="absolute inset-x-0 top-[70%] h-px bg-picard-navy/10" />
-      {/* Floor sheen */}
-      <div className="absolute inset-x-0 bottom-0 top-[70%] bg-gradient-to-b from-stone-200/0 via-stone-200/40 to-stone-300/60" />
-      {/* Vignette to focus center */}
+
+      {/* Centre vignette focus */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse at center, transparent 55%, rgba(26,26,46,0.08) 100%)',
+            'radial-gradient(ellipse at center 45%, transparent 50%, rgba(26,26,46,0.14) 100%)',
         }}
       />
     </div>
