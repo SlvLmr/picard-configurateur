@@ -31,7 +31,7 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
     <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:px-8 lg:py-16">
       <div className="mb-8 flex flex-col gap-2">
         <span className="text-xs uppercase tracking-[0.28em] text-picard-navy/55">
-          Étape 03 — Récapitulatif
+          Étape 02 — Récapitulatif
         </span>
         <h2 className="font-display text-4xl text-picard-navy sm:text-5xl">
           Votre porte, en un coup d'œil.

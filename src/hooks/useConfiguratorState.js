@@ -7,9 +7,8 @@ import { glasses } from '../data/glasses';
 import { finishes } from '../data/finishes';
 
 export const STEPS = [
-  { id: 1, key: 'door', label: 'Modèle' },
-  { id: 2, key: 'personalize', label: 'Personnalisation' },
-  { id: 3, key: 'summary', label: 'Récapitulatif' },
+  { id: 1, key: 'personalize', label: 'Personnalisation' },
+  { id: 2, key: 'summary', label: 'Récapitulatif' },
 ];
 
 const MAX_STEP = STEPS.length;

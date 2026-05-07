@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Compass } from 'lucide-react';
 import Intro from './components/Intro';
 import ProgressBar from './components/ProgressBar';
-import DoorSelector from './components/DoorSelector';
 import PersonalizationPanel from './components/PersonalizationPanel';
 import DoorCanvas from './components/DoorCanvas';
 import GuidedTour from './components/GuidedTour';
@@ -30,7 +29,13 @@ export default function App() {
   if (state.step === 0) {
     return (
       <>
-        <Intro onStart={() => goTo(1)} onResume={() => setRestoreOpen(true)} />
+        <Intro
+          onPickDoor={(id) => {
+            set({ doorId: id });
+            goTo(1);
+          }}
+          onResume={() => setRestoreOpen(true)}
+        />
         <RestoreModal
           open={restoreOpen}
           onClose={() => setRestoreOpen(false)}
@@ -49,16 +54,6 @@ export default function App() {
       <AnimatePresence mode="wait">
         {state.step === 1 && (
           <motion.div key="step-1" {...stepTransition}>
-            <DoorSelector
-              doorId={state.doorId}
-              onSelect={(id) => set({ doorId: id })}
-              onContinue={next}
-              onBack={() => goTo(0)}
-            />
-          </motion.div>
-        )}
-        {state.step === 2 && (
-          <motion.div key="step-2" {...stepTransition}>
             <PersonalizationStep
               cfg={cfg}
               isMobile={isMobile}
@@ -70,8 +65,8 @@ export default function App() {
             />
           </motion.div>
         )}
-        {state.step === 3 && (
-          <motion.div key="step-3" {...stepTransition}>
+        {state.step === 2 && (
+          <motion.div key="step-2" {...stepTransition}>
             <Summary
               state={state}
               selections={selections}
@@ -93,7 +88,7 @@ function PersonalizationStep({ cfg, isMobile, tourOpen, onStartTour, onCloseTour
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
       <div className="mb-6 flex flex-col gap-2 sm:mb-8">
         <span className="text-xs uppercase tracking-[0.28em] text-picard-navy/55">
-          Étape 02 — Personnalisation
+          Étape 01 — Personnalisation
         </span>
         <h2 className="font-display text-3xl text-picard-navy sm:text-4xl lg:text-5xl">
           Composez chaque détail.
