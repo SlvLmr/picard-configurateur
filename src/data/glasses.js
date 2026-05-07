@@ -1,6 +1,0 @@
-export const glasses = [
-  { id: 'none', name: 'Sans vitrage', description: 'Panneau plein.', layout: 'none' },
-  { id: 'top-center', name: 'Hublot haut central', description: 'Vitrage centré en partie haute.', layout: 'top_center' },
-  { id: 'vertical-asym', name: 'Vertical asymétrique', description: 'Bande verticale fine, latérale.', layout: 'vertical_side' },
-  { id: 'multi-geo', name: 'Multi-géométrique', description: 'Composition de hublots géométriques.', layout: 'multi_geo' },
-];

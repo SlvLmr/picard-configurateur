@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, KeyRound, Star } from 'lucide-react';
-import { doors } from '../data/doors';
+import { doors } from '../data';
 
 export default function Intro({ onPickDoor, onResume }) {
   return (

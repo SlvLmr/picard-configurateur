@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "slug": "appartement",
+      "name": "Porte d'appartement",
+      "range": "Appartement",
+      "security": 5,
+      "priceFrom": 3290,
+      "price": "À partir de 3 290 €",
+      "desc": "Lignes sobres pensées pour les halls d'immeubles, blindage haute sécurité.",
+      "icon": "▢",
+      "panelStyle": "full_panel"
+    },
+    {
+      "id": 2,
+      "slug": "maison",
+      "name": "Porte de maison",
+      "range": "Maison individuelle",
+      "security": 5,
+      "priceFrom": 4490,
+      "price": "À partir de 4 490 €",
+      "desc": "Présence affirmée pour entrée individuelle, isolation thermique renforcée.",
+      "icon": "◇",
+      "panelStyle": "horizontal_lines"
+    },
+    {
+      "id": 3,
+      "slug": "maison-vitree",
+      "name": "Porte de maison vitrée",
+      "range": "Maison · Vitrée",
+      "security": 5,
+      "priceFrom": 5690,
+      "price": "À partir de 5 690 €",
+      "desc": "Lumière sculptée par un vitrage feuilleté de sécurité SP10.",
+      "icon": "◆",
+      "panelStyle": "asymmetric_glass"
+    }
+  ]
+}

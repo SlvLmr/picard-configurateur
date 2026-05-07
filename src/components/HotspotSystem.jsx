@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { hotspots } from '../data/hotspots';
+import { hotspots } from '../data';
 
 export default function HotspotSystem({ activeId, onSelect, onClose }) {
   return (

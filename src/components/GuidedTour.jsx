@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Pause, Play, X, ChevronRight } from 'lucide-react';
-import { hotspots } from '../data/hotspots';
+import { hotspots } from '../data';
 
 const STEP_DURATION = 4500;
 

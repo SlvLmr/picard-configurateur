@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Compass, Image as ImageIcon, Camera } from 'lucide-react';
-import { colors } from '../data/colors';
-import { handles } from '../data/handles';
-import { glasses } from '../data/glasses';
-import { accessories } from '../data/accessories';
-import { finishes } from '../data/finishes';
-import { decors } from '../data/decors';
+import {
+  colors,
+  finishes,
+  decorsForDoor,
+  accessoriesForDoor,
+  handlesForDoor,
+  glassesForDoor,
+} from '../data';
 import PhotoUploader from './PhotoUploader';
 import { resolveDecorImage } from '../utils/assets';
 
@@ -26,7 +28,12 @@ export default function PersonalizationPanel({
   onToggleAccessory,
   onStartTour,
 }) {
-  const [tab, setTab] = useState('color');
+  const [tab, setTab] = useState('decor');
+  const doorId = selections.door.id;
+  const availableDecors = decorsForDoor(doorId);
+  const availableHandles = handlesForDoor(doorId);
+  const availableGlasses = glassesForDoor(doorId);
+  const availableAccessories = accessoriesForDoor(doorId);
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-picard-navy/10 bg-white shadow-soft">
@@ -75,6 +82,7 @@ export default function PersonalizationPanel({
           >
             {tab === 'decor' && (
               <DecorTab
+                decors={availableDecors}
                 decorId={state.decorId}
                 customPhoto={state.customPhoto}
                 onSelectDecor={(id) => onChange({ decorId: id, customPhoto: null })}
@@ -98,21 +106,21 @@ export default function PersonalizationPanel({
             )}
             {tab === 'handle' && (
               <OptionList
-                items={handles}
+                items={availableHandles}
                 selectedId={state.handleId}
                 onSelect={(id) => onChange({ handleId: id })}
               />
             )}
             {tab === 'glass' && (
               <OptionList
-                items={glasses}
+                items={availableGlasses}
                 selectedId={state.glassId}
                 onSelect={(id) => onChange({ glassId: id })}
               />
             )}
             {tab === 'accessories' && (
               <div className="space-y-2.5">
-                {accessories.map((acc) => {
+                {availableAccessories.map((acc) => {
                   const checked = state.accessoryIds.includes(acc.id);
                   return (
                     <button
@@ -189,7 +197,7 @@ function Swatches({ items, selectedId, onSelect, renderSwatch, meta }) {
   );
 }
 
-function DecorTab({ decorId, customPhoto, onSelectDecor, onUploadPhoto }) {
+function DecorTab({ decors, decorId, customPhoto, onSelectDecor, onUploadPhoto }) {
   const [mode, setMode] = useState(customPhoto ? 'photo' : 'gallery');
 
   return (

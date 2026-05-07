@@ -1,0 +1,8 @@
+{
+  "items": [
+    { "id": "heurtoir", "name": "Heurtoir laiton", "description": "Heurtoir traditionnel laiton ciré.", "compatibleDoorIds": [] },
+    { "id": "numero", "name": "Numéro gravé", "description": "Numéro de rue gravé en façade.", "compatibleDoorIds": [] },
+    { "id": "judas", "name": "Judas optique", "description": "Judas grand-angle 200°.", "compatibleDoorIds": [] },
+    { "id": "plaque", "name": "Plaque signalétique", "description": "Plaque en laiton ou inox personnalisable.", "compatibleDoorIds": [] }
+  ]
+}

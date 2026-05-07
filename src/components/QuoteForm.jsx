@@ -30,32 +30,56 @@ export default function QuoteForm({ open, onClose, configurationSummary }) {
     onClose();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const subject = `Demande de devis Picard — ${form.firstName} ${form.lastName}`;
-    const lines = [
-      `Bonjour,`,
-      ``,
-      `Je souhaite recevoir un devis pour ma porte Picard.`,
-      ``,
-      `— Coordonnées`,
-      `${form.firstName} ${form.lastName}`,
-      `${form.email}`,
-      `${form.phone}`,
-      `Code postal : ${form.postalCode}`,
-      ``,
-      `— Projet`,
-      `Type : ${form.projectType}`,
-      `Délai : ${form.timeline}`,
-      ``,
-      `— Configuration`,
-      configurationSummary || '(non précisée)',
-    ];
-    const href = `mailto:contact@picard-serrures.com?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(lines.join('\n'))}`;
-    window.location.href = href;
-    setSubmitted(true);
+    const payload = {
+      'form-name': 'devis',
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      phone: form.phone,
+      postalCode: form.postalCode,
+      projectType: form.projectType,
+      timeline: form.timeline,
+      configuration: configurationSummary || '',
+    };
+    const body = new URLSearchParams(payload).toString();
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+      });
+      if (!response.ok) throw new Error(`Netlify Forms HTTP ${response.status}`);
+      setSubmitted(true);
+    } catch (err) {
+      // Fallback when not deployed on Netlify (or offline): open the user's
+      // mail client with a pre-filled message.
+      const subject = `Demande de devis Picard — ${form.firstName} ${form.lastName}`;
+      const lines = [
+        'Bonjour,',
+        '',
+        'Je souhaite recevoir un devis pour ma porte Picard.',
+        '',
+        '— Coordonnées',
+        `${form.firstName} ${form.lastName}`,
+        form.email,
+        form.phone,
+        `Code postal : ${form.postalCode}`,
+        '',
+        '— Projet',
+        `Type : ${form.projectType}`,
+        `Délai : ${form.timeline}`,
+        '',
+        '— Configuration',
+        configurationSummary || '(non précisée)',
+      ];
+      const href = `mailto:contact@picard-serrures.com?subject=${encodeURIComponent(
+        subject,
+      )}&body=${encodeURIComponent(lines.join('\n'))}`;
+      window.location.href = href;
+      setSubmitted(true);
+    }
   };
 
   return (

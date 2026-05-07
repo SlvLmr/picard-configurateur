@@ -1,10 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { decors } from '../data/decors';
-import { doors } from '../data/doors';
-import { colors } from '../data/colors';
-import { handles } from '../data/handles';
-import { glasses } from '../data/glasses';
-import { finishes } from '../data/finishes';
+import { decors, doors, colors, handles, glasses, finishes } from '../data';
 
 export const STEPS = [
   { id: 1, key: 'personalize', label: 'Personnalisation' },

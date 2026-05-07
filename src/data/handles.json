@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "id": "verticale-inox",
+      "name": "Verticale Inox",
+      "description": "Tirant haut, géométrie contemporaine.",
+      "style": "vertical",
+      "finish": "inox",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "bequille-classique",
+      "name": "Béquille Classique",
+      "description": "Béquille équilibrée, intemporelle.",
+      "style": "lever",
+      "finish": "inox",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "barre-tirage",
+      "name": "Barre de tirage",
+      "description": "Barre pleine longueur, geste affirmé.",
+      "style": "bar",
+      "finish": "inox",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "or-vintage",
+      "name": "Or Vintage",
+      "description": "Béquille laiton patiné, esprit hôtel particulier.",
+      "style": "lever",
+      "finish": "gold",
+      "compatibleDoorIds": []
+    }
+  ]
+}

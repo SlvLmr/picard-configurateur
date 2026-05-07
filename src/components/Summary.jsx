@@ -5,7 +5,7 @@ import DoorCanvas from './DoorCanvas';
 import SaveModal from './SaveModal';
 import QuoteForm from './QuoteForm';
 import ShareMenu from './ShareMenu';
-import { accessories as ACCESSORIES } from '../data/accessories';
+import { accessories as ACCESSORIES } from '../data';
 import { generatePdfFromElement } from '../utils/pdfGenerator';
 
 export default function Summary({ state, selections, payload, onBack, onRestart }) {

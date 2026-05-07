@@ -1,9 +1,7 @@
 # Picard Serrures — Configurateur de portes
 
 Configurateur premium des portes blindées Picard Serrures.
-Application 100 % statique, hébergée sur **GitHub Pages**.
-
-> URL publique : https://slvlmr.github.io/picard-configurateur/
+Application 100 % statique avec admin Decap CMS, hébergée sur **Netlify**.
 
 ## Stack
 
@@ -12,9 +10,13 @@ Application 100 % statique, hébergée sur **GitHub Pages**.
 - **Framer Motion** pour les animations
 - **Lucide React** pour les icônes
 - **html2canvas + jsPDF** pour l'export PDF
-- **localStorage** pour la sauvegarde par code
+- **Decap CMS** pour l'administration du catalogue
+- **Netlify Identity + Git Gateway** pour l'auth de l'admin
+- **Netlify Forms** pour les demandes de devis
+- **localStorage** pour la sauvegarde par code (V1)
 
-Aucun backend, aucune base de données. Tout vit dans le navigateur.
+Pas de backend custom. Toutes les données du catalogue vivent dans `src/data/*.json`,
+éditées via l'interface Decap qui commit automatiquement dans le repo.
 
 ## Lancer en local
 
@@ -25,89 +27,90 @@ npm install
 npm run dev
 ```
 
-L'app est disponible sur http://localhost:5173.
+Sur http://localhost:5173.
 
-Pour vérifier la version de production :
+## Déploiement & admin — setup Netlify (à faire une seule fois)
 
-```bash
-npm run build
-npm run preview
-```
+### 1. Créer le site Netlify
 
-## Déploiement
+1. Va sur https://app.netlify.com/start, connecte-toi avec ton compte GitHub
+2. **Add new site → Import an existing project → GitHub → SlvLmr/picard-configurateur**
+3. Branch : `main` — Build command : `npm run build` — Publish directory : `dist`
+4. **Deploy site**
 
-Chaque push sur `main` déclenche le workflow `.github/workflows/deploy.yml`,
-qui build avec Vite et publie sur GitHub Pages.
+Le site apparaît sur une URL `random-name.netlify.app`. Renomme-la dans
+**Site settings → Change site name → `picard-configurateur`** pour avoir
+`picard-configurateur.netlify.app`.
 
-Activation côté repo (à faire une seule fois) :
+### 2. Activer Identity (login admin)
 
-1. Settings → Pages
-2. **Source : GitHub Actions**
+1. Sur le dashboard du site, onglet **Identity → Enable Identity**
+2. Dans **Identity → Settings and usage → Registration preferences**, choisis
+   **Invite only** (sinon n'importe qui peut s'inscrire)
+3. Toujours dans Identity → **Services → Git Gateway → Enable Git Gateway**
+4. Onglet **Identity → Invite users** : invite ton email (`sylvain@…`).
+   Tu reçois un email d'invitation, clique le lien, choisis un mot de passe.
 
-Le premier déploiement met 2-3 minutes. Ensuite chaque push prend environ
-une minute.
+### 3. Premier accès à l'admin
+
+Une fois invité, va sur https://picard-configurateur.netlify.app/admin/ et
+connecte-toi avec ton email + mot de passe choisi.
+
+Tu peux maintenant éditer décors, portes, couleurs, poignées, vitrages,
+accessoires, finitions et hotspots. Chaque sauvegarde commit automatiquement
+dans le repo, ce qui déclenche un nouveau déploiement (~1 min).
+
+### 4. Recevoir les demandes de devis
+
+Netlify Forms est déjà branché (formulaire `devis` détecté à l'index.html).
+Onglet **Forms** dans Netlify → tu vois toutes les demandes reçues.
+
+Configure les notifications par email : **Forms → Form notifications →
+Add notification → Email notification → form: devis → ton email**.
+
+> Limite gratuite : 100 soumissions/mois et 10 Mo de pièces jointes. Largement
+> suffisant en V1.
 
 ## Modifier le catalogue (sans dev)
 
-Tout le catalogue tient dans `src/data/`. Édition directe possible
-depuis l'interface web GitHub (bouton crayon sur chaque fichier) :
+### Via l'admin Decap (recommandé)
+
+https://picard-configurateur.netlify.app/admin/ — édition visuelle, drag & drop
+d'images, validation. Chaque sauvegarde = un commit automatique.
+
+### Directement dans GitHub
+
+Tu peux aussi ouvrir `src/data/*.json` sur GitHub et utiliser le crayon. Même
+résultat (commit + redéploiement), mais sans validation d'erreurs.
 
 | Fichier | Contenu |
 |---|---|
-| `src/data/decors.js` | Galerie d'inspiration (12 décors V1) |
-| `src/data/doors.js` | Modèles de portes (Diamant Luminance, Sérénité, Présence, Vauban) |
-| `src/data/colors.js` | Nuancier RAL |
-| `src/data/handles.js` | Poignées |
-| `src/data/glasses.js` | Configurations de vitrage |
-| `src/data/accessories.js` | Heurtoir, numéro, judas, plaque |
-| `src/data/finishes.js` | Mate / Satinée / Brillante |
-| `src/data/hotspots.js` | Hotspots techniques + descriptions |
+| `src/data/decors.json` | Galerie d'inspiration (12 décors V1) |
+| `src/data/doors.json` | Modèles de portes (Appartement, Maison, Maison vitrée) |
+| `src/data/colors.json` | Nuancier RAL |
+| `src/data/handles.json` | Poignées |
+| `src/data/glasses.json` | Configurations de vitrage |
+| `src/data/accessories.json` | Heurtoir, numéro, judas, plaque |
+| `src/data/finishes.json` | Mate / Satinée / Brillante |
+| `src/data/hotspots.json` | Hotspots techniques + descriptions |
 
-### Ajouter un décor
+### Règles de compatibilité
 
-Ouvrir `src/data/decors.js` et dupliquer un objet existant :
+Les décors, poignées, vitrages et accessoires ont un champ
+`compatibleDoorIds` qui filtre l'affichage selon le modèle de porte choisi
+par le visiteur :
 
-```js
-{
-  id: 13, // unique
-  name: 'Hôtel particulier 16e',
-  type: 'exterior',           // 'exterior' ou 'interior'
-  category: 'house_villa',    // 'house_villa' ou 'apartment_building'
-  style: 'Classique',
-  gradient: 'from-stone-100 via-amber-50 to-stone-200',
-  accent: 'rgba(184, 134, 11, 0.3)',
-  imageUrl: null,             // ou URL d'une image plus tard
-}
-```
+- **Tableau vide `[]`** → l'élément est **compatible avec toutes** les portes
+- **Tableau avec des IDs `[1, 3]`** → uniquement compatible avec les portes
+  qui ont ces IDs
 
-`gradient` accepte n'importe quelle classe Tailwind `from-* via-* to-*`.
-`accent` est un rgba pour l'éclairage de la scène.
+Exemple : pour qu'un heurtoir soit réservé aux portes de maison (ID 2) et
+aux portes de maison vitrée (ID 3), édite `src/data/accessories.json` et mets
+`"compatibleDoorIds": [2, 3]` sur l'accessoire concerné.
 
-### Ajouter une porte
+L'admin Decap fournit un widget liste pour gérer ça facilement.
 
-Ouvrir `src/data/doors.js` :
-
-```js
-{
-  id: 5,
-  slug: 'edition-2026',
-  name: 'Édition 2026',
-  range: 'Premium',
-  security: 5,                // 1 à 5 étoiles A2P
-  priceFrom: 6500,
-  price: 'À partir de 6 500 €',
-  desc: 'Description courte (1 ligne).',
-  icon: '◇',
-  panelStyle: 'horizontal_lines', // 'asymmetric_glass' | 'full_panel' | 'horizontal_lines' | 'fortress'
-}
-```
-
-### Modifier une couleur
-
-Dans `src/data/colors.js`, changez le `hex` (et éventuellement `name` / `ral`).
-Garder `textOn` cohérent (clair sur fond foncé, foncé sur fond clair).
-
-## Sauvegarde par code
+## Sauvegarde par code (côté visiteur)
 
 Quand un visiteur clique « Sauvegarder », un code à 6 caractères est généré
 (alphabet sans O/0/I/1/L) et stocké dans `localStorage` avec son email et une
@@ -121,38 +124,46 @@ expiration à 30 jours.
 
 ```
 src/
-├── App.jsx                   # Routage entre les 4 étapes
+├── App.jsx                   # Routage entre les 2 étapes
 ├── main.jsx                  # Bootstrap React
 ├── index.css                 # Tailwind + tokens
-├── data/                     # Catalogue (à éditer pour ajouter)
+├── data/
+│   ├── *.json                # Catalogue (édité par Decap)
+│   └── index.js              # Barrel d'export + helpers de filtrage
 ├── hooks/
 │   ├── useConfiguratorState.js
 │   └── useResponsive.js
 ├── utils/
 │   ├── codeGenerator.js
 │   ├── localStorage.js
-│   └── pdfGenerator.js
+│   ├── pdfGenerator.js
+│   └── assets.js             # Résolution URLs images décors
 └── components/
-    ├── Intro.jsx
+    ├── Intro.jsx             # Accueil + 3 modèles
     ├── ProgressBar.jsx
-    ├── DecorGallery.jsx
     ├── PhotoUploader.jsx
-    ├── DoorSelector.jsx
-    ├── DoorCanvas.jsx
+    ├── DoorCanvas.jsx        # Rendu de la porte sur le décor
     ├── HotspotSystem.jsx
     ├── GuidedTour.jsx
     ├── PersonalizationPanel.jsx
     ├── Summary.jsx
     ├── SaveModal.jsx
     ├── RestoreModal.jsx
-    ├── QuoteForm.jsx
+    ├── QuoteForm.jsx         # Netlify Forms + mailto fallback
     └── ShareMenu.jsx
+
+public/
+├── admin/                    # Decap CMS (login Netlify Identity)
+│   ├── index.html
+│   └── config.yml
+├── decors/                   # Images de décors uploadées via Decap
+└── LOGO-PICARD-SERRURES-MIDNIGHT.png
 ```
 
 ## Roadmap V2 (à plus tard)
 
-- Vraies images Nano Banana pour les 40 décors et les portes
+- Vraies images Nano Banana pour les décors et les portes (uploadables via Decap)
 - Drag & drop fin de la porte sur la photo perso (react-konva)
-- Sauvegarde côté serveur (Supabase / Firestore)
-- Envoi du devis via Brevo / Formspree
-- Dashboard admin pour suivre les configurations
+- Sauvegarde côté serveur (Supabase / Firestore) pour récupération cross-device
+- Inbox des demandes de devis directement dans /admin (au-delà de Netlify Forms)
+- Dashboard analytics (taux de configuration, modèle le plus choisi, etc.)
