@@ -28,17 +28,19 @@ export default function Intro({ onStart, onResume }) {
       </div>
 
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-8 sm:px-10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-picard-navy text-picard-cream">
-            <span className="font-display text-lg leading-none">P</span>
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="font-display text-xl text-picard-navy">Picard Serrures</span>
-            <span className="text-[11px] uppercase tracking-[0.22em] text-picard-navy/60">
-              Maître serrurier depuis 1720
-            </span>
-          </div>
-        </div>
+        <a href={import.meta.env.BASE_URL} className="flex items-center" aria-label="Picard Serrures, accueil">
+          <img
+            src={`${import.meta.env.BASE_URL}picard-logo.svg`}
+            alt="Picard Serrures — Depuis 1720"
+            className="h-10 w-auto sm:h-12"
+            onError={(e) => {
+              if (!e.currentTarget.dataset.fallback) {
+                e.currentTarget.dataset.fallback = '1';
+                e.currentTarget.src = `${import.meta.env.BASE_URL}picard-logo.png`;
+              }
+            }}
+          />
+        </a>
         <span className="hidden text-xs uppercase tracking-[0.28em] text-picard-navy/60 md:block">
           Configurateur de portes blindées
         </span>

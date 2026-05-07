@@ -11,12 +11,20 @@ export default function ProgressBar({ step, onBack, onHome }) {
         <button
           type="button"
           onClick={onHome}
-          className="hidden items-center gap-2 text-picard-navy transition hover:opacity-70 sm:flex"
+          aria-label="Retour à l'accueil"
+          className="hidden items-center transition hover:opacity-70 sm:flex"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-picard-navy text-picard-cream">
-            <span className="font-display text-base leading-none">P</span>
-          </span>
-          <span className="font-display text-lg">Picard Serrures</span>
+          <img
+            src={`${import.meta.env.BASE_URL}picard-logo.svg`}
+            alt="Picard Serrures"
+            className="h-8 w-auto"
+            onError={(e) => {
+              if (!e.currentTarget.dataset.fallback) {
+                e.currentTarget.dataset.fallback = '1';
+                e.currentTarget.src = `${import.meta.env.BASE_URL}picard-logo.png`;
+              }
+            }}
+          />
         </button>
 
         <div className="flex flex-1 items-center gap-3">
