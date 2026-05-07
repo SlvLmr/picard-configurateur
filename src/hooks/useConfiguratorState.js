@@ -7,15 +7,16 @@ import { glasses } from '../data/glasses';
 import { finishes } from '../data/finishes';
 
 export const STEPS = [
-  { id: 1, key: 'decor', label: 'Décor' },
-  { id: 2, key: 'door', label: 'Modèle' },
-  { id: 3, key: 'personalize', label: 'Personnalisation' },
-  { id: 4, key: 'summary', label: 'Récapitulatif' },
+  { id: 1, key: 'door', label: 'Modèle' },
+  { id: 2, key: 'personalize', label: 'Personnalisation' },
+  { id: 3, key: 'summary', label: 'Récapitulatif' },
 ];
 
+const MAX_STEP = STEPS.length;
+
 const DEFAULT_STATE = {
-  step: 0, // 0 = intro, 1..4 = steps
-  decorId: null,
+  step: 0, // 0 = intro, 1..3 = steps
+  decorId: 1,
   customPhoto: null, // base64 data url
   doorId: doors[0].id,
   view: 'exterior',
@@ -34,7 +35,7 @@ export default function useConfiguratorState() {
   }, []);
 
   const next = useCallback(() => {
-    setState((prev) => ({ ...prev, step: Math.min(prev.step + 1, 4) }));
+    setState((prev) => ({ ...prev, step: Math.min(prev.step + 1, MAX_STEP) }));
   }, []);
 
   const back = useCallback(() => {
@@ -50,7 +51,7 @@ export default function useConfiguratorState() {
   }, []);
 
   const restore = useCallback((saved) => {
-    setState((prev) => ({ ...prev, ...saved, step: 4 }));
+    setState((prev) => ({ ...prev, ...saved, step: MAX_STEP }));
   }, []);
 
   const toggleAccessory = useCallback((accessoryId) => {

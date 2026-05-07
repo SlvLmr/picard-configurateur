@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Compass } from 'lucide-react';
+import { Check, Compass, Image as ImageIcon, Camera } from 'lucide-react';
 import { colors } from '../data/colors';
 import { handles } from '../data/handles';
 import { glasses } from '../data/glasses';
 import { accessories } from '../data/accessories';
 import { finishes } from '../data/finishes';
+import { decors } from '../data/decors';
+import PhotoUploader from './PhotoUploader';
 
 const TABS = [
+  { id: 'decor', label: 'Décor' },
   { id: 'color', label: 'Couleur' },
   { id: 'handle', label: 'Poignée' },
   { id: 'glass', label: 'Vitrage' },
@@ -69,6 +72,14 @@ export default function PersonalizationPanel({
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
+            {tab === 'decor' && (
+              <DecorTab
+                decorId={state.decorId}
+                customPhoto={state.customPhoto}
+                onSelectDecor={(id) => onChange({ decorId: id, customPhoto: null })}
+                onUploadPhoto={(photo) => onChange({ customPhoto: photo, decorId: null })}
+              />
+            )}
             {tab === 'color' && (
               <Swatches
                 items={colors}
@@ -173,6 +184,86 @@ function Swatches({ items, selectedId, onSelect, renderSwatch, meta }) {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function DecorTab({ decorId, customPhoto, onSelectDecor, onUploadPhoto }) {
+  const [mode, setMode] = useState(customPhoto ? 'photo' : 'gallery');
+
+  return (
+    <div>
+      <div className="mb-3 inline-flex rounded-full border border-picard-navy/12 bg-stone-50 p-0.5">
+        <button
+          type="button"
+          onClick={() => setMode('gallery')}
+          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+            mode === 'gallery'
+              ? 'bg-picard-navy text-picard-cream'
+              : 'text-picard-navy/65 hover:text-picard-navy'
+          }`}
+        >
+          <ImageIcon size={13} />
+          Galerie
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('photo')}
+          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+            mode === 'photo'
+              ? 'bg-picard-navy text-picard-cream'
+              : 'text-picard-navy/65 hover:text-picard-navy'
+          }`}
+        >
+          <Camera size={13} />
+          Ma photo
+        </button>
+      </div>
+
+      {mode === 'gallery' ? (
+        <div className="grid grid-cols-2 gap-2.5">
+          {decors.map((decor) => {
+            const selected = decor.id === decorId;
+            return (
+              <button
+                type="button"
+                key={decor.id}
+                onClick={() => onSelectDecor(decor.id)}
+                className={`group relative overflow-hidden rounded-xl text-left transition ${
+                  selected ? 'ring-2 ring-picard-gold ring-offset-2 ring-offset-white' : ''
+                }`}
+              >
+                <div className={`relative aspect-[4/5] w-full bg-gradient-to-br ${decor.gradient}`}>
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage: `radial-gradient(circle at 30% 30%, ${decor.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${decor.accent} 0%, transparent 55%)`,
+                    }}
+                  />
+                  <div className="absolute inset-x-3 bottom-10 top-3 rounded border border-white/30 bg-white/15 backdrop-blur-[1px]" />
+                  {decor.imageUrl && (
+                    <img
+                      src={decor.imageUrl}
+                      alt={decor.name}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent p-2">
+                  <p className="text-[11px] font-medium leading-tight text-white">{decor.name}</p>
+                </div>
+                {selected && (
+                  <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-picard-gold text-white shadow">
+                    <Check size={12} strokeWidth={3} />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <PhotoUploader photo={customPhoto} onChange={onUploadPhoto} />
+      )}
     </div>
   );
 }

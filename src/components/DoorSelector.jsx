@@ -7,10 +7,10 @@ export default function DoorSelector({ doorId, onSelect, onContinue, onBack }) {
     <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:px-8 lg:py-16">
       <div className="mb-10 flex flex-col gap-3">
         <span className="text-xs uppercase tracking-[0.28em] text-picard-navy/55">
-          Étape 02 — Modèle
+          Étape 01 — Modèle
         </span>
         <h2 className="font-display text-4xl text-picard-navy sm:text-5xl">
-          Quatre architectures, une même exigence.
+          Trois architectures, une même exigence.
         </h2>
         <p className="max-w-2xl text-base leading-relaxed text-picard-navy/65">
           Chaque modèle Picard est certifié A2P et fabriqué en France. Choisissez celui qui dialogue
@@ -18,7 +18,7 @@ export default function DoorSelector({ doorId, onSelect, onContinue, onBack }) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         {doors.map((door, idx) => {
           const selected = door.id === doorId;
           return (
