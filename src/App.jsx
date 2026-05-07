@@ -71,6 +71,7 @@ export default function App() {
               state={state}
               selections={selections}
               payload={persistablePayload}
+              onChange={set}
               onBack={back}
               onRestart={() => reset()}
             />
@@ -123,6 +124,7 @@ function PersonalizationStep({ cfg, isMobile, tourOpen, onStartTour, onCloseTour
             showHotspots
             activeHotspotId={activeHotspot}
             onHotspotChange={setActiveHotspot}
+            inStudio
           />
         </div>
         <div className={isMobile ? 'h-[60vh]' : 'h-[640px]'}>

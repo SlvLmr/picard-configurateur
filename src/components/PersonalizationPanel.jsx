@@ -1,20 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Compass, Image as ImageIcon, Camera } from 'lucide-react';
+import { Check, Compass } from 'lucide-react';
 import {
   colors,
   finishes,
-  ambiancesForDoor,
   accessoriesForDoor,
   handlesForDoor,
   glassesForDoor,
   panelsForDoor,
 } from '../data';
-import PhotoUploader from './PhotoUploader';
-import { resolveAmbianceImage } from '../utils/assets';
 
 const TABS = [
-  { id: 'ambiance', label: 'Ambiance' },
   { id: 'colors', label: 'Couleurs' },
   { id: 'panel', label: 'Panneau' },
   { id: 'handle', label: 'Poignée' },
@@ -30,9 +26,8 @@ export default function PersonalizationPanel({
   onToggleAccessory,
   onStartTour,
 }) {
-  const [tab, setTab] = useState('ambiance');
+  const [tab, setTab] = useState('colors');
   const door = selections.door;
-  const availableAmbiances = ambiancesForDoor(door);
   const availableHandles = handlesForDoor(door.id);
   const availableGlasses = glassesForDoor(door.id);
   const availableAccessories = accessoriesForDoor(door.id);
@@ -83,15 +78,6 @@ export default function PersonalizationPanel({
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
-            {tab === 'ambiance' && (
-              <AmbianceTab
-                ambiances={availableAmbiances}
-                ambianceId={state.ambianceId}
-                customPhoto={state.customPhoto}
-                onSelectAmbiance={(id) => onChange({ ambianceId: id, customPhoto: null })}
-                onUploadPhoto={(photo) => onChange({ customPhoto: photo, ambianceId: null })}
-              />
-            )}
             {tab === 'colors' && (
               <ColorsTab
                 state={state}
@@ -211,97 +197,6 @@ function ColorsTab({ state, onChange }) {
           </div>
         );
       })}
-    </div>
-  );
-}
-
-function AmbianceTab({ ambiances, ambianceId, customPhoto, onSelectAmbiance, onUploadPhoto }) {
-  const [mode, setMode] = useState(customPhoto ? 'photo' : 'gallery');
-
-  return (
-    <div>
-      <div className="mb-3 inline-flex rounded-full border border-picard-navy/12 bg-stone-50 p-0.5">
-        <button
-          type="button"
-          onClick={() => setMode('gallery')}
-          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-            mode === 'gallery'
-              ? 'bg-picard-navy text-picard-cream'
-              : 'text-picard-navy/65 hover:text-picard-navy'
-          }`}
-        >
-          <ImageIcon size={13} />
-          Galerie
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode('photo')}
-          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-            mode === 'photo'
-              ? 'bg-picard-navy text-picard-cream'
-              : 'text-picard-navy/65 hover:text-picard-navy'
-          }`}
-        >
-          <Camera size={13} />
-          Ma photo
-        </button>
-      </div>
-
-      {mode === 'gallery' ? (
-        <div className="grid grid-cols-2 gap-2.5">
-          {ambiances.map((ambiance) => {
-            const selected = ambiance.id === ambianceId;
-            const resolvedImage = resolveAmbianceImage(ambiance.imageUrl);
-            return (
-              <button
-                type="button"
-                key={ambiance.id}
-                onClick={() => onSelectAmbiance(ambiance.id)}
-                className={`group relative overflow-hidden rounded-xl text-left transition ${
-                  selected ? 'ring-2 ring-picard-gold ring-offset-2 ring-offset-white' : ''
-                }`}
-              >
-                <div className={`relative aspect-[4/5] w-full bg-gradient-to-br ${ambiance.gradient}`}>
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      backgroundImage: `radial-gradient(circle at 30% 30%, ${ambiance.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${ambiance.accent} 0%, transparent 55%)`,
-                    }}
-                  />
-                  {!resolvedImage && (
-                    <div className="absolute inset-x-3 bottom-10 top-3 rounded border border-white/30 bg-white/15 backdrop-blur-[1px]" />
-                  )}
-                  {resolvedImage && (
-                    <img
-                      src={resolvedImage}
-                      alt={ambiance.name}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  )}
-                </div>
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent p-2">
-                  <p className="text-[11px] font-medium leading-tight text-white">{ambiance.name}</p>
-                  <p className="text-[9px] uppercase tracking-[0.18em] text-white/75">
-                    {ambiance.type === 'exterior' ? 'Extérieur' : 'Intérieur'}
-                  </p>
-                </div>
-                {selected && (
-                  <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-picard-gold text-white shadow">
-                    <Check size={12} strokeWidth={3} />
-                  </span>
-                )}
-              </button>
-            );
-          })}
-          {ambiances.length === 0 && (
-            <p className="col-span-2 py-6 text-center text-sm text-picard-navy/55">
-              Aucune ambiance disponible pour ce modèle.
-            </p>
-          )}
-        </div>
-      ) : (
-        <PhotoUploader photo={customPhoto} onChange={onUploadPhoto} />
-      )}
     </div>
   );
 }

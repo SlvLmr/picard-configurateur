@@ -19,19 +19,21 @@ const DoorCanvas = forwardRef(function DoorCanvas(
     showHotspots,
     activeHotspotId,
     onHotspotChange,
+    inStudio = false,
   },
   ref,
 ) {
   const sceneStyle = useMemo(() => {
+    if (inStudio) return null;
     if (customPhoto) {
       return { backgroundImage: `url(${customPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' };
     }
     return null;
-  }, [customPhoto]);
+  }, [customPhoto, inStudio]);
 
   const hotspots = door?.hotspots || [];
-  const ambianceImage = resolveAmbianceImage(ambiance?.imageUrl);
-  const overRealPhoto = !!customPhoto || !!ambianceImage;
+  const ambianceImage = inStudio ? null : resolveAmbianceImage(ambiance?.imageUrl);
+  const overRealPhoto = !inStudio && (!!customPhoto || !!ambianceImage);
   const interactive = !!showHotspots;
 
   // Drag-to-position the door overlay onto the photo, with simple zoom.
@@ -78,7 +80,7 @@ const DoorCanvas = forwardRef(function DoorCanvas(
       ref={ref}
       className="relative isolate overflow-hidden rounded-3xl border border-picard-navy/10 bg-stone-100 editorial-shadow"
     >
-      <SceneBackdrop ambiance={ambiance} sceneStyle={sceneStyle} view={view} />
+      <SceneBackdrop ambiance={ambiance} sceneStyle={sceneStyle} view={view} inStudio={inStudio} />
 
       <div className="relative aspect-[4/5] w-full">
         <div className="absolute inset-0 flex items-center justify-center">
@@ -169,7 +171,47 @@ const DoorCanvas = forwardRef(function DoorCanvas(
 
 export default DoorCanvas;
 
-function SceneBackdrop({ ambiance, sceneStyle, view }) {
+function StudioBackdrop() {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Wall to floor gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-stone-50 via-white to-stone-200" />
+      {/* Subtle dot grid (paper-like texture) */}
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(26,26,46,0.05) 1px, transparent 1px)',
+          backgroundSize: '22px 22px',
+        }}
+      />
+      {/* Soft warm light from upper-left */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse at 28% -10%, rgba(184,134,11,0.10), transparent 55%)',
+        }}
+      />
+      {/* Floor line at ~70% (where wall meets floor) */}
+      <div className="absolute inset-x-0 top-[70%] h-px bg-picard-navy/10" />
+      {/* Floor sheen */}
+      <div className="absolute inset-x-0 bottom-0 top-[70%] bg-gradient-to-b from-stone-200/0 via-stone-200/40 to-stone-300/60" />
+      {/* Vignette to focus center */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, transparent 55%, rgba(26,26,46,0.08) 100%)',
+        }}
+      />
+    </div>
+  );
+}
+
+function SceneBackdrop({ ambiance, sceneStyle, view, inStudio }) {
+  if (inStudio) {
+    return <StudioBackdrop />;
+  }
   if (sceneStyle) {
     return (
       <div className="absolute inset-0">
@@ -179,9 +221,7 @@ function SceneBackdrop({ ambiance, sceneStyle, view }) {
     );
   }
   if (!ambiance) {
-    return (
-      <div className="absolute inset-0 bg-gradient-to-br from-stone-200 via-stone-100 to-stone-200" />
-    );
+    return <StudioBackdrop />;
   }
   const resolvedImage = resolveAmbianceImage(ambiance.imageUrl);
   if (resolvedImage) {

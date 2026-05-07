@@ -1,21 +1,25 @@
 import { useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Bookmark, Download, Send, Share2, Star } from 'lucide-react';
+import { ArrowLeft, Bookmark, Camera, Check, Download, Image as ImageIcon, Send, Share2, Star } from 'lucide-react';
 import DoorCanvas from './DoorCanvas';
+import PhotoUploader from './PhotoUploader';
 import SaveModal from './SaveModal';
 import QuoteForm from './QuoteForm';
 import ShareMenu from './ShareMenu';
-import { accessories as ACCESSORIES } from '../data';
+import { accessories as ACCESSORIES, ambiancesForDoor } from '../data';
+import { resolveAmbianceImage } from '../utils/assets';
 import { generatePdfFromElement } from '../utils/pdfGenerator';
 
-export default function Summary({ state, selections, payload, onBack, onRestart }) {
+export default function Summary({ state, selections, payload, onChange, onBack, onRestart }) {
   const summaryRef = useRef(null);
   const [saveOpen, setSaveOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [showPhotoUploader, setShowPhotoUploader] = useState(false);
 
   const summaryText = useMemo(() => buildSummaryText(state, selections), [state, selections]);
+  const compatibleAmbiances = useMemo(() => ambiancesForDoor(selections.door), [selections.door]);
 
   const handleDownload = async () => {
     if (!summaryRef.current) return;
@@ -35,6 +39,8 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
           .filter(Boolean)
           .join(', ');
 
+  const isCustomPhotoActive = !!state.customPhoto;
+
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:px-8 lg:py-16">
       <div className="mb-8 flex flex-col gap-2">
@@ -44,10 +50,13 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
         <h2 className="font-display text-4xl text-picard-navy sm:text-5xl">
           Votre porte, en un coup d'œil.
         </h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-picard-navy/65">
+          Visualisez votre configuration dans différentes ambiances ou sur votre propre façade.
+        </p>
       </div>
 
       <div ref={summaryRef} className="grid grid-cols-1 gap-8 lg:grid-cols-[1.05fr_1fr]">
-        <div>
+        <div className="space-y-4">
           <DoorCanvas
             ambiance={selections.ambiance}
             customPhoto={state.customPhoto}
@@ -61,6 +70,24 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
             view={state.view}
             showHotspots={false}
           />
+
+          <AmbianceStrip
+            ambiances={compatibleAmbiances}
+            selectedAmbianceId={isCustomPhotoActive ? null : state.ambianceId}
+            isCustomPhotoActive={isCustomPhotoActive}
+            onSelectAmbiance={(id) => onChange({ ambianceId: id, customPhoto: null })}
+            onPickPhoto={() => setShowPhotoUploader(true)}
+          />
+
+          {showPhotoUploader && (
+            <PhotoUploader
+              photo={state.customPhoto}
+              onChange={(photo) => {
+                onChange({ customPhoto: photo, ambianceId: photo ? null : state.ambianceId });
+                if (!photo) setShowPhotoUploader(false);
+              }}
+            />
+          )}
         </div>
         <motion.aside
           initial={{ opacity: 0, y: 16 }}
@@ -89,7 +116,6 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
           </p>
 
           <dl className="mt-6 grid grid-cols-1 gap-3 text-sm">
-            <SummaryRow label="Ambiance" value={selections.ambiance?.name || (state.customPhoto ? 'Photo personnelle' : 'Non sélectionnée')} />
             <SummaryRow label="Panneau" value={selections.panel.name} />
             <SummaryRow label="Porte · ext." value={`${selections.doorColorExterior.name} (${selections.doorColorExterior.ral})`} />
             <SummaryRow label="Porte · int." value={`${selections.doorColorInterior.name} (${selections.doorColorInterior.ral})`} />
@@ -146,6 +172,85 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
       />
       <ShareMenu open={shareOpen} onClose={() => setShareOpen(false)} summaryText={summaryText} />
     </div>
+  );
+}
+
+function AmbianceStrip({ ambiances, selectedAmbianceId, isCustomPhotoActive, onSelectAmbiance, onPickPhoto }) {
+  return (
+    <div>
+      <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.22em] text-picard-navy/55">
+        Visualiser dans une ambiance
+      </p>
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
+        <PhotoPickerThumb active={isCustomPhotoActive} onClick={onPickPhoto} />
+        {ambiances.map((ambiance) => (
+          <AmbianceThumb
+            key={ambiance.id}
+            ambiance={ambiance}
+            active={!isCustomPhotoActive && ambiance.id === selectedAmbianceId}
+            onClick={() => onSelectAmbiance(ambiance.id)}
+          />
+        ))}
+        {ambiances.length === 0 && (
+          <p className="px-3 py-4 text-xs text-picard-navy/55">
+            Aucune ambiance disponible pour ce modèle.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AmbianceThumb({ ambiance, active, onClick }) {
+  const resolved = resolveAmbianceImage(ambiance.imageUrl);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border transition ${
+        active
+          ? 'border-picard-gold ring-2 ring-picard-gold ring-offset-2 ring-offset-picard-cream'
+          : 'border-picard-navy/12 hover:border-picard-navy/30'
+      }`}
+      title={ambiance.name}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${ambiance.gradient}`}>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 30% 30%, ${ambiance.accent} 0%, transparent 60%)`,
+          }}
+        />
+      </div>
+      {resolved && (
+        <img src={resolved} alt={ambiance.name} className="absolute inset-0 h-full w-full object-cover" />
+      )}
+      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent px-2 py-1.5 text-left text-[10px] font-medium leading-tight text-white">
+        {ambiance.name}
+      </span>
+      {active && (
+        <span className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-picard-gold text-white">
+          <Check size={11} strokeWidth={3} />
+        </span>
+      )}
+    </button>
+  );
+}
+
+function PhotoPickerThumb({ active, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group flex h-20 w-28 shrink-0 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed transition ${
+        active
+          ? 'border-picard-gold bg-amber-50/50 text-picard-navy'
+          : 'border-picard-navy/25 bg-stone-50 text-picard-navy/65 hover:border-picard-navy/40 hover:text-picard-navy'
+      }`}
+    >
+      <Camera size={16} strokeWidth={1.5} />
+      <span className="text-[10px] font-medium uppercase tracking-[0.16em]">Ma photo</span>
+    </button>
   );
 }
 
