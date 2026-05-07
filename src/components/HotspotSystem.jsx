@@ -9,7 +9,9 @@ export default function HotspotSystem({ hotspots = [], activeId, onSelect, onClo
           <button
             type="button"
             key={spot.id}
+            data-hotspot
             onClick={() => onSelect(isActive ? null : spot.id)}
+            onPointerDown={(e) => e.stopPropagation()}
             style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
             className="group absolute -translate-x-1/2 -translate-y-1/2"
             aria-label={spot.label}

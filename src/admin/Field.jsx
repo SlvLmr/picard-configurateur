@@ -134,17 +134,24 @@ function SelectField({ field, value, onChange }) {
 function ImageField({ field, value, onChange }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
-  const resolved = resolveAmbianceImage(value);
+  const [localPreview, setLocalPreview] = useState(null);
+  const resolved = localPreview || resolveAmbianceImage(value);
 
   const handleFile = async (file) => {
     if (!file) return;
     setError(null);
+    // Show the picked file immediately so the user sees their selection
+    // even before Netlify has rebuilt (the live URL only appears after deploy).
+    const reader = new FileReader();
+    reader.onload = () => setLocalPreview(reader.result);
+    reader.readAsDataURL(file);
     setUploading(true);
     try {
       const fileName = await uploadAmbianceImage(file);
       onChange(fileName);
     } catch (err) {
       setError(err.message || "Échec de l'upload");
+      setLocalPreview(null);
     } finally {
       setUploading(false);
     }
@@ -171,10 +178,20 @@ function ImageField({ field, value, onChange }) {
               onChange={(e) => handleFile(e.target.files?.[0])}
             />
           </label>
+          {value && !uploading && (
+            <span className="text-[11px] leading-snug text-picard-navy/55">
+              {localPreview
+                ? "Pense à cliquer « Enregistrer » : l'image sera visible sur le site après le déploiement Netlify (~1 min)."
+                : 'Image enregistrée.'}
+            </span>
+          )}
           {value && (
             <button
               type="button"
-              onClick={() => onChange(null)}
+              onClick={() => {
+                onChange(null);
+                setLocalPreview(null);
+              }}
               className="inline-flex w-fit items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-picard-navy/55 transition hover:text-picard-red"
             >
               <X size={12} /> Retirer

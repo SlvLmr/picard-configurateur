@@ -1,5 +1,6 @@
-import { forwardRef, useMemo } from 'react';
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Maximize2, Minus, Plus, RotateCcw } from 'lucide-react';
 import HotspotSystem from './HotspotSystem';
 import { resolveAmbianceImage } from '../utils/assets';
 
@@ -29,6 +30,48 @@ const DoorCanvas = forwardRef(function DoorCanvas(
   }, [customPhoto]);
 
   const hotspots = door?.hotspots || [];
+  const ambianceImage = resolveAmbianceImage(ambiance?.imageUrl);
+  const overRealPhoto = !!customPhoto || !!ambianceImage;
+  const interactive = !!showHotspots;
+
+  // Drag-to-position the door overlay onto the photo, with simple zoom.
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(1);
+  const drag = useRef({ active: false, startX: 0, startY: 0, baseX: 0, baseY: 0 });
+
+  // Reset position/scale when the underlying photo or door changes.
+  useEffect(() => {
+    setPosition({ x: 0, y: 0 });
+    setScale(1);
+  }, [customPhoto, ambiance?.id, door?.id]);
+
+  const onPointerDown = (e) => {
+    if (!interactive || !overRealPhoto) return;
+    if (e.target.closest('[data-hotspot]')) return;
+    drag.current = {
+      active: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      baseX: position.x,
+      baseY: position.y,
+    };
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e) => {
+    if (!drag.current.active) return;
+    const dx = e.clientX - drag.current.startX;
+    const dy = e.clientY - drag.current.startY;
+    setPosition({ x: drag.current.baseX + dx, y: drag.current.baseY + dy });
+  };
+  const onPointerUp = (e) => {
+    drag.current.active = false;
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+  };
+  const reset = () => {
+    setPosition({ x: 0, y: 0 });
+    setScale(1);
+  };
+  const bumpScale = (delta) => setScale((s) => Math.max(0.5, Math.min(1.6, +(s + delta).toFixed(2))));
 
   return (
     <div
@@ -40,8 +83,20 @@ const DoorCanvas = forwardRef(function DoorCanvas(
       <div className="relative aspect-[4/5] w-full">
         <div className="absolute inset-0 flex items-center justify-center">
           <div
-            className="relative h-[80%] w-[56%] rounded-md p-[6px]"
-            style={{ background: frameColor?.hex || '#1A1A2E' }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            className={`relative h-[80%] w-[56%] rounded-md ${overRealPhoto ? 'p-[3px]' : 'p-[6px]'} ${
+              interactive && overRealPhoto ? 'cursor-move touch-none' : ''
+            }`}
+            style={{
+              background: frameColor?.hex || '#1A1A2E',
+              transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+              transformOrigin: 'center',
+              transition: drag.current.active ? 'none' : 'transform 0.15s ease-out',
+              filter: overRealPhoto ? 'drop-shadow(0 14px 30px rgba(0,0,0,0.45))' : 'none',
+            }}
           >
             <DoorGraphic
               door={door}
@@ -51,6 +106,7 @@ const DoorCanvas = forwardRef(function DoorCanvas(
               finish={finish}
               accessoryIds={accessoryIds}
               view={view}
+              overRealPhoto={overRealPhoto}
             />
             {showHotspots && (
               <HotspotSystem
@@ -64,10 +120,49 @@ const DoorCanvas = forwardRef(function DoorCanvas(
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+
       <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/55 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-picard-navy/75 backdrop-blur">
         <span className="h-1.5 w-1.5 rounded-full bg-picard-gold" />
         {view === 'exterior' ? 'Vue extérieur' : 'Vue intérieur'}
       </div>
+
+      {interactive && overRealPhoto && (
+        <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/40 bg-white/85 px-2 py-1 text-picard-navy backdrop-blur">
+          <button
+            type="button"
+            onClick={() => bumpScale(-0.05)}
+            className="rounded-full p-1.5 transition hover:bg-picard-navy/10"
+            aria-label="Réduire la porte"
+            title="Réduire"
+          >
+            <Minus size={14} />
+          </button>
+          <span className="px-2 text-[11px] font-medium tabular-nums">{Math.round(scale * 100)}%</span>
+          <button
+            type="button"
+            onClick={() => bumpScale(0.05)}
+            className="rounded-full p-1.5 transition hover:bg-picard-navy/10"
+            aria-label="Agrandir la porte"
+            title="Agrandir"
+          >
+            <Plus size={14} />
+          </button>
+          <span className="mx-1 h-4 w-px bg-picard-navy/15" />
+          <button
+            type="button"
+            onClick={reset}
+            className="rounded-full p-1.5 transition hover:bg-picard-navy/10"
+            aria-label="Réinitialiser la position"
+            title="Recentrer"
+          >
+            <RotateCcw size={14} />
+          </button>
+          <span className="px-2 text-[10px] uppercase tracking-[0.18em] text-picard-navy/55">
+            <span className="hidden sm:inline">Glisser pour positionner</span>
+            <span className="sm:hidden">Glisser</span>
+          </span>
+        </div>
+      )}
     </div>
   );
 });
@@ -115,8 +210,11 @@ function SceneBackdrop({ ambiance, sceneStyle, view }) {
   );
 }
 
-function DoorGraphic({ door, doorColor, handle, glass, finish, accessoryIds, view }) {
+function DoorGraphic({ door, doorColor, handle, glass, finish, accessoryIds, view, overRealPhoto }) {
   const finishOverlay = finishStyle(finish?.id);
+  const baseShadow = overRealPhoto
+    ? 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.18)'
+    : '0 30px 60px -25px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 0 rgba(0,0,0,0.25)';
   return (
     <motion.div
       key={`${door.id}-${doorColor.id}-${finish.id}-${view}`}
@@ -126,8 +224,7 @@ function DoorGraphic({ door, doorColor, handle, glass, finish, accessoryIds, vie
       className="relative h-full w-full rounded-md"
       style={{
         background: doorColor?.hex || '#1A1A2E',
-        boxShadow:
-          '0 30px 60px -25px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 0 rgba(0,0,0,0.25)',
+        boxShadow: baseShadow,
         ...finishOverlay,
       }}
     >
