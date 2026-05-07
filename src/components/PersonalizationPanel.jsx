@@ -8,6 +8,7 @@ import { accessories } from '../data/accessories';
 import { finishes } from '../data/finishes';
 import { decors } from '../data/decors';
 import PhotoUploader from './PhotoUploader';
+import { resolveDecorImage } from '../utils/assets';
 
 const TABS = [
   { id: 'decor', label: 'Décor' },
@@ -224,6 +225,7 @@ function DecorTab({ decorId, customPhoto, onSelectDecor, onUploadPhoto }) {
         <div className="grid grid-cols-2 gap-2.5">
           {decors.map((decor) => {
             const selected = decor.id === decorId;
+            const resolvedImage = resolveDecorImage(decor.imageUrl);
             return (
               <button
                 type="button"
@@ -240,10 +242,12 @@ function DecorTab({ decorId, customPhoto, onSelectDecor, onUploadPhoto }) {
                       backgroundImage: `radial-gradient(circle at 30% 30%, ${decor.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${decor.accent} 0%, transparent 55%)`,
                     }}
                   />
-                  <div className="absolute inset-x-3 bottom-10 top-3 rounded border border-white/30 bg-white/15 backdrop-blur-[1px]" />
-                  {decor.imageUrl && (
+                  {!resolvedImage && (
+                    <div className="absolute inset-x-3 bottom-10 top-3 rounded border border-white/30 bg-white/15 backdrop-blur-[1px]" />
+                  )}
+                  {resolvedImage && (
                     <img
-                      src={decor.imageUrl}
+                      src={resolvedImage}
                       alt={decor.name}
                       className="absolute inset-0 h-full w-full object-cover"
                     />

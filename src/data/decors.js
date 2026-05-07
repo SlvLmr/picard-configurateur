@@ -7,7 +7,7 @@ export const decors = [
     style: 'Contemporain',
     gradient: 'from-amber-100 via-orange-50 to-stone-200',
     accent: 'rgba(216, 180, 132, 0.4)',
-    imageUrl: null,
+    imageUrl: 'villa-bord-de-mer.jpg',
   },
   {
     id: 2,

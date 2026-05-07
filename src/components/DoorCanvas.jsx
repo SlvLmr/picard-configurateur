@@ -1,6 +1,7 @@
 import { forwardRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import HotspotSystem from './HotspotSystem';
+import { resolveDecorImage } from '../utils/assets';
 
 const DoorCanvas = forwardRef(function DoorCanvas(
   {
@@ -77,6 +78,19 @@ function SceneBackdrop({ decor, sceneStyle, view }) {
       <div className="absolute inset-0 bg-gradient-to-br from-stone-200 via-stone-100 to-stone-200" />
     );
   }
+  const resolvedImage = resolveDecorImage(decor.imageUrl);
+  if (resolvedImage) {
+    return (
+      <div className="absolute inset-0">
+        <img
+          src={resolvedImage}
+          alt={decor.name}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {view === 'interior' && <div className="absolute inset-0 bg-picard-navy/35" />}
+      </div>
+    );
+  }
   return (
     <div className={`absolute inset-0 bg-gradient-to-br ${decor.gradient}`}>
       <div
@@ -85,7 +99,6 @@ function SceneBackdrop({ decor, sceneStyle, view }) {
           backgroundImage: `radial-gradient(circle at 30% 20%, ${decor.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${decor.accent} 0%, transparent 55%)`,
         }}
       />
-      {/* horizon line */}
       <div className="absolute inset-x-0 top-1/2 h-px bg-picard-navy/8" />
       {view === 'interior' && <div className="absolute inset-0 bg-picard-navy/12" />}
     </div>
