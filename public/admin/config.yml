@@ -3,8 +3,8 @@ backend:
   branch: main
 
 publish_mode: simple
-media_folder: "public/decors"
-public_folder: "/decors"
+media_folder: "public/ambiances"
+public_folder: "/ambiances"
 
 site_url: https://picard-configurateur.netlify.app
 display_url: https://picard-configurateur.netlify.app
@@ -12,52 +12,10 @@ logo_url: /LOGO-PICARD-SERRURES-MIDNIGHT.png
 locale: fr
 
 collections:
-  - name: "decors_collection"
-    label: "Décors"
-    label_singular: "Décor"
-    description: "Galerie d'inspiration. Chaque décor est un visuel de fond pour la projection de la porte."
-    editor:
-      preview: false
-    files:
-      - name: "decors"
-        label: "Liste des décors"
-        file: "src/data/decors.json"
-        format: "json"
-        fields:
-          - name: items
-            label: "Décors"
-            label_singular: "Décor"
-            widget: list
-            summary: "{{fields.name}} ({{fields.style}})"
-            fields:
-              - { name: id, label: "ID (unique)", widget: number, value_type: int, min: 1 }
-              - { name: name, label: "Nom", widget: string }
-              - name: type
-                label: "Type"
-                widget: select
-                options:
-                  - { label: "Extérieur", value: "exterior" }
-                  - { label: "Intérieur", value: "interior" }
-              - name: category
-                label: "Catégorie"
-                widget: select
-                options:
-                  - { label: "Maison / Villa", value: "house_villa" }
-                  - { label: "Appartement / Immeuble", value: "apartment_building" }
-              - { name: style, label: "Style", widget: string, hint: "Ex. Contemporain, Haussmannien, Méditerranéen…" }
-              - { name: imageUrl, label: "Image (uploader)", widget: image, required: false, allow_multiple: false, choose_url: false, hint: "Téléverse l'image ici. Sera stockée dans /decors/." }
-              - { name: gradient, label: "Gradient (fallback)", widget: string, required: false, hint: "Classes Tailwind si pas d'image." }
-              - { name: accent, label: "Accent (fallback)", widget: string, required: false, hint: "Couleur rgba pour l'éclairage." }
-              - name: compatibleDoorIds
-                label: "Portes compatibles (vide = toutes)"
-                widget: list
-                required: false
-                field: { name: id, label: "ID porte", widget: number, value_type: int }
-
   - name: "doors_collection"
     label: "Modèles de portes"
     label_singular: "Modèle"
-    description: "Les modèles affichés sur l'écran d'accueil."
+    description: "Les modèles affichés sur l'écran d'accueil. Chaque porte a ses propres hotspots techniques."
     files:
       - name: "doors"
         label: "Liste des modèles"
@@ -68,28 +26,80 @@ collections:
             label: "Modèles"
             label_singular: "Modèle"
             widget: list
-            summary: "{{fields.name}} — {{fields.price}}"
+            summary: "{{fields.name}} ({{fields.category}}) — {{fields.price}}"
             fields:
               - { name: id, label: "ID (unique)", widget: number, value_type: int, min: 1 }
-              - { name: slug, label: "Slug", widget: string, hint: "Identifiant URL ex. appartement, maison-vitree" }
+              - { name: slug, label: "Slug", widget: string, hint: "Identifiant URL ex. diamant-10" }
               - { name: name, label: "Nom", widget: string }
-              - { name: range, label: "Gamme / catégorie courte", widget: string }
+              - name: category
+                label: "Catégorie d'usage"
+                widget: select
+                options:
+                  - { label: "Appartement", value: "appartement" }
+                  - { label: "Maison", value: "maison" }
+              - { name: range, label: "Gamme / mention courte", widget: string, hint: "Ex. Appartement, Maison individuelle, Premium…" }
               - { name: security, label: "Étoiles A2P (1-5)", widget: number, value_type: int, min: 1, max: 5 }
               - { name: priceFrom, label: "Prix de départ (entier en €)", widget: number, value_type: int, min: 0 }
-              - { name: price, label: "Affichage prix", widget: string }
+              - { name: price, label: "Affichage prix", widget: string, hint: "Ex. À partir de 4 990 €" }
               - { name: desc, label: "Description courte", widget: text }
               - { name: icon, label: "Icône (caractère unicode)", widget: string, required: false }
               - name: panelStyle
-                label: "Style de panneau"
+                label: "Style de panneau (rendu placeholder)"
                 widget: select
                 options:
                   - { label: "Plein", value: "full_panel" }
                   - { label: "Lignes horizontales", value: "horizontal_lines" }
                   - { label: "Vitrage asymétrique", value: "asymmetric_glass" }
-                  - { label: "Renforcé / Vauban", value: "fortress" }
+                  - { label: "Renforcé", value: "fortress" }
+              - name: hotspots
+                label: "Hotspots techniques de cette porte"
+                widget: list
+                hint: "Pastilles cliquables sur la porte. Position en %. 0,0 = haut-gauche."
+                summary: "{{fields.title}} ({{fields.x}}, {{fields.y}})"
+                fields:
+                  - { name: id, label: "ID slug", widget: string }
+                  - { name: label, label: "Étiquette courte", widget: string }
+                  - { name: x, label: "Position X (%)", widget: number, value_type: int, min: 0, max: 100 }
+                  - { name: y, label: "Position Y (%)", widget: number, value_type: int, min: 0, max: 100 }
+                  - { name: title, label: "Titre du détail", widget: string }
+                  - { name: description, label: "Description", widget: text }
+
+  - name: "ambiances_collection"
+    label: "Ambiances"
+    label_singular: "Ambiance"
+    description: "Visuels de fond projetant la porte dans son contexte (intérieur ou extérieur)."
+    editor:
+      preview: false
+    files:
+      - name: "ambiances"
+        label: "Liste des ambiances"
+        file: "src/data/ambiances.json"
+        format: "json"
+        fields:
+          - name: items
+            label: "Ambiances"
+            label_singular: "Ambiance"
+            widget: list
+            summary: "{{fields.name}} — {{fields.style}}"
+            fields:
+              - { name: id, label: "ID (unique)", widget: number, value_type: int, min: 1 }
+              - { name: name, label: "Nom", widget: string }
+              - name: type
+                label: "Type"
+                widget: select
+                options:
+                  - { label: "Extérieur (façade)", value: "exterior" }
+                  - { label: "Intérieur (hall, vestibule)", value: "interior" }
+              - { name: style, label: "Style", widget: string, hint: "Ex. Contemporain, Haussmannien, Méditerranéen…" }
+              - { name: forApartment, label: "OK pour appartement ?", widget: boolean, default: true }
+              - { name: forHouse, label: "OK pour maison ?", widget: boolean, default: true }
+              - { name: imageUrl, label: "Image", widget: image, required: false, allow_multiple: false, choose_url: false, hint: "Téléverse l'image. Stockée dans /ambiances/." }
+              - { name: gradient, label: "Gradient (fallback si pas d'image)", widget: string, required: false, hint: "Classes Tailwind ex. from-amber-100 via-orange-50 to-stone-200" }
+              - { name: accent, label: "Accent (fallback)", widget: string, required: false, hint: "Couleur rgba pour l'éclairage." }
 
   - name: "colors_collection"
     label: "Couleurs (RAL)"
+    description: "Nuancier RAL utilisé pour porte intérieur, porte extérieur, bâti intérieur et bâti extérieur."
     files:
       - name: "colors"
         label: "Liste des couleurs"
@@ -105,8 +115,47 @@ collections:
               - { name: id, label: "ID slug (ex. noir-9005)", widget: string }
               - { name: name, label: "Nom", widget: string }
               - { name: ral, label: "Référence RAL", widget: string }
-              - { name: hex, label: "Code hexadécimal (#RRGGBB)", widget: string }
-              - { name: textOn, label: "Couleur de texte sur cette couleur", widget: string, default: "#F5F0E8" }
+              - { name: hex, label: "Code hexadécimal #RRGGBB", widget: string }
+              - { name: textOn, label: "Couleur du texte sur fond", widget: string, default: "#F5F0E8" }
+
+  - name: "panels_collection"
+    label: "Panneaux"
+    description: "Matières et styles de panneau (acier mélaminé, aluminium, etc.)."
+    files:
+      - name: "panels"
+        label: "Liste des panneaux"
+        file: "src/data/panels.json"
+        format: "json"
+        fields:
+          - name: items
+            label: "Panneaux"
+            label_singular: "Panneau"
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - { name: id, label: "ID slug", widget: string }
+              - { name: name, label: "Nom", widget: string }
+              - name: material
+                label: "Matériau"
+                widget: select
+                options:
+                  - { label: "Acier", value: "acier" }
+                  - { label: "Aluminium", value: "alu" }
+              - name: family
+                label: "Famille / style"
+                widget: select
+                options:
+                  - { label: "Mélaminé standard", value: "melamine" }
+                  - { label: "Plaxé", value: "plaxe" }
+                  - { label: "Contemporain", value: "contemporain" }
+                  - { label: "Estampé", value: "estampe" }
+                  - { label: "Mouluré", value: "moulure" }
+              - { name: description, label: "Description", widget: text, required: false }
+              - name: compatibleDoorIds
+                label: "Portes compatibles (vide = toutes)"
+                widget: list
+                required: false
+                field: { name: id, label: "ID porte", widget: number, value_type: int }
 
   - name: "handles_collection"
     label: "Poignées"
@@ -124,7 +173,7 @@ collections:
             fields:
               - { name: id, label: "ID slug", widget: string }
               - { name: name, label: "Nom", widget: string }
-              - { name: description, label: "Description courte", widget: text, required: false }
+              - { name: description, label: "Description", widget: text, required: false }
               - name: style
                 label: "Style"
                 widget: select
@@ -177,6 +226,7 @@ collections:
 
   - name: "accessories_collection"
     label: "Accessoires"
+    description: "Heurtoir, judas, entrebâilleur, bâton de maréchal, etc."
     files:
       - name: "accessories"
         label: "Liste des accessoires"
@@ -215,25 +265,3 @@ collections:
               - { name: id, label: "ID slug", widget: string }
               - { name: name, label: "Nom", widget: string }
               - { name: description, label: "Description", widget: text, required: false }
-
-  - name: "hotspots_collection"
-    label: "Hotspots techniques"
-    description: "Les pastilles cliquables sur la porte qui expliquent les caractéristiques. Position en pourcentages : 0,0 = haut-gauche, 100,100 = bas-droite."
-    files:
-      - name: "hotspots"
-        label: "Liste des hotspots"
-        file: "src/data/hotspots.json"
-        format: "json"
-        fields:
-          - name: items
-            label: "Hotspots"
-            label_singular: "Hotspot"
-            widget: list
-            summary: "{{fields.title}} ({{fields.x}}, {{fields.y}})"
-            fields:
-              - { name: id, label: "ID slug", widget: string }
-              - { name: label, label: "Étiquette courte", widget: string }
-              - { name: x, label: "Position X (%)", widget: number, value_type: int, min: 0, max: 100 }
-              - { name: y, label: "Position Y (%)", widget: number, value_type: int, min: 0, max: 100 }
-              - { name: title, label: "Titre du détail", widget: string }
-              - { name: description, label: "Description longue", widget: text }

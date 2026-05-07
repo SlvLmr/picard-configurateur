@@ -4,17 +4,19 @@ import { Check, Compass, Image as ImageIcon, Camera } from 'lucide-react';
 import {
   colors,
   finishes,
-  decorsForDoor,
+  ambiancesForDoor,
   accessoriesForDoor,
   handlesForDoor,
   glassesForDoor,
+  panelsForDoor,
 } from '../data';
 import PhotoUploader from './PhotoUploader';
-import { resolveDecorImage } from '../utils/assets';
+import { resolveAmbianceImage } from '../utils/assets';
 
 const TABS = [
-  { id: 'decor', label: 'Décor' },
-  { id: 'color', label: 'Couleur' },
+  { id: 'ambiance', label: 'Ambiance' },
+  { id: 'colors', label: 'Couleurs' },
+  { id: 'panel', label: 'Panneau' },
   { id: 'handle', label: 'Poignée' },
   { id: 'glass', label: 'Vitrage' },
   { id: 'accessories', label: 'Accessoires' },
@@ -28,12 +30,13 @@ export default function PersonalizationPanel({
   onToggleAccessory,
   onStartTour,
 }) {
-  const [tab, setTab] = useState('decor');
-  const doorId = selections.door.id;
-  const availableDecors = decorsForDoor(doorId);
-  const availableHandles = handlesForDoor(doorId);
-  const availableGlasses = glassesForDoor(doorId);
-  const availableAccessories = accessoriesForDoor(doorId);
+  const [tab, setTab] = useState('ambiance');
+  const door = selections.door;
+  const availableAmbiances = ambiancesForDoor(door);
+  const availableHandles = handlesForDoor(door.id);
+  const availableGlasses = glassesForDoor(door.id);
+  const availableAccessories = accessoriesForDoor(door.id);
+  const availablePanels = panelsForDoor(door.id);
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-picard-navy/10 bg-white shadow-soft">
@@ -42,7 +45,7 @@ export default function PersonalizationPanel({
           <p className="text-[10px] uppercase tracking-[0.24em] text-picard-navy/50">
             Modèle sélectionné
           </p>
-          <p className="font-display text-2xl text-picard-navy">{selections.door.name}</p>
+          <p className="font-display text-2xl text-picard-navy">{door.name}</p>
         </div>
         <button
           type="button"
@@ -80,28 +83,26 @@ export default function PersonalizationPanel({
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
-            {tab === 'decor' && (
-              <DecorTab
-                decors={availableDecors}
-                decorId={state.decorId}
+            {tab === 'ambiance' && (
+              <AmbianceTab
+                ambiances={availableAmbiances}
+                ambianceId={state.ambianceId}
                 customPhoto={state.customPhoto}
-                onSelectDecor={(id) => onChange({ decorId: id, customPhoto: null })}
-                onUploadPhoto={(photo) => onChange({ customPhoto: photo, decorId: null })}
+                onSelectAmbiance={(id) => onChange({ ambianceId: id, customPhoto: null })}
+                onUploadPhoto={(photo) => onChange({ customPhoto: photo, ambianceId: null })}
               />
             )}
-            {tab === 'color' && (
-              <Swatches
-                items={colors}
-                selectedId={state.colorId}
-                onSelect={(id) => onChange({ colorId: id })}
-                renderSwatch={(c) => (
-                  <span
-                    className="block h-full w-full"
-                    style={{ background: c.hex }}
-                    aria-label={`${c.name} ${c.ral}`}
-                  />
-                )}
-                meta={(c) => `${c.name} · ${c.ral}`}
+            {tab === 'colors' && (
+              <ColorsTab
+                state={state}
+                onChange={onChange}
+              />
+            )}
+            {tab === 'panel' && (
+              <OptionList
+                items={availablePanels}
+                selectedId={state.panelId}
+                onSelect={(id) => onChange({ panelId: id })}
               />
             )}
             {tab === 'handle' && (
@@ -165,39 +166,56 @@ export default function PersonalizationPanel({
   );
 }
 
-function Swatches({ items, selectedId, onSelect, renderSwatch, meta }) {
+function ColorsTab({ state, onChange }) {
+  const slots = [
+    { key: 'doorColorExteriorId', label: 'Porte · extérieur' },
+    { key: 'doorColorInteriorId', label: 'Porte · intérieur' },
+    { key: 'frameColorExteriorId', label: 'Bâti · extérieur' },
+    { key: 'frameColorInteriorId', label: 'Bâti · intérieur' },
+  ];
   return (
-    <div className="grid grid-cols-3 gap-3">
-      {items.map((c) => {
-        const selected = c.id === selectedId;
+    <div className="space-y-5">
+      {slots.map((slot) => {
+        const selectedId = state[slot.key];
         return (
-          <button
-            type="button"
-            key={c.id}
-            onClick={() => onSelect(c.id)}
-            className={`group flex flex-col items-stretch gap-2 rounded-xl border p-2 transition ${
-              selected
-                ? 'border-picard-gold ring-1 ring-picard-gold'
-                : 'border-picard-navy/10 hover:border-picard-navy/25'
-            }`}
-          >
-            <span className="relative block aspect-square overflow-hidden rounded-lg shadow-inner">
-              {renderSwatch(c)}
-              {selected && (
-                <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-picard-gold text-white">
-                  <Check size={12} strokeWidth={3} />
-                </span>
-              )}
-            </span>
-            <span className="block text-[11px] leading-tight text-picard-navy/70">{meta(c)}</span>
-          </button>
+          <div key={slot.key}>
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.22em] text-picard-navy/55">
+              {slot.label}
+            </p>
+            <div className="grid grid-cols-6 gap-1.5">
+              {colors.map((c) => {
+                const selected = c.id === selectedId;
+                return (
+                  <button
+                    type="button"
+                    key={c.id}
+                    onClick={() => onChange({ [slot.key]: c.id })}
+                    title={`${c.name} · ${c.ral}`}
+                    aria-label={`${slot.label} : ${c.name} ${c.ral}`}
+                    className={`relative aspect-square overflow-hidden rounded-md border transition ${
+                      selected
+                        ? 'border-picard-gold ring-1 ring-picard-gold'
+                        : 'border-picard-navy/12 hover:border-picard-navy/30'
+                    }`}
+                    style={{ background: c.hex }}
+                  >
+                    {selected && (
+                      <span className="absolute inset-0 flex items-center justify-center">
+                        <Check size={14} strokeWidth={3} color={c.textOn} />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         );
       })}
     </div>
   );
 }
 
-function DecorTab({ decors, decorId, customPhoto, onSelectDecor, onUploadPhoto }) {
+function AmbianceTab({ ambiances, ambianceId, customPhoto, onSelectAmbiance, onUploadPhoto }) {
   const [mode, setMode] = useState(customPhoto ? 'photo' : 'gallery');
 
   return (
@@ -231,23 +249,23 @@ function DecorTab({ decors, decorId, customPhoto, onSelectDecor, onUploadPhoto }
 
       {mode === 'gallery' ? (
         <div className="grid grid-cols-2 gap-2.5">
-          {decors.map((decor) => {
-            const selected = decor.id === decorId;
-            const resolvedImage = resolveDecorImage(decor.imageUrl);
+          {ambiances.map((ambiance) => {
+            const selected = ambiance.id === ambianceId;
+            const resolvedImage = resolveAmbianceImage(ambiance.imageUrl);
             return (
               <button
                 type="button"
-                key={decor.id}
-                onClick={() => onSelectDecor(decor.id)}
+                key={ambiance.id}
+                onClick={() => onSelectAmbiance(ambiance.id)}
                 className={`group relative overflow-hidden rounded-xl text-left transition ${
                   selected ? 'ring-2 ring-picard-gold ring-offset-2 ring-offset-white' : ''
                 }`}
               >
-                <div className={`relative aspect-[4/5] w-full bg-gradient-to-br ${decor.gradient}`}>
+                <div className={`relative aspect-[4/5] w-full bg-gradient-to-br ${ambiance.gradient}`}>
                   <div
                     className="absolute inset-0"
                     style={{
-                      backgroundImage: `radial-gradient(circle at 30% 30%, ${decor.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${decor.accent} 0%, transparent 55%)`,
+                      backgroundImage: `radial-gradient(circle at 30% 30%, ${ambiance.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${ambiance.accent} 0%, transparent 55%)`,
                     }}
                   />
                   {!resolvedImage && (
@@ -256,13 +274,16 @@ function DecorTab({ decors, decorId, customPhoto, onSelectDecor, onUploadPhoto }
                   {resolvedImage && (
                     <img
                       src={resolvedImage}
-                      alt={decor.name}
+                      alt={ambiance.name}
                       className="absolute inset-0 h-full w-full object-cover"
                     />
                   )}
                 </div>
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent p-2">
-                  <p className="text-[11px] font-medium leading-tight text-white">{decor.name}</p>
+                  <p className="text-[11px] font-medium leading-tight text-white">{ambiance.name}</p>
+                  <p className="text-[9px] uppercase tracking-[0.18em] text-white/75">
+                    {ambiance.type === 'exterior' ? 'Extérieur' : 'Intérieur'}
+                  </p>
                 </div>
                 {selected && (
                   <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-picard-gold text-white shadow">
@@ -272,6 +293,11 @@ function DecorTab({ decors, decorId, customPhoto, onSelectDecor, onUploadPhoto }
               </button>
             );
           })}
+          {ambiances.length === 0 && (
+            <p className="col-span-2 py-6 text-center text-sm text-picard-navy/55">
+              Aucune ambiance disponible pour ce modèle.
+            </p>
+          )}
         </div>
       ) : (
         <PhotoUploader photo={customPhoto} onChange={onUploadPhoto} />
@@ -281,6 +307,13 @@ function DecorTab({ decors, decorId, customPhoto, onSelectDecor, onUploadPhoto }
 }
 
 function OptionList({ items, selectedId, onSelect }) {
+  if (items.length === 0) {
+    return (
+      <p className="py-6 text-center text-sm text-picard-navy/55">
+        Aucune option disponible pour ce modèle.
+      </p>
+    );
+  }
   return (
     <div className="space-y-2.5">
       {items.map((item) => {

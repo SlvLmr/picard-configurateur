@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Pause, Play, X, ChevronRight } from 'lucide-react';
-import { hotspots } from '../data';
 
 const STEP_DURATION = 4500;
 
-export default function GuidedTour({ open, onClose, onFocusHotspot }) {
+export default function GuidedTour({ open, hotspots = [], onClose, onFocusHotspot }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const timer = useRef(null);
 
   useEffect(() => {
     if (!open) return undefined;
+    if (hotspots.length === 0) {
+      onClose();
+      return undefined;
+    }
     setIndex(0);
     setPaused(false);
     onFocusHotspot(hotspots[0].id);

@@ -1,0 +1,68 @@
+{
+  "items": [
+    {
+      "id": "acier-melamine-standard",
+      "name": "Acier mélaminé standard",
+      "material": "acier",
+      "family": "melamine",
+      "description": "Panneau acier finition mélaminée, gamme standard.",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "acier-plaxe",
+      "name": "Acier plaxé",
+      "material": "acier",
+      "family": "plaxe",
+      "description": "Panneau acier plaxé, large palette de teintes et de motifs.",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "acier-contemporain",
+      "name": "Acier contemporain",
+      "material": "acier",
+      "family": "contemporain",
+      "description": "Lignes contemporaines, finition matte ou satinée.",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "acier-estampe",
+      "name": "Acier estampé",
+      "material": "acier",
+      "family": "estampe",
+      "description": "Reliefs estampés discrets, esprit classique revisité.",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "acier-moulure",
+      "name": "Acier mouluré",
+      "material": "acier",
+      "family": "moulure",
+      "description": "Moulures travaillées, signature classique haut de gamme.",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "alu-contemporain",
+      "name": "Aluminium contemporain",
+      "material": "alu",
+      "family": "contemporain",
+      "description": "Aluminium thermolaqué, lignes contemporaines, ultra-durable.",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "alu-estampe",
+      "name": "Aluminium estampé",
+      "material": "alu",
+      "family": "estampe",
+      "description": "Aluminium estampé, reliefs subtils.",
+      "compatibleDoorIds": []
+    },
+    {
+      "id": "alu-moulure",
+      "name": "Aluminium mouluré",
+      "material": "alu",
+      "family": "moulure",
+      "description": "Aluminium mouluré, présence affirmée.",
+      "compatibleDoorIds": []
+    }
+  ]
+}

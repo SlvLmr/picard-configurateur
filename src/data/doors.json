@@ -2,39 +2,100 @@
   "items": [
     {
       "id": 1,
-      "slug": "appartement",
-      "name": "Porte d'appartement",
+      "slug": "diamant-10",
+      "name": "Diamant 10",
+      "category": "appartement",
       "range": "Appartement",
       "security": 5,
-      "priceFrom": 3290,
-      "price": "À partir de 3 290 €",
-      "desc": "Lignes sobres pensées pour les halls d'immeubles, blindage haute sécurité.",
+      "priceFrom": 2990,
+      "price": "À partir de 2 990 €",
+      "desc": "Niveau d'entrée premium pour appartement, blindage A2P certifié.",
       "icon": "▢",
-      "panelStyle": "full_panel"
+      "panelStyle": "full_panel",
+      "hotspots": [
+        { "id": "handle", "label": "Poignée", "x": 86, "y": 52, "title": "Poignée signature", "description": "Conçue pour un geste précis et silencieux, en finition inox brossé ou or vintage." },
+        { "id": "lock", "label": "Serrure A2P", "x": 86, "y": 60, "title": "Serrure A2P***", "description": "Cylindre certifié A2P 3 étoiles, plus haut niveau de résistance contre l'effraction." },
+        { "id": "multipoint", "label": "Verrouillage 5 points", "x": 12, "y": 50, "title": "Verrouillage 5 points", "description": "Cinq points d'ancrage, fermeture sans faille de la porte." },
+        { "id": "seals", "label": "Joints isolants", "x": 50, "y": 92, "title": "Joints d'étanchéité", "description": "Triple joint périphérique : isolation thermique et acoustique." }
+      ]
     },
     {
       "id": 2,
-      "slug": "maison",
-      "name": "Porte de maison",
-      "range": "Maison individuelle",
+      "slug": "diamant-20",
+      "name": "Diamant 20",
+      "category": "appartement",
+      "range": "Appartement",
       "security": 5,
-      "priceFrom": 4490,
-      "price": "À partir de 4 490 €",
-      "desc": "Présence affirmée pour entrée individuelle, isolation thermique renforcée.",
+      "priceFrom": 3990,
+      "price": "À partir de 3 990 €",
+      "desc": "Sécurité renforcée et finitions plus nobles pour un appartement haut standing.",
       "icon": "◇",
-      "panelStyle": "horizontal_lines"
+      "panelStyle": "horizontal_lines",
+      "hotspots": [
+        { "id": "handle", "label": "Poignée", "x": 86, "y": 52, "title": "Poignée signature", "description": "Conçue pour un geste précis et silencieux, en finition inox brossé ou or vintage." },
+        { "id": "lock", "label": "Serrure A2P", "x": 86, "y": 60, "title": "Serrure A2P***", "description": "Cylindre certifié A2P 3 étoiles." },
+        { "id": "multipoint", "label": "Verrouillage 7 points", "x": 12, "y": 50, "title": "Verrouillage 7 points", "description": "Sept points d'ancrage répartis sur toute la hauteur." },
+        { "id": "seals", "label": "Joints isolants", "x": 50, "y": 92, "title": "Joints d'étanchéité", "description": "Triple joint périphérique : isolation thermique, acoustique et coupe-vent." }
+      ]
     },
     {
       "id": 3,
-      "slug": "maison-vitree",
-      "name": "Porte de maison vitrée",
-      "range": "Maison · Vitrée",
+      "slug": "diamant-30",
+      "name": "Diamant 30",
+      "category": "appartement",
+      "range": "Appartement Premium",
       "security": 5,
-      "priceFrom": 5690,
-      "price": "À partir de 5 690 €",
-      "desc": "Lumière sculptée par un vitrage feuilleté de sécurité SP10.",
+      "priceFrom": 4990,
+      "price": "À partir de 4 990 €",
+      "desc": "Le haut de gamme appartement Picard : sécurité maximale, isolation supérieure.",
       "icon": "◆",
-      "panelStyle": "asymmetric_glass"
+      "panelStyle": "fortress",
+      "hotspots": [
+        { "id": "handle", "label": "Poignée", "x": 86, "y": 52, "title": "Poignée signature", "description": "Béquille ou tirant en finition haute qualité." },
+        { "id": "lock", "label": "Serrure A2P", "x": 86, "y": 60, "title": "Serrure A2P***", "description": "Cylindre certifié A2P 3 étoiles, anti-perçage et anti-crochetage." },
+        { "id": "multipoint", "label": "Verrouillage 7 points", "x": 12, "y": 50, "title": "Verrouillage 7 points renforcé", "description": "Sept points d'ancrage et renforts métalliques aux angles." },
+        { "id": "seals", "label": "Joints isolants", "x": 50, "y": 92, "title": "Joints renforcés", "description": "Triple joint périphérique haute performance." }
+      ]
+    },
+    {
+      "id": 4,
+      "slug": "diamant-reflet",
+      "name": "Diamant Reflet",
+      "category": "maison",
+      "range": "Maison individuelle",
+      "security": 5,
+      "priceFrom": 5990,
+      "price": "À partir de 5 990 €",
+      "desc": "Vitrage feuilleté SP10 et ligne contemporaine pour les entrées de maison.",
+      "icon": "◆",
+      "panelStyle": "asymmetric_glass",
+      "hotspots": [
+        { "id": "handle", "label": "Poignée", "x": 86, "y": 52, "title": "Poignée tirant", "description": "Tirant inox haut signature, geste affirmé." },
+        { "id": "lock", "label": "Serrure A2P", "x": 86, "y": 60, "title": "Serrure A2P***", "description": "Cylindre certifié A2P 3 étoiles." },
+        { "id": "multipoint", "label": "Verrouillage 7 points", "x": 12, "y": 50, "title": "Verrouillage 7 points", "description": "Sept points d'ancrage répartis sur toute la hauteur." },
+        { "id": "glass", "label": "Vitrage SP10", "x": 50, "y": 25, "title": "Vitrage feuilleté SP10", "description": "Verre feuilleté de sécurité, résistant aux impacts répétés tout en laissant passer la lumière." },
+        { "id": "seals", "label": "Joints isolants", "x": 50, "y": 92, "title": "Joints d'étanchéité", "description": "Triple joint pour une étanchéité parfaite face aux intempéries." }
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "diamant-confort",
+      "name": "Diamant Confort",
+      "category": "maison",
+      "range": "Maison individuelle",
+      "security": 5,
+      "priceFrom": 6990,
+      "price": "À partir de 6 990 €",
+      "desc": "Isolation thermique de pointe pour votre maison, signature pleine intemporelle.",
+      "icon": "▢",
+      "panelStyle": "full_panel",
+      "hotspots": [
+        { "id": "handle", "label": "Poignée", "x": 86, "y": 52, "title": "Poignée signature", "description": "Béquille ou tirant en finition haute qualité." },
+        { "id": "lock", "label": "Serrure A2P", "x": 86, "y": 60, "title": "Serrure A2P***", "description": "Cylindre certifié A2P 3 étoiles." },
+        { "id": "multipoint", "label": "Verrouillage 7 points", "x": 12, "y": 50, "title": "Verrouillage 7 points", "description": "Sept points d'ancrage répartis sur toute la hauteur." },
+        { "id": "thermal", "label": "Bouclier thermique", "x": 50, "y": 50, "title": "Bouclier thermique", "description": "Mousse haute densité multi-couches : performances thermiques au sommet du marché." },
+        { "id": "seals", "label": "Joints isolants", "x": 50, "y": 92, "title": "Joints triples", "description": "Triple joint périphérique : étanchéité totale air, eau et bruit." }
+      ]
     }
   ]
 }

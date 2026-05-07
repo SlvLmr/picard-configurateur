@@ -110,10 +110,11 @@ function PersonalizationStep({ cfg, isMobile, tourOpen, onStartTour, onCloseTour
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="relative">
           <DoorCanvas
-            decor={selections.decor}
+            ambiance={selections.ambiance}
             customPhoto={state.customPhoto}
             door={selections.door}
-            color={selections.color}
+            doorColor={state.view === 'exterior' ? selections.doorColorExterior : selections.doorColorInterior}
+            frameColor={state.view === 'exterior' ? selections.frameColorExterior : selections.frameColorInterior}
             handle={selections.handle}
             glass={selections.glass}
             finish={selections.finish}
@@ -152,7 +153,12 @@ function PersonalizationStep({ cfg, isMobile, tourOpen, onStartTour, onCloseTour
         </button>
       </div>
 
-      <GuidedTour open={tourOpen} onClose={onCloseTour} onFocusHotspot={setActiveHotspot} />
+      <GuidedTour
+        open={tourOpen}
+        hotspots={selections.door.hotspots || []}
+        onClose={onCloseTour}
+        onFocusHotspot={setActiveHotspot}
+      />
     </div>
   );
 }

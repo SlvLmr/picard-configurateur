@@ -27,6 +27,14 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
     }
   };
 
+  const accessoriesValue =
+    state.accessoryIds.length === 0
+      ? 'Aucun'
+      : state.accessoryIds
+          .map((id) => ACCESSORIES.find((a) => a.id === id)?.name)
+          .filter(Boolean)
+          .join(', ');
+
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:px-8 lg:py-16">
       <div className="mb-8 flex flex-col gap-2">
@@ -41,10 +49,11 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
       <div ref={summaryRef} className="grid grid-cols-1 gap-8 lg:grid-cols-[1.05fr_1fr]">
         <div>
           <DoorCanvas
-            decor={selections.decor}
+            ambiance={selections.ambiance}
             customPhoto={state.customPhoto}
             door={selections.door}
-            color={selections.color}
+            doorColor={state.view === 'exterior' ? selections.doorColorExterior : selections.doorColorInterior}
+            frameColor={state.view === 'exterior' ? selections.frameColorExterior : selections.frameColorInterior}
             handle={selections.handle}
             glass={selections.glass}
             finish={selections.finish}
@@ -80,22 +89,16 @@ export default function Summary({ state, selections, payload, onBack, onRestart 
           </p>
 
           <dl className="mt-6 grid grid-cols-1 gap-3 text-sm">
-            <SummaryRow label="Décor" value={selections.decor?.name || (state.customPhoto ? 'Photo personnelle' : 'Non sélectionné')} />
-            <SummaryRow label="Couleur" value={`${selections.color.name} (${selections.color.ral})`} />
+            <SummaryRow label="Ambiance" value={selections.ambiance?.name || (state.customPhoto ? 'Photo personnelle' : 'Non sélectionnée')} />
+            <SummaryRow label="Panneau" value={selections.panel.name} />
+            <SummaryRow label="Porte · ext." value={`${selections.doorColorExterior.name} (${selections.doorColorExterior.ral})`} />
+            <SummaryRow label="Porte · int." value={`${selections.doorColorInterior.name} (${selections.doorColorInterior.ral})`} />
+            <SummaryRow label="Bâti · ext." value={`${selections.frameColorExterior.name} (${selections.frameColorExterior.ral})`} />
+            <SummaryRow label="Bâti · int." value={`${selections.frameColorInterior.name} (${selections.frameColorInterior.ral})`} />
             <SummaryRow label="Poignée" value={selections.handle.name} />
             <SummaryRow label="Vitrage" value={selections.glass.name} />
             <SummaryRow label="Finition" value={selections.finish.name} />
-            <SummaryRow
-              label="Accessoires"
-              value={
-                state.accessoryIds.length === 0
-                  ? 'Aucun'
-                  : state.accessoryIds
-                      .map((id) => ACCESSORIES.find((a) => a.id === id)?.name)
-                      .filter(Boolean)
-                      .join(', ')
-              }
-            />
+            <SummaryRow label="Accessoires" value={accessoriesValue} />
           </dl>
 
           <div className="mt-6 border-t border-picard-navy/10 pt-5">
@@ -181,11 +184,18 @@ function ActionButton({ icon: Icon, label, hint, onClick, primary }) {
 function buildSummaryText(state, selections) {
   const lines = [
     `Modèle : ${selections.door.name} (${selections.door.range})`,
-    `Couleur : ${selections.color.name} ${selections.color.ral}`,
+    `Panneau : ${selections.panel.name}`,
+    `Porte ext. : ${selections.doorColorExterior.name} ${selections.doorColorExterior.ral}`,
+    `Porte int. : ${selections.doorColorInterior.name} ${selections.doorColorInterior.ral}`,
+    `Bâti ext. : ${selections.frameColorExterior.name} ${selections.frameColorExterior.ral}`,
+    `Bâti int. : ${selections.frameColorInterior.name} ${selections.frameColorInterior.ral}`,
     `Poignée : ${selections.handle.name}`,
     `Vitrage : ${selections.glass.name}`,
     `Finition : ${selections.finish.name}`,
   ];
+  if (selections.ambiance) {
+    lines.unshift(`Ambiance : ${selections.ambiance.name}`);
+  }
   if (state.accessoryIds.length > 0) {
     const names = state.accessoryIds
       .map((id) => ACCESSORIES.find((a) => a.id === id)?.name)

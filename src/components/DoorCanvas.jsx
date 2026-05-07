@@ -1,14 +1,15 @@
 import { forwardRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import HotspotSystem from './HotspotSystem';
-import { resolveDecorImage } from '../utils/assets';
+import { resolveAmbianceImage } from '../utils/assets';
 
 const DoorCanvas = forwardRef(function DoorCanvas(
   {
-    decor,
+    ambiance,
     customPhoto,
     door,
-    color,
+    doorColor,
+    frameColor,
     handle,
     glass,
     finish,
@@ -27,19 +28,24 @@ const DoorCanvas = forwardRef(function DoorCanvas(
     return null;
   }, [customPhoto]);
 
+  const hotspots = door?.hotspots || [];
+
   return (
     <div
       ref={ref}
       className="relative isolate overflow-hidden rounded-3xl border border-picard-navy/10 bg-stone-100 editorial-shadow"
     >
-      <SceneBackdrop decor={decor} sceneStyle={sceneStyle} view={view} />
+      <SceneBackdrop ambiance={ambiance} sceneStyle={sceneStyle} view={view} />
 
       <div className="relative aspect-[4/5] w-full">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative h-[78%] w-[58%] sm:h-[80%] sm:w-[52%]">
+          <div
+            className="relative h-[80%] w-[56%] rounded-md p-[6px]"
+            style={{ background: frameColor?.hex || '#1A1A2E' }}
+          >
             <DoorGraphic
               door={door}
-              color={color}
+              doorColor={doorColor}
               handle={handle}
               glass={glass}
               finish={finish}
@@ -47,7 +53,11 @@ const DoorCanvas = forwardRef(function DoorCanvas(
               view={view}
             />
             {showHotspots && (
-              <HotspotSystem activeId={activeHotspotId} onSelect={onHotspotChange} />
+              <HotspotSystem
+                hotspots={hotspots}
+                activeId={activeHotspotId}
+                onSelect={onHotspotChange}
+              />
             )}
           </div>
         </div>
@@ -64,7 +74,7 @@ const DoorCanvas = forwardRef(function DoorCanvas(
 
 export default DoorCanvas;
 
-function SceneBackdrop({ decor, sceneStyle, view }) {
+function SceneBackdrop({ ambiance, sceneStyle, view }) {
   if (sceneStyle) {
     return (
       <div className="absolute inset-0">
@@ -73,18 +83,18 @@ function SceneBackdrop({ decor, sceneStyle, view }) {
       </div>
     );
   }
-  if (!decor) {
+  if (!ambiance) {
     return (
       <div className="absolute inset-0 bg-gradient-to-br from-stone-200 via-stone-100 to-stone-200" />
     );
   }
-  const resolvedImage = resolveDecorImage(decor.imageUrl);
+  const resolvedImage = resolveAmbianceImage(ambiance.imageUrl);
   if (resolvedImage) {
     return (
       <div className="absolute inset-0">
         <img
           src={resolvedImage}
-          alt={decor.name}
+          alt={ambiance.name}
           className="absolute inset-0 h-full w-full object-cover"
         />
         {view === 'interior' && <div className="absolute inset-0 bg-picard-navy/35" />}
@@ -92,11 +102,11 @@ function SceneBackdrop({ decor, sceneStyle, view }) {
     );
   }
   return (
-    <div className={`absolute inset-0 bg-gradient-to-br ${decor.gradient}`}>
+    <div className={`absolute inset-0 bg-gradient-to-br ${ambiance.gradient}`}>
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `radial-gradient(circle at 30% 20%, ${decor.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${decor.accent} 0%, transparent 55%)`,
+          backgroundImage: `radial-gradient(circle at 30% 20%, ${ambiance.accent} 0%, transparent 60%), radial-gradient(circle at 75% 80%, ${ambiance.accent} 0%, transparent 55%)`,
         }}
       />
       <div className="absolute inset-x-0 top-1/2 h-px bg-picard-navy/8" />
@@ -105,17 +115,17 @@ function SceneBackdrop({ decor, sceneStyle, view }) {
   );
 }
 
-function DoorGraphic({ door, color, handle, glass, finish, accessoryIds, view }) {
+function DoorGraphic({ door, doorColor, handle, glass, finish, accessoryIds, view }) {
   const finishOverlay = finishStyle(finish?.id);
   return (
     <motion.div
-      key={`${door.id}-${color.id}-${finish.id}-${view}`}
+      key={`${door.id}-${doorColor.id}-${finish.id}-${view}`}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className="relative h-full w-full rounded-md"
       style={{
-        background: color?.hex || '#1A1A2E',
+        background: doorColor?.hex || '#1A1A2E',
         boxShadow:
           '0 30px 60px -25px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 0 rgba(0,0,0,0.25)',
         ...finishOverlay,
@@ -123,8 +133,8 @@ function DoorGraphic({ door, color, handle, glass, finish, accessoryIds, view })
     >
       <div className="pointer-events-none absolute inset-1.5 rounded-sm border border-white/10" />
 
-      <PanelDesign door={door} colorHex={color?.hex} />
-      <GlassDesign glass={glass} colorHex={color?.hex} />
+      <PanelDesign door={door} />
+      <GlassDesign glass={glass} />
 
       {view === 'exterior' && (
         <>
@@ -139,15 +149,14 @@ function DoorGraphic({ door, color, handle, glass, finish, accessoryIds, view })
         </>
       )}
 
-      <Accessories accessoryIds={accessoryIds} view={view} colorHex={color?.hex} />
+      <Accessories accessoryIds={accessoryIds} view={view} />
 
-      {/* base shadow */}
       <span className="pointer-events-none absolute -bottom-3 left-1/2 h-5 w-3/4 -translate-x-1/2 rounded-full bg-black/35 blur-2xl" />
     </motion.div>
   );
 }
 
-function PanelDesign({ door, colorHex }) {
+function PanelDesign({ door }) {
   const lighten = 'rgba(255,255,255,0.08)';
   switch (door.panelStyle) {
     case 'horizontal_lines':
@@ -169,7 +178,7 @@ function PanelDesign({ door, colorHex }) {
         </>
       );
     case 'asymmetric_glass':
-      return null; // handled by glass design
+      return null;
     case 'full_panel':
     default:
       return (
@@ -181,7 +190,7 @@ function PanelDesign({ door, colorHex }) {
   }
 }
 
-function GlassDesign({ glass, colorHex }) {
+function GlassDesign({ glass }) {
   if (!glass || glass.id === 'none') return null;
   const sheen = 'linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(220,235,245,0.35) 40%, rgba(180,200,210,0.55) 100%)';
   switch (glass.id) {
@@ -227,7 +236,6 @@ function HandleGraphic({ handle }) {
       />
     );
   }
-  // lever
   return (
     <div className="absolute right-2.5 top-[55%] flex -translate-y-1/2 items-center gap-1">
       <span className={`h-2.5 w-2.5 rounded-full ${colorClass}`} />
@@ -267,7 +275,7 @@ function InteriorHandle({ handle }) {
   );
 }
 
-function Accessories({ accessoryIds, view, colorHex }) {
+function Accessories({ accessoryIds, view }) {
   if (view !== 'exterior') return null;
   return (
     <>

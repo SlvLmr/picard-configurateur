@@ -2,7 +2,17 @@ import { motion } from 'framer-motion';
 import { ArrowRight, KeyRound, Star } from 'lucide-react';
 import { doors } from '../data';
 
+const CATEGORY_GROUPS = [
+  { id: 'appartement', label: 'Pour appartement', accent: "Halls d'immeuble, copropriétés." },
+  { id: 'maison', label: 'Pour maison', accent: 'Maisons individuelles, villas.' },
+];
+
 export default function Intro({ onPickDoor, onResume }) {
+  const groups = CATEGORY_GROUPS.map((group) => ({
+    ...group,
+    doors: doors.filter((d) => d.category === group.id),
+  })).filter((group) => group.doors.length > 0);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-stone-100 via-amber-50 to-stone-100">
       <div className="pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden>
@@ -23,7 +33,7 @@ export default function Intro({ onPickDoor, onResume }) {
         </span>
       </header>
 
-      <section className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-8 px-6 pb-16 pt-8 text-center sm:px-10 md:pt-14">
+      <section className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-8 px-6 pb-20 pt-8 text-center sm:px-10 md:pt-12">
         <motion.span
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,53 +61,72 @@ export default function Intro({ onPickDoor, onResume }) {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
           className="max-w-2xl text-base leading-relaxed text-picard-navy/70 sm:text-lg"
         >
-          Choisissez votre type de porte pour démarrer la configuration. Composez ensuite couleur,
-          poignée, vitrage et finition — sans concession sur la sécurité.
+          Choisissez votre modèle pour démarrer. Composez ensuite couleur, panneau, poignée, vitrage
+          et finition — sans concession sur la sécurité.
         </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="mt-4 grid w-full grid-cols-1 gap-5 sm:grid-cols-3"
-        >
-          {doors.map((door, i) => (
-            <motion.button
-              key={door.id}
-              type="button"
-              onClick={() => onPickDoor(door.id)}
+        <div className="mt-2 flex w-full flex-col gap-10">
+          {groups.map((group, gi) => (
+            <motion.section
+              key={group.id}
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.35 + i * 0.08 }}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-picard-navy/10 bg-white/85 p-6 text-left backdrop-blur transition-all duration-300 ease-editorial hover:-translate-y-1 hover:border-picard-navy/25 hover:shadow-soft"
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.25 + gi * 0.1 }}
             >
-              <div className="mb-5 flex aspect-[4/5] items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200">
-                <DoorVignette door={door} />
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.24em] text-picard-navy/55">
-                  {door.range}
-                </span>
-                <SecurityStars value={door.security} />
-              </div>
-              <h3 className="mt-1.5 font-display text-2xl text-picard-navy">{door.name}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-picard-navy/60">{door.desc}</p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-sm font-medium text-picard-navy">{door.price}</span>
-                <span className="inline-flex items-center gap-1 text-xs font-medium uppercase tracking-[0.18em] text-picard-red transition-transform duration-300 ease-editorial group-hover:translate-x-1">
-                  Configurer
-                  <ArrowRight size={14} />
+              <div className="mb-5 flex items-baseline justify-between gap-4 text-left">
+                <div>
+                  <h2 className="font-display text-2xl text-picard-navy sm:text-3xl">
+                    {group.label}
+                  </h2>
+                  <p className="text-xs uppercase tracking-[0.22em] text-picard-navy/55">
+                    {group.accent}
+                  </p>
+                </div>
+                <span className="hidden text-[11px] uppercase tracking-[0.22em] text-picard-navy/45 sm:block">
+                  {group.doors.length} modèle{group.doors.length > 1 ? 's' : ''}
                 </span>
               </div>
-            </motion.button>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {group.doors.map((door, i) => (
+                  <motion.button
+                    key={door.id}
+                    type="button"
+                    onClick={() => onPickDoor(door.id)}
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.35 + gi * 0.1 + i * 0.06 }}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-picard-navy/10 bg-white/85 p-6 text-left backdrop-blur transition-all duration-300 ease-editorial hover:-translate-y-1 hover:border-picard-navy/25 hover:shadow-soft"
+                  >
+                    <div className="mb-5 flex aspect-[4/5] items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200">
+                      <DoorVignette door={door} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase tracking-[0.24em] text-picard-navy/55">
+                        {door.range}
+                      </span>
+                      <SecurityStars value={door.security} />
+                    </div>
+                    <h3 className="mt-1.5 font-display text-2xl text-picard-navy">{door.name}</h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-picard-navy/60">{door.desc}</p>
+                    <div className="mt-4 flex items-center justify-between">
+                      <span className="text-sm font-medium text-picard-navy">{door.price}</span>
+                      <span className="inline-flex items-center gap-1 text-xs font-medium uppercase tracking-[0.18em] text-picard-red transition-transform duration-300 ease-editorial group-hover:translate-x-1">
+                        Configurer
+                        <ArrowRight size={14} />
+                      </span>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.section>
           ))}
-        </motion.div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
-          className="mt-6"
+          className="mt-2"
         >
           <button
             type="button"
