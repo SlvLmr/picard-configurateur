@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 import type { ProfilReel } from "@/lib/data/types";
 import { MODULES, ROLE_LABEL, ROLE_MODULES, SECTIONS_MENU, type ModuleId } from "@/lib/roles";
 import { useSession } from "@/lib/session";
-import { LogoEspacePro } from "@/components/marque/logo-espace-pro";
+import { SignatureEspacePro } from "@/components/marque/logo-espace-pro";
 import { LogoMarque } from "@/components/marque/logo-picard";
 import { NAV_ICONS } from "./nav-icons";
 
@@ -46,12 +46,10 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
         open ? "translate-x-0" : "-translate-x-full",
       )}
     >
-      <div className="flex flex-col gap-4 px-5 pb-4 pt-5">
-        <LogoMarque marque={brand} className="h-9" />
-        <Link href="/accueil" onClick={onNavigate} className="block rounded-md" aria-label="Espace Pro, accueil">
-          <LogoEspacePro />
-        </Link>
-      </div>
+      <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className="mx-3 mb-2 mt-3 flex flex-col gap-3 rounded-md px-3 py-3">
+        <LogoMarque marque={brand} className="h-8" />
+        <SignatureEspacePro />
+      </Link>
 
       <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-4 overflow-y-auto px-3 pb-4">
         <ul className="flex flex-col gap-0.5">

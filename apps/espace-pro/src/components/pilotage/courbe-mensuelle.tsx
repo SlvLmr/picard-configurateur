@@ -1,3 +1,4 @@
+import { aireLissee, courbeLissee } from "@/lib/courbes";
 import type { MoisCA } from "@/lib/data/pilotage";
 import { MOIS_COURTS, MOIS_LONGS, montantCourt } from "./montants";
 
@@ -20,21 +21,28 @@ export function CourbeMensuelle({ mois, annee }: { mois: MoisCA[]; annee: number
 
   const x = (i: number) => g.gauche + (i / 11) * largeur;
   const y = (v: number) => g.haut + hauteur - (v / plafond) * hauteur;
-  const trace = (pts: [number, number][]) => pts.map(([a, b], i) => `${i ? "L" : "M"}${a.toFixed(1)} ${b.toFixed(1)}`).join(" ");
 
   const realises = mois.map((m, i) => (m.realise !== null ? ([x(i), y(m.realise)] as [number, number]) : null)).filter(Boolean) as [number, number][];
   const budget = mois.map((m, i) => [x(i), y(m.budget)] as [number, number]);
   const n1 = mois.map((m, i) => [x(i), y(m.n1)] as [number, number]);
-  const dernier = realises[realises.length - 1];
 
   return (
     <figure>
       <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={`Chiffre d’affaires mensuel ${annee} : réalisé, budget et année précédente`}>
         <defs>
           <linearGradient id="aire-realise" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="var(--accent)" stopOpacity="0.2" />
-            <stop offset="1" stopColor="var(--accent)" stopOpacity="0" />
+            <stop offset="0" stopColor="var(--accent)" stopOpacity="0.34" />
+            <stop offset="0.45" stopColor="var(--bleu-400)" stopOpacity="0.14" />
+            <stop offset="1" stopColor="var(--bleu-300)" stopOpacity="0" />
           </linearGradient>
+          <linearGradient id="trait-realise" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stopColor="var(--bleu-700)" />
+            <stop offset="0.6" stopColor="var(--accent)" />
+            <stop offset="1" stopColor="var(--bleu-400)" />
+          </linearGradient>
+          <filter id="ombre-realise" x="-5%" y="-20%" width="110%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="var(--accent)" floodOpacity="0.25" />
+          </filter>
         </defs>
         {graduations.map((v) => (
           <g key={v}>
@@ -50,14 +58,21 @@ export function CourbeMensuelle({ mois, annee }: { mois: MoisCA[]; annee: number
           </text>
         ))}
         {realises.length > 1 ? (
-          <path d={`${trace(realises)} L${dernier[0]} ${y(0)} L${realises[0][0]} ${y(0)}Z`} fill="url(#aire-realise)" />
+          <path d={aireLissee(realises, y(0))} fill="url(#aire-realise)" />
         ) : null}
-        <path d={trace(n1)} fill="none" stroke="var(--bleu-300)" strokeWidth="1.5" />
-        <path d={trace(budget)} fill="none" stroke="var(--text-3)" strokeWidth="1.5" strokeDasharray="5 5" />
-        <path d={trace(realises)} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        {realises.map(([a, b], i) => (
-          <circle key={i} cx={a} cy={b} r="3.5" fill="var(--surface)" stroke="var(--accent)" strokeWidth="2" />
-        ))}
+        <path d={courbeLissee(n1)} fill="none" stroke="var(--bleu-300)" strokeWidth="1.5" strokeLinecap="round" opacity="0.9" />
+        <path d={courbeLissee(budget)} fill="none" stroke="var(--text-3)" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round" />
+        <path d={courbeLissee(realises)} fill="none" stroke="url(#trait-realise)" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" filter="url(#ombre-realise)" />
+        {realises.map(([a, b], i) =>
+          i === realises.length - 1 ? (
+            <g key={i}>
+              <circle cx={a} cy={b} r="9" fill="var(--accent)" opacity="0.15" />
+              <circle cx={a} cy={b} r="4.5" fill="var(--surface)" stroke="var(--accent)" strokeWidth="2.5" />
+            </g>
+          ) : (
+            <circle key={i} cx={a} cy={b} r="2.5" fill="var(--surface)" stroke="var(--accent)" strokeWidth="1.5" />
+          ),
+        )}
         {mois.map((m, i) => (
           <rect key={m.mois} x={x(i) - largeur / 22} y={g.haut} width={largeur / 11} height={hauteur} fill="transparent">
             <title>

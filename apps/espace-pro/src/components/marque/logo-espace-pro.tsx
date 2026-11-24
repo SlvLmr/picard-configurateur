@@ -43,3 +43,21 @@ export function LogoEspacePro({ sousTitre, className, clair = true }: { sousTitr
     </span>
   );
 }
+
+/**
+ * Signature de l'outil, placée sous le logo de la marque : « Espace Pro » en laiton,
+ * prolongé d'un filet qui s'efface. Fine et discrète, elle complète le logo sans le concurrencer.
+ */
+export function SignatureEspacePro({ taille = "sm", className }: { taille?: "sm" | "lg"; className?: string }) {
+  return (
+    <span className={cn("flex items-center", taille === "lg" ? "gap-4" : "gap-3", className)}>
+      <span
+        className={cn("whitespace-nowrap font-semibold leading-none text-cta", taille === "lg" ? "text-sm" : "text-xs")}
+        style={{ letterSpacing: "0.2em", fontVariationSettings: '"wdth" 112' }}
+      >
+        ESPACE PRO
+      </span>
+      <span aria-hidden className="h-px flex-1" style={{ background: "linear-gradient(90deg, var(--cta), transparent)", opacity: 0.7 }} />
+    </span>
+  );
+}
