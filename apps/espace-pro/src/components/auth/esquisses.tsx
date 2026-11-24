@@ -7,13 +7,13 @@ import { Fragment, useEffect, useRef, useState } from "react";
  * reste un instant, puis laisse place à la suivante. Elles racontent ce que propose l'Espace Pro.
  * Respecte « réduire les animations » : la première scène s'affiche alors fixe.
  */
-/** Une planche par module : position sur le grand plan, titre, chiffre clé. */
+/** Une planche par module : position sur le grand plan et titre. */
 const SCENES = [
-  { module: "Configurateur", titre: "Chaque porte au millimètre", texte: "Cotes, sécurité, finitions : le devis est prêt en quelques étapes.", x: 0, y: 0, chiffre: 930, suffixe: " mm", legende: "largeur de passage" },
-  { module: "Leads", titre: "Vos leads en temps réel", texte: "Chaque demande part vers l’installateur le plus proche.", x: 560, y: -80, chiffre: 12, suffixe: " min", legende: "pour accepter un lead" },
-  { module: "Médiathèque", titre: "Brochures et notices à jour", texte: "Documents commerciaux et techniques, en un clic.", x: 1100, y: 60, chiffre: 248, suffixe: "", legende: "téléchargements ce mois" },
-  { module: "Ventes", titre: "Développez vos ventes", texte: "Chiffre, objectifs et campagnes, zone par zone.", x: 260, y: 420, chiffre: 18, suffixe: " %", prefixe: "+", legende: "de chiffre sur un an" },
-  { module: "Calendrier", titre: "Aucun rendez-vous manqué", texte: "Salons, formations et visites dans un seul calendrier.", x: 860, y: 460, chiffre: 14, suffixe: " mars", legende: "prochain salon régional" },
+  { module: "Configurateur", titre: "Chaque porte sur mesure", x: 0, y: 0 },
+  { module: "Leads", titre: "Les leads au bon installateur", x: 560, y: -80 },
+  { module: "Médiathèque", titre: "Brochures et notices à portée de main", x: 1100, y: 60 },
+  { module: "Ventes", titre: "Développez vos ventes", x: 260, y: 420 },
+  { module: "Calendrier", titre: "Salons, formations et visites", x: 860, y: 460 },
 ] as const;
 
 const DUREE = 3800;
@@ -105,7 +105,7 @@ export function Esquisses() {
           {!reduit && prec !== i ? (
             <g key={`comete-${i}-${cycle}`}>
               <path d={trajet} className="sillage" fill="none" stroke="#ebbc4e" strokeWidth="2" strokeLinecap="round" pathLength={1} />
-              <circle r="5" fill="#ffd36b">
+              <circle r="5" fill="#ffd36b" className="comete">
                 <animateMotion dur="0.85s" fill="freeze" path={trajet} keyTimes="0;1" keySplines="0.7 0 0.2 1" calcMode="spline" />
               </circle>
             </g>
@@ -123,10 +123,10 @@ export function Esquisses() {
       <span className="repere bottom-6 left-6 border-b border-l" />
       <span className="repere bottom-6 right-6 border-b border-r" />
 
-      {/* Texte, chiffre clé et modules */}
+      {/* Titre et modules */}
       <div className="relative px-12 pb-10 xl:px-16">
         <div className="flex items-end justify-between gap-8">
-          <div key={`t-${i}-${cycle}`} className="flex min-h-40 min-w-0 flex-col justify-end">
+          <div key={`t-${i}-${cycle}`} className="flex min-h-24 min-w-0 flex-col justify-end">
             <p className="kicker text-sm font-semibold text-cta">
               {String(i + 1).padStart(2, "0")} <span className="text-white/40">sur 05</span>, {scene.module}
             </p>
@@ -140,9 +140,7 @@ export function Esquisses() {
                 </Fragment>
               ))}
             </h2>
-            <p className="sous-titre mt-3 max-w-md text-base text-nav-muted">{scene.texte}</p>
           </div>
-          <Compteur key={`c-${i}-${cycle}`} valeur={scene.chiffre} prefixe={"prefixe" in scene ? scene.prefixe : ""} suffixe={scene.suffixe} legende={scene.legende} reduit={reduit} />
         </div>
 
         <nav aria-label="Modules de l’Espace Pro" className="mt-10 grid grid-cols-5 gap-3">
@@ -157,33 +155,6 @@ export function Esquisses() {
           ))}
         </nav>
       </div>
-    </div>
-  );
-}
-
-/** Chiffre clé qui défile jusqu'à sa valeur */
-function Compteur({ valeur, prefixe, suffixe, legende, reduit }: { valeur: number; prefixe: string; suffixe: string; legende: string; reduit: boolean }) {
-  const [n, setN] = useState(reduit ? valeur : 0);
-  useEffect(() => {
-    if (reduit) return;
-    let raf = 0;
-    const debut = performance.now() + 300;
-    const pas = (t: number) => {
-      const p = Math.min(1, Math.max(0, (t - debut) / 800));
-      setN(Math.round(valeur * (1 - Math.pow(1 - p, 4))));
-      if (p < 1) raf = requestAnimationFrame(pas);
-    };
-    raf = requestAnimationFrame(pas);
-    return () => cancelAnimationFrame(raf);
-  }, [valeur, reduit]);
-  return (
-    <div className="compteur hidden shrink-0 text-right xl:block">
-      <p className="font-display text-3xl font-semibold tabular text-cta">
-        {prefixe}
-        {n}
-        <span className="text-xl">{suffixe}</span>
-      </p>
-      <p className="mt-1 text-xs text-nav-muted">{legende}</p>
     </div>
   );
 }
@@ -219,83 +190,102 @@ function T({ d, delai = 0, laiton = false, pointille = false, epais = 1.6 }: { d
   );
 }
 
-function Texte({ x, y, children, delai = 0, ancre = "middle" }: { x: number; y: number; children: string; delai?: number; ancre?: "start" | "middle" | "end" }) {
-  return (
-    <text x={x} y={y} textAnchor={ancre} className="annotation" style={{ animationDelay: `${0.45 + delai * 0.38}s` }} fill="#ebbc4e" fontSize="11" fontStyle="italic" fontFamily="Archivo, sans-serif">
-      {children}
-    </text>
-  );
-}
-
 function Porte() {
   return (
     <g>
-      <T d="M150 250V48h110v202" epais={2} />
-      <T d="M162 250V60h86v190" delai={0.4} />
-      <T d="M238 150a4 4 0 1 0 0.1 0" delai={0.9} laiton epais={1.8} />
-      <T d="M238 158v12" delai={1} laiton epais={1.8} />
-      <Pulse cx={238} cy={154} delai={1.2} />
-      <T d="M162 250A86 86 0 0 1 248 164" delai={1.1} pointille />
-      <T d="M150 270h110M150 263v14M260 263v14" delai={1.4} laiton />
-      <T d="M125 48v202M118 48h14M118 250h14" delai={1.6} laiton />
-      <Texte x={205} y={290} delai={1.9}>930 mm</Texte>
-      <Texte x={110} y={152} delai={2} ancre="end">2150</Texte>
-      <T d="M290 80h60M290 100h44M290 120h52" delai={2.1} />
-      <T d="M282 76l4 4 8-8" delai={2.3} laiton />
-      <T d="M282 96l4 4 8-8" delai={2.4} laiton />
-      <T d="M282 116l4 4 8-8" delai={2.5} laiton />
+      <T d="M90 262h230" epais={1.4} />
+      <T d="M140 260V38h132v222" epais={2.2} />
+      {/* Lumière derrière le vantail qui s'ouvre */}
+      <g className="esq-lumiere">
+        <T d="M152 250V50h108v200" pointille />
+        <T d="M206 150L330 110M206 150L340 150M206 150L330 190" laiton pointille />
+      </g>
+      <g className="esq-ouvrir">
+        <T d="M150 252V48h112v204z" delai={0.4} epais={1.8} />
+        <T d="M164 66h84v76h-84zM164 160h84v76h-84z" delai={0.8} />
+        <T d="M244 146a6 6 0 1 0 0.1 0" delai={1} laiton epais={2} />
+        <g className="esq-pene">
+          <T d="M262 80h10M262 150h10M262 220h10" delai={1.1} laiton epais={3} />
+        </g>
+      </g>
+      <T d="M140 280h132M140 273v14M272 273v14" delai={1.2} laiton />
+      <T d="M116 38v222M109 38h14M109 260h14" delai={1.3} laiton />
     </g>
   );
 }
 
+const TRAJET_LEAD = "M40 70C110 40 170 150 262 168";
+
 function Lead() {
   return (
     <g>
-      <T d="M40 70h120v70H40z" epais={1.8} />
-      <T d="M54 88h60M54 104h86M54 120h44" delai={0.4} />
-      <T d="M140 86a8 8 0 1 0 0.1 0" delai={0.6} laiton />
-      <T d="M260 60c40 10 80 50 70 100s-60 80-110 70-80-40-60-90 50-90 100-80z" delai={0.7} pointille />
-      <T d="M165 105C210 100 230 130 262 150" delai={1.2} laiton epais={1.8} />
-      <T d="M254 143l9 8-11 4" delai={1.6} laiton epais={1.8} />
-      <T d="M285 140c0-14 22-14 22 0 0 12-11 24-11 24s-11-12-11-24z" delai={1.8} epais={1.8} />
-      <T d="M296 141a3 3 0 1 0 0.1 0" delai={2} laiton />
-      <Pulse cx={296} cy={144} delai={1.5} />
-      <Texte x={296} y={190} delai={2.2}>IAP Elite, 3 km</Texte>
-      <T d="M70 200h80v30H70z" delai={2.3} />
-      <T d="M82 216l6 6 12-12" delai={2.5} laiton epais={1.8} />
-      <Texte x={160} y={220} delai={2.6} ancre="start">accepté</Texte>
+      {/* Carte de France esquissée */}
+      <T d="M168 36l46-8 40 22 44 6 8 46-18 34 26 50-30 44-58 16-48-14-34 10-26-40 12-46-28-38 30-40 36-6z" epais={1.6} />
+      <T d="M232 60l-10 70 40 60M180 80l30 90-40 50" delai={0.5} pointille />
+      {/* Fiche du lead qui arrive */}
+      <T d="M14 52h52v36H14z" delai={0.3} epais={1.6} />
+      <T d="M22 62h28M22 72h36M22 80h18" delai={0.5} />
+      <T d={TRAJET_LEAD} delai={0.6} laiton pointille />
+      <circle r="5" fill="#ffd36b" className="esq-voyage" style={{ offsetPath: `path("${TRAJET_LEAD}")` }} />
+      {/* Installateurs */}
+      <g className="esq-clignote">
+        <T d="M196 96c0-12 18-12 18 0 0 10-9 20-9 20s-9-10-9-20z" delai={0.8} />
+      </g>
+      <g className="esq-clignote" style={{ animationDelay: "0.4s" }}>
+        <T d="M158 196c0-12 18-12 18 0 0 10-9 20-9 20s-9-10-9-20z" delai={0.9} />
+      </g>
+      <T d="M252 150c0-16 24-16 24 0 0 14-12 26-12 26s-12-12-12-26z" delai={1} laiton epais={2.2} />
+      <Pulse cx={264} cy={152} delai={1.6} />
     </g>
   );
 }
 
 function Brochure() {
+  const page = "M0 0h96l24 24v136H0z";
   return (
     <g>
-      <T d="M120 40h110l30 30v170H120z" epais={1.8} />
-      <T d="M230 40v30h30" delai={0.4} />
-      <T d="M138 64h70M138 80h50" delai={0.6} />
-      <T d="M138 100h104v60H138z" delai={0.8} />
-      <T d="M150 150l22-24 16 16 12-10 30 18" delai={1.1} laiton />
-      <T d="M138 178h104M138 192h86M138 206h96" delai={1.3} />
-      <T d="M310 90v100" delai={1.6} laiton epais={2} />
-      <T d="M290 170l20 20 20-20" delai={1.9} laiton epais={2} />
-      <T d="M280 220h60v14h-60z" delai={2.1} />
-      <Texte x={310} y={262} delai={2.3}>notice v3</Texte>
+      <g transform="translate(90 40)">
+        <g className="esq-eventail-g">
+          <T d={page} delai={0.2} />
+        </g>
+        <g className="esq-eventail-d">
+          <T d={page} delai={0.3} />
+        </g>
+        <T d={page} delai={0.4} epais={2} />
+        <T d="M96 0v24h24" delai={0.6} />
+        <T d="M16 24h56M16 38h40" delai={0.7} />
+        <T d="M16 56h88v48H16z" delai={0.8} />
+        <T d="M24 96l18-20 14 12 12-10 28 18" delai={1} laiton />
+        <T d="M16 120h88M16 132h70M16 144h80" delai={1.1} />
+      </g>
+      <g className="esq-rebond">
+        <T d="M300 60v90M280 130l20 20 20-20" delai={0.9} laiton epais={2.4} />
+      </g>
+      <T d="M262 176v28h76v-28" delai={1.1} epais={1.8} />
+      <T d="M262 228h76" delai={1.2} epais={1} />
+      <g className="esq-remplir">
+        <T d="M262 228h76" delai={1.3} laiton epais={3} />
+      </g>
     </g>
   );
 }
 
 function Pilotage() {
+  const barres = [70, 110, 90, 150, 130, 190];
   return (
     <g>
-      <T d="M50 240V50M50 240h300" epais={1.6} />
-      <T d="M70 240v-50M110 240v-80M150 240v-60M190 240v-110M230 240v-90" delai={0.4} epais={6} />
-      <T d="M60 200C100 190 120 150 160 160S220 110 260 100s50-40 80-50" delai={1} laiton epais={2} />
-      <T d="M340 50a5 5 0 1 0 0.1 0" delai={1.6} laiton epais={2} />
-      <Pulse cx={340} cy={55} delai={1.2} />
-      <T d="M260 220a50 50 0 0 1 100 0" delai={1.7} />
-      <T d="M310 220l24-30" delai={2} laiton epais={1.8} />
-      <Texte x={310} y={248} delai={2.2}>94 % du budget</Texte>
+      <T d="M40 250V40M40 250h320" epais={1.6} />
+      <T d="M40 190h320M40 130h320M40 70h320" delai={0.3} pointille />
+      {barres.map((h, k) => (
+        <g key={k} className="esq-barre" style={{ animationDelay: `${0.5 + k * 0.08}s` }}>
+          <T d={`M${70 + k * 44} 250v-${h}`} delai={0.4} epais={14} />
+        </g>
+      ))}
+      <T d="M60 200C110 196 130 150 170 160S240 110 280 90s50-30 74-50" delai={1} laiton epais={2.6} />
+      <g className="esq-monte">
+        <T d="M330 40h24v24" delai={1.4} laiton epais={2.6} />
+      </g>
+      <Pulse cx={354} cy={40} delai={1.4} />
     </g>
   );
 }
@@ -303,22 +293,29 @@ function Pilotage() {
 function Calendrier() {
   const lignes = [110, 145, 180, 215];
   const colonnes = [100, 140, 180, 220, 260];
+  const coches = [
+    [2, 0], [4, 1], [1, 2], [3, 2], [0, 3],
+  ];
   return (
     <g>
-      <T d="M80 60h240v190H80z" epais={1.8} />
-      <T d="M80 95h240" delai={0.3} />
-      <T d="M120 48v24M280 48v24" delai={0.4} epais={2} />
+      <T d="M80 60h240v190H80z" epais={2} />
+      <T d="M80 95h240" delai={0.3} epais={1.6} />
+      <g className="esq-feuillette">
+        <T d="M120 44v28M280 44v28" delai={0.4} epais={2.4} />
+      </g>
       {lignes.map((y, k) => (
-        <T key={y} d={`M80 ${y + 17}h240`} delai={0.6 + k * 0.1} pointille />
+        <T key={y} d={`M80 ${y + 17}h240`} delai={0.5 + k * 0.05} pointille />
       ))}
       {colonnes.map((x, k) => (
-        <T key={x} d={`M${x + 20} 95v155`} delai={0.6 + k * 0.1} pointille />
+        <T key={x} d={`M${x + 20} 95v155`} delai={0.5 + k * 0.05} pointille />
       ))}
-      <T d="M222 162a20 16 0 1 0 1 0" delai={1.4} laiton epais={2} />
-      <Pulse cx={222} cy={178} delai={1.1} />
-      <T d="M242 150l40-46" delai={1.8} laiton />
-      <T d="M282 104v-30l26 10-26 10" delai={2} laiton />
-      <Texte x={300} y={66} delai={2.2} ancre="start">Salon</Texte>
+      {coches.map(([c, l], k) => (
+        <T key={k} d={`M${88 + c * 48} ${118 + l * 35}l8 8 16-16`} delai={1 + k * 0.25} laiton epais={2.2} />
+      ))}
+      <g className="esq-chute">
+        <T d="M178 228v-30l22 9-22 9" delai={1.8} laiton epais={2} />
+      </g>
+      <Pulse cx={178} cy={230} delai={2.2} />
     </g>
   );
 }
