@@ -1,8 +1,8 @@
 "use client";
 
-import { MailPlus, UserCheck, UserRoundX, UserX } from "lucide-react";
+import { Inbox, MailPlus, UserCheck, UserRoundX, UserX } from "lucide-react";
 import { useState, useTransition } from "react";
-import { annulerInvitation, definirProfil, inviter } from "@/app/(app)/administration/actions";
+import { annulerInvitation, definirProfil, inviter, traiterDemande } from "@/app/(app)/administration/actions";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,17 @@ import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Segmented } from "@/components/ui/segmented";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
-import type { Invitation, Option, Utilisateur } from "@/lib/data/administration";
+import type { DemandeAcces, Invitation, Option, Utilisateur } from "@/lib/data/administration";
 import { ROLE_LABEL } from "@/lib/roles";
 import { FormulaireProfil, type ValeursProfil } from "./formulaire-profil";
+
+const PROFIL_DEMANDE: Record<DemandeAcces["profil"], string> = {
+  iap: "installateur agréé",
+  serrurier: "serrurier",
+  fenetrier: "fenêtrier",
+  interne: "salarié Picard",
+  autre: "autre profil",
+};
 
 type Filtre = "tous" | "actifs" | "sans_profil" | "desactives";
 
@@ -25,12 +33,14 @@ const dateCourte = (iso: string | null) =>
 export function VueAdministration({
   utilisateurs,
   invitations,
+  demandes,
   commerciaux,
   comptes,
   moiId,
 }: {
   utilisateurs: Utilisateur[];
   invitations: Invitation[];
+  demandes: DemandeAcces[];
   commerciaux: Option[];
   comptes: Option[];
   moiId: string;
@@ -42,6 +52,15 @@ export function VueAdministration({
   const [edition, setEdition] = useState<ValeursProfil & { actif: boolean }>({ role: "client_gerant", prenom: "", nom: "", compteId: null, commercialId: null, actif: true });
   const [email, setEmail] = useState("");
   const [invite, setInvite] = useState<ValeursProfil>({ role: "client_gerant", prenom: "", nom: "", compteId: null, commercialId: null });
+
+  const [demandeSource, setDemandeSource] = useState<string | null>(null);
+
+  const preparerInvitation = (d: DemandeAcces) => {
+    setDemandeSource(d.id);
+    setEmail(d.email);
+    setInvite({ role: d.profil === "interne" ? "atc" : "client_gerant", prenom: d.prenom, nom: d.nom, compteId: null, commercialId: null });
+    document.getElementById("invite-email")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 
   const actifs = utilisateurs.filter((u) => u.role && u.actif);
   const sansProfil = utilisateurs.filter((u) => !u.role);
@@ -127,6 +146,36 @@ export function VueAdministration({
         </Panel>
 
         <div className="flex flex-col gap-8">
+          {demandes.length ? (
+            <Panel>
+              <PanelHeader title="Demandes d’accès" description="Déposées depuis la page de connexion" />
+              <ul>
+                {demandes.map((d) => (
+                  <li key={d.id} className="flex flex-col gap-3 border-t border-line px-6 py-4">
+                    <div className="flex items-start gap-3">
+                      <Inbox className="mt-0.5 size-4 shrink-0 text-text-3" aria-hidden />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold text-text">{d.prenom} {d.nom}</span>
+                        <span className="block truncate text-sm text-text-2">{[d.entreprise, PROFIL_DEMANDE[d.profil]].filter(Boolean).join(", ")}</span>
+                        <span className="block truncate text-sm text-text-2">{[d.email, d.telephone].filter(Boolean).join(", ")}</span>
+                        {d.message ? <span className="mt-2 block text-sm text-text-2">{d.message}</span> : null}
+                      </span>
+                      <span className="shrink-0 text-xs text-text-3">{dateCourte(d.creeLe)}</span>
+                    </div>
+                    <div className="flex gap-2 pl-8">
+                      <Button size="sm" variant="secondary" disabled={pending} onClick={() => preparerInvitation(d)}>
+                        Préparer l’invitation
+                      </Button>
+                      <Button size="sm" variant="ghost" disabled={pending} onClick={() => executer(() => traiterDemande(d.id, "refusee"))}>
+                        Refuser
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          ) : null}
+
           {choisi ? (
             <Panel>
               <PanelHeader title={choisi.role ? "Modifier l’accès" : "Donner un rôle"} description={choisi.email} />
@@ -164,8 +213,13 @@ export function VueAdministration({
                 disabled={pending || !email.includes("@")}
                 onClick={() =>
                   executer(
-                    () => inviter(email, invite),
+                    async () => {
+                      const r = await inviter(email, invite);
+                      if (r.ok && demandeSource) await traiterDemande(demandeSource, "invitee");
+                      return r;
+                    },
                     () => {
+                      setDemandeSource(null);
                       setEmail("");
                       setInvite({ role: invite.role, prenom: "", nom: "", compteId: null, commercialId: null });
                     },

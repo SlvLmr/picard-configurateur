@@ -18,19 +18,24 @@ export type Utilisateur = {
 
 export type Invitation = { id: string; email: string; role: RoleId; prenom: string | null; nom: string | null; creeLe: string };
 export type Option = { id: string; nom: string; detail?: string | null };
+export type DemandeAcces = {
+  id: string; prenom: string; nom: string; email: string; telephone: string | null; entreprise: string | null;
+  profil: "iap" | "serrurier" | "fenetrier" | "interne" | "autre"; message: string | null; creeLe: string;
+};
 
 export type DonneesAdministration =
-  | { etat: "ok"; utilisateurs: Utilisateur[]; invitations: Invitation[]; commerciaux: Option[]; comptes: Option[] }
+  | { etat: "ok"; utilisateurs: Utilisateur[]; invitations: Invitation[]; demandes: DemandeAcces[]; commerciaux: Option[]; comptes: Option[] }
   | { etat: "migration_manquante" }
   | { etat: "erreur"; message: string };
 
 export async function donneesAdministration(): Promise<DonneesAdministration> {
   const supabase = supabaseServeur();
-  const [u, i, c, comptes] = await Promise.all([
+  const [u, i, c, comptes, dem] = await Promise.all([
     supabase.rpc("ep_admin_utilisateurs"),
     supabase.rpc("ep_admin_invitations"),
     supabase.rpc("ep_admin_commerciaux"),
     supabase.from("ep_comptes").select("id, raison_sociale, ville, niveau_iap").eq("actif", true).order("raison_sociale"),
+    supabase.rpc("ep_admin_demandes_acces"),
   ]);
   const err = u.error ?? i.error ?? c.error;
   if (err) {
@@ -56,6 +61,8 @@ export async function donneesAdministration(): Promise<DonneesAdministration> {
       commercialNom: x.commercial_nom,
     })),
     invitations: ((i.data ?? []) as LigneI[]).map((x) => ({ id: x.id, email: x.email, role: x.role, prenom: x.prenom, nom: x.nom, creeLe: x.cree_le })),
+    // Demandes d'accès : liste vide si la migration n'est pas encore appliquée
+    demandes: ((dem.data ?? []) as (Omit<DemandeAcces, "creeLe"> & { cree_le: string })[]).map(({ cree_le, ...x }) => ({ ...x, creeLe: cree_le })),
     commerciaux: ((c.data ?? []) as { id: string; nom: string; equipe: string }[]).map((x) => ({ id: x.id, nom: x.nom, detail: x.equipe })),
     comptes: (comptes.data ?? []).map((x) => ({ id: x.id, nom: x.raison_sociale, detail: [x.niveau_iap, x.ville].filter(Boolean).join(", ") })),
   };

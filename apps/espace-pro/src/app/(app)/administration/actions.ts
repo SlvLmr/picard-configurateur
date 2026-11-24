@@ -46,6 +46,13 @@ export async function annulerInvitation(id: string): Promise<Resultat> {
   return { ok: true, message: "Invitation annulée" };
 }
 
+export async function traiterDemande(id: string, statut: "invitee" | "refusee"): Promise<Resultat> {
+  const { error } = await supabaseServeur().rpc("ep_admin_traiter_demande", { p_id: id, p_statut: statut });
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/administration");
+  return { ok: true, message: statut === "refusee" ? "Demande refusée" : "Demande traitée" };
+}
+
 export async function enregistrerCommercial(id: string | null, c: {
   prenom: string; nom: string; equipe: string; fonction: string; email: string; telephone: string; iapObjectif: number; actif: boolean;
 }): Promise<Resultat> {

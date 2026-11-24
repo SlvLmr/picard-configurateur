@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase/config";
 
 const PAGE_CONNEXION = "/connexion";
+/** Pages accessibles sans être connecté. */
+const PAGES_PUBLIQUES = ["/connexion", "/mot-de-passe-oublie", "/rejoindre", "/auth/confirmer"];
 
 /**
  * Accès réservé : toute page exige une session (identifiant + mot de passe).
@@ -27,9 +29,11 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const surConnexion = request.nextUrl.pathname === PAGE_CONNEXION;
+  const chemin = request.nextUrl.pathname;
+  const publique = PAGES_PUBLIQUES.includes(chemin);
+  const surConnexion = chemin === PAGE_CONNEXION;
 
-  if (!user && !surConnexion) {
+  if (!user && !publique) {
     const url = request.nextUrl.clone();
     url.pathname = PAGE_CONNEXION;
     url.search = "";

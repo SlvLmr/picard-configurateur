@@ -202,3 +202,54 @@
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f6f86' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 select { background-position: right 12px center; }
+
+/* ── Esquisses de la page de connexion ───────────────────────────── */
+.esquisse .trait {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: dessiner 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.esquisse .trait-fondu,
+.esquisse .annotation {
+  opacity: 0;
+  animation: apparaitre 0.9s ease-out forwards;
+}
+.esquisse .scene {
+  animation: sceneFin 6.5s ease-in-out forwards;
+}
+.legende {
+  animation: apparaitre 0.8s ease-out 0.3s both;
+}
+@keyframes dessiner {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes apparaitre {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sceneFin {
+  0%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .esquisse .trait {
+    stroke-dashoffset: 0;
+  }
+  .esquisse .trait-fondu,
+  .esquisse .annotation {
+    opacity: 1;
+  }
+}
