@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="fr" data-brand="picard" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace Pro — Maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ───────── Tokens : crème + camaïeu de bleus + CTA (teintes à caler sur les chartes) ───────── */
+:root{
+  --bg:#f7f2e8; --surface:#fffdf9; --surface-2:#fbf7ef; --ink:#0f1f33; --ink-2:#2c3d55; --muted:#6c7a8c; --line:#e7dfd0;
+  --side-bg:#0c2340; --side-ink:#e8eef6; --side-muted:#8fa6c2; --side-hover:#143258;
+  --accent:#2f6fb2; --accent-soft:#e3edf8; --accent-strong:#1d4f86; --accent-light:#9cc0e6;
+  --cta:#e8692f; --cta-strong:#c9541f; --cta-soft:#fde9de; --cta-ink:#ffffff;
+  --ok:#2f7d55; --ok-soft:#e3f2ea; --warn:#a8650f; --warn-soft:#fbf0dc; --warn-ink:#6d430b; --danger:#b5382f; --danger-soft:#f9e3e0; --info:#2f6fb2; --info-soft:#e3edf8;
+  --elite:#0c2340; --elite-soft:#d6e3f3; --premium:#1d4f86; --premium-soft:#e3edf8; --officiel:#3f7fc0; --officiel-soft:#eef4fb; --autre-soft:#f1ece2;
+  --track:#ece5d8; --wood1:#d9bf94; --wood2:#e6d0aa; --frame:#3b3833; --map-land:#fffdf9;
+  --r:14px; --r-sm:10px; --shadow:0 1px 2px rgba(12,35,64,.04),0 4px 16px rgba(12,35,64,.05);
+  --font:'Inter',system-ui,sans-serif; --display:'Fraunces',Georgia,serif;
+  --sel-bg:#0c2340; --sel-ink:#ffffff;
+  color-scheme:light;
+}
+[data-brand="eliot"]{
+  --side-bg:#0b3142; --side-hover:#124359; --accent:#1f8a9e; --accent-soft:#dff1f4; --accent-strong:#14697a; --accent-light:#8fd0dc;
+  --elite:#0b3142; --elite-soft:#d3eaef; --premium:#14697a; --premium-soft:#dff1f4; --officiel:#2aa3b8; --officiel-soft:#eaf6f8;
+}
+[data-theme="dark"]{
+  --bg:#0a1422; --surface:#101e31; --surface-2:#13243a; --ink:#eef2f7; --ink-2:#c3cedb; --muted:#8597ad; --line:#1f3350;
+  --side-bg:#071020; --side-hover:#13243a;
+  --accent:#6fa8e6; --accent-soft:#16304f; --accent-strong:#9cc6f2; --accent-light:#3d6fa6;
+  --cta:#f07a43; --cta-strong:#ff8f5a; --cta-soft:#3a2216;
+  --ok:#5cc28d; --ok-soft:#123326; --warn:#e3a54f; --warn-soft:#35270f; --warn-ink:#f0c88a; --danger:#ef7a70; --danger-soft:#3a1714; --info:#6fa8e6; --info-soft:#16304f;
+  --elite:#cfe0f5; --elite-soft:#21426b; --premium:#9cc6f2; --premium-soft:#16304f; --officiel:#8fc0ee; --officiel-soft:#122a45; --autre-soft:#1a2b42;
+  --track:#1f3350; --map-land:#13243a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  --sel-bg:#6fa8e6; --sel-ink:#071020;
+  color-scheme:dark;
+}
+[data-theme="dark"][data-brand="eliot"]{ --accent:#5cc3d4; --accent-soft:#12343d; --accent-strong:#8fdbe7; --elite-soft:#164450; --premium:#8fdbe7; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select{font:inherit;color:inherit}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{display:grid;grid-template-columns:252px 1fr;min-height:100vh}
+
+/* ───────── Sidebar ───────── */
+.side{background:var(--side-bg);color:var(--side-ink);padding:20px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow:auto;transition:background .4s}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-strong));display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:600;font-size:18px;transition:background .4s}
+.brand-name{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:.2px}
+.brand-sub{font-size:11px;color:var(--side-muted);letter-spacing:.08em;text-transform:uppercase}
+.nav-label{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--side-muted);padding:14px 10px 6px}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;color:var(--side-ink);text-decoration:none;cursor:pointer;font-weight:500;transition:background .15s,color .15s;position:relative}
+.nav a:hover{background:var(--side-hover)}
+.nav a.on{background:var(--side-hover)}
+.nav a.on::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--cta)}
+.nav a.on svg{color:var(--accent-light)}
+.nav a .count{margin-left:auto;background:var(--cta);color:#fff;font-size:11px;font-weight:600;padding:1px 7px;border-radius:20px}
+.nav a.soon{color:var(--side-muted);cursor:default}
+.nav a.soon:hover{background:none}
+.nav a .tag{margin-left:auto;font-size:10px;border:1px solid #ffffff22;padding:1px 6px;border-radius:20px;color:var(--side-muted)}
+.side-foot{margin-top:auto;padding:12px 8px 0;border-top:1px solid #ffffff14;font-size:11.5px;color:var(--side-muted)}
+
+/* ───────── Topbar ───────── */
+.main{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:12px;padding:14px 28px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px);position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line)}
+.icon-btn.burger{display:none}
+.search{flex:1;max-width:460px;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:9px 12px;color:var(--muted);cursor:text}
+.search kbd{white-space:nowrap;margin-left:auto;font-family:var(--font);font-size:11px;border:1px solid var(--line);border-radius:6px;padding:1px 6px;background:var(--surface-2)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{padding:5px 11px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--sel-bg);color:var(--sel-ink)}
+.sel{appearance:none;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a83' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid var(--line);border-radius:10px;padding:7px 30px 7px 11px;font-weight:600;font-size:12.5px;cursor:pointer}
+.icon-btn{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);position:relative}
+.icon-btn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--cta);box-shadow:0 0 0 2px var(--surface)}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-soft);color:var(--accent-strong);display:grid;place-items:center;font-weight:700;font-size:13px}
+.proto{font-size:11px;color:var(--warn);background:var(--warn-soft);padding:4px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+
+/* ───────── Content ───────── */
+.content{padding:28px;max-width:1360px;width:100%;margin:0 auto;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.head{display:flex;align-items:flex-end;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.eyebrow{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-strong);font-weight:600;margin-bottom:6px}
+h1{font-family:var(--display);font-weight:600;font-size:30px;letter-spacing:-.01em;line-height:1.15}
+h2{font-size:15px;font-weight:600}
+.sub{color:var(--muted);margin-top:4px}
+.head .actions{margin-left:auto;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px;background:var(--surface);border:1px solid var(--line);transition:transform .1s,background .15s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--cta);border-color:var(--cta);color:var(--cta-ink)}
+.btn.primary:hover{background:var(--cta-strong);border-color:var(--cta-strong)}
+.btn.dark{background:var(--side-bg);border-color:var(--side-bg);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g-main{grid-template-columns:minmax(0,1.65fr) minmax(0,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.card-h .link{margin-left:auto;font-size:12.5px;color:var(--accent-strong);font-weight:600;cursor:pointer}
+.kpi .lbl{color:var(--muted);font-size:12.5px;display:flex;align-items:center;gap:6px}
+.kpi .val{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi .delta{font-size:12px;font-weight:600;margin-top:2px}
+.up{color:var(--ok)} .down{color:var(--danger)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.p-elite{background:var(--elite-soft);color:var(--elite)}
+.p-premium{background:var(--premium-soft);color:var(--premium)}
+.p-officiel{background:var(--officiel-soft);color:var(--officiel)}
+.p-autre{background:var(--autre-soft);color:var(--ink-2)}
+.p-cta{background:var(--cta-soft);color:var(--cta-strong)}
+.p-atc{background:var(--ok-soft);color:var(--ok)}
+.p-warn{background:var(--warn-soft);color:var(--warn)}
+.p-danger{background:var(--danger-soft);color:var(--danger)}
+.p-ok{background:var(--ok-soft);color:var(--ok)}
+.p-info{background:var(--info-soft);color:var(--info)}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+.row{display:flex;align-items:center;gap:12px}
+.list > *{padding:12px 0;border-top:1px solid var(--line)}
+.list > *:first-child{border-top:0;padding-top:0}
+.ava{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;background:var(--surface-2);border:1px solid var(--line);flex:none}
+table{width:100%;border-collapse:collapse}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:left;padding:0 10px 10px}
+td{padding:12px 10px;border-top:1px solid var(--line);vertical-align:middle}
+tr.row-h:hover td{background:var(--surface-2)}
+.bar{height:7px;border-radius:7px;background:var(--track);overflow:hidden}
+.bar > i{display:block;height:100%;border-radius:7px;background:var(--accent);transition:width .8s cubic-bezier(.16,1,.3,1)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:6px 12px;border-radius:20px;border:1px solid var(--line);background:var(--surface);font-weight:500;font-size:12.5px;cursor:pointer}
+.chip.on{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
+.hero{background:linear-gradient(135deg,var(--side-bg),color-mix(in srgb,var(--side-bg) 70%,var(--accent-strong)));color:var(--side-ink);border-radius:18px;padding:26px;position:relative;overflow:hidden;transition:background .4s}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 55%,transparent),transparent 70%)}
+.hero::before{content:"";position:absolute;right:120px;bottom:-120px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent-light) 30%,transparent),transparent 70%)}
+.hero > *{position:relative;z-index:1}
+.hero h1{color:#fff}
+.hero .sub{color:var(--side-muted)}
+.timer{font-variant-numeric:tabular-nums;font-weight:700}
+.empty-note{font-size:12px;color:var(--muted);text-align:center;padding:10px}
+.fade-out{animation:out .45s forwards}
+@keyframes out{to{opacity:0;transform:translateX(30px);height:0;padding:0}}
+
+/* Map */
+.map{position:relative;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;height:100%;min-height:300px}
+.map svg{width:100%;height:100%;display:block}
+
+/* Configurator */
+.steps{display:flex;flex-direction:column;gap:2px}
+.step{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;cursor:pointer;font-weight:500;color:var(--muted)}
+.step .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11.5px;font-weight:700}
+.step.done{color:var(--ink)} .step.done .n{background:var(--accent-strong);border-color:var(--accent-strong);color:var(--surface)}
+.step.on{background:var(--accent-soft);color:var(--ink)} .step.on .n{border-color:var(--accent);background:var(--accent);color:#fff}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:12px;font-weight:600;color:var(--ink-2)}
+.inp{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--surface);width:100%}
+.inp:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{border:1.5px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;font-weight:600;font-size:12.5px;background:var(--surface);text-align:left}
+.opt small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.door-stage{background:repeating-linear-gradient(0deg,transparent 0 23px,color-mix(in srgb,var(--accent) 7%,transparent) 23px 24px),repeating-linear-gradient(90deg,transparent 0 23px,color-mix(in srgb,var(--accent) 7%,transparent) 23px 24px),var(--surface-2);border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;padding:16px;min-height:440px}
+.rule{display:flex;gap:10px;padding:12px;border-radius:10px;background:var(--warn-soft);color:var(--warn-ink);font-size:12.5px;margin-top:12px}
+.sum-line{display:flex;justify-content:space-between;padding:7px 0;border-top:1px dashed var(--line);font-size:13px}
+.sum-line:first-child{border-top:0}
+.total{font-size:24px;font-weight:700;letter-spacing:-.02em}
+
+/* Médiathèque / produits */
+.thumb{height:130px;border-radius:10px;display:grid;place-items:center;position:relative;overflow:hidden;margin-bottom:12px}
+.thumb svg.i{width:34px;height:34px;stroke-width:1.4;opacity:.85}
+.thumb .badge{position:absolute;top:8px;left:8px}
+.t1{background:linear-gradient(135deg,var(--side-bg),var(--accent-strong));color:var(--accent-light)}
+.t2{background:linear-gradient(135deg,var(--accent-soft),var(--surface-2));color:var(--accent-strong)}
+.t3{background:linear-gradient(135deg,var(--accent-light),var(--accent));color:#fff}
+.t4{background:linear-gradient(135deg,var(--cta-soft),var(--surface-2));color:var(--cta-strong)}
+.t5{background:linear-gradient(135deg,var(--autre-soft),var(--line));color:var(--ink-2)}
+.hover-lift{transition:transform .2s,box-shadow .2s;cursor:pointer}
+.hover-lift:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(20,20,20,.09)}
+
+/* Palette ⌘K */
+.overlay{position:fixed;inset:0;background:rgba(15,15,17,.45);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding-top:12vh;z-index:50}
+.overlay.open{display:flex;animation:fade .2s}
+.palette{width:min(620px,92vw);background:var(--surface);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.25);overflow:hidden}
+.palette input{width:100%;border:0;background:var(--surface);padding:18px 20px;font-size:16px;outline:none;border-bottom:1px solid var(--line)}
+.pal-list{max-height:360px;overflow:auto;padding:8px}
+.pal-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer}
+.pal-item:hover,.pal-item.on{background:var(--surface-2)}
+.pal-item .k{margin-left:auto;font-size:11.5px;color:var(--muted)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--side-bg);color:#fff;border:1px solid var(--line);padding:11px 16px;border-radius:12px;display:flex;align-items:center;gap:10px;opacity:0;transition:.3s;z-index:60;font-weight:500}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.toast svg{color:#7fd3a5}
+.range{width:100%;accent-color:var(--cta)}
+
+@media (max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.g-main,.g3{grid-template-columns:1fr}.cfg-grid{grid-template-columns:1fr!important}}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;z-index:40;width:260px;transform:translateX(-100%);transition:transform .25s}
+  .side.open{transform:none}
+  .icon-btn.burger{display:grid}
+  .top{padding:12px 16px;flex-wrap:wrap}
+  .search{order:3;max-width:none;flex-basis:100%}
+  .proto{display:none}
+  .content{padding:18px 16px}
+  .g2{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}.kpi .val{font-size:22px}
+  h1{font-size:24px}
+  .hide-m{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side"></aside>
+  <div class="main">
+    <header class="top">
+      <button class="icon-btn burger" onclick="document.getElementById('side').classList.toggle('open')" aria-label="Menu"><svg class="i"><use href="#menu"/></svg></button>
+      <div class="search" onclick="openPalette()"><svg class="i"><use href="#search"/></svg><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Rechercher partout…</span><kbd>⌘ K</kbd></div>
+      <div class="top-right">
+        <span class="proto">Maquette · données fictives</span>
+        <div class="seg" id="brandSeg">
+          <button data-b="picard" class="on">Picard</button>
+          <button data-b="eliot">Eliot</button>
+        </div>
+        <select class="sel" id="roleSel" aria-label="Voir en tant que">
+          <option value="repartiteur">Vue : Répartiteur</option>
+          <option value="direction">Vue : Direction (CODIR)</option>
+          <option value="atc">Vue : Commercial (ATC)</option>
+          <option value="iap">Vue : Client IAP Elite</option>
+        </select>
+        <button class="icon-btn" id="themeBtn" aria-label="Mode sombre" title="Mode clair / sombre"><svg class="i"><use href="#moon"/></svg></button>
+        <button class="icon-btn hide-m" aria-label="Notifications"><svg class="i"><use href="#bell"/></svg><span class="dot"></span></button>
+        <div class="avatar" id="avatar">CD</div>
+      </div>
+    </header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closePalette()">
+  <div class="palette">
+    <input id="palInput" placeholder="Rechercher partout…" autocomplete="off">
+    <div class="pal-list" id="palList"></div>
+  </div>
+</div>
+<div class="toast" id="toast"><svg class="i"><use href="#check"/></svg><span id="toastMsg"></span></div>
+
+<!-- Icônes -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></symbol>
+  <symbol id="map" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></symbol>
+  <symbol id="ruler" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 7v4M10 7v3M14 7v4M18 7v3"/></symbol>
+  <symbol id="folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="megaphone" viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M17 8a5 5 0 0 1 0 8"/></symbol>
+  <symbol id="bag" viewBox="0 0 24 24"><path d="M5 7h14l-1 13H6z"/><path d="M9 7a3 3 0 0 1 6 0"/></symbol>
+  <symbol id="cap" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></symbol>
+  <symbol id="wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></symbol>
+  <symbol id="news" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></symbol>
+  <symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+  <symbol id="file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
+  <symbol id="video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="door" viewBox="0 0 24 24"><path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="15" cy="12" r="1"/></symbol>
+  <symbol id="key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2"/></symbol>
+  <symbol id="alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  <symbol id="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+  <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8S10 3 7.5 4.5 9 8 12 8zm0 0s2-5 4.5-3.5S15 8 12 8z"/></symbol>
+  <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></symbol>
+  <symbol id="truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+  <symbol id="google" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12h8M16 12a4 4 0 1 1-1.2-2.8"/></symbol>
+</svg>
+
+<script>
+const $ = s => document.querySelector(s);
+const ico = (id, cls='') => `<svg class="i ${cls}"><use href="#${id}"/></svg>`;
+
+const NAV = {
+  home:{label:'Accueil',icon:'home'},
+  demandes:{label:'Leads',icon:'inbox'},
+  terrain:{label:'CRM',icon:'map'},
+  pilotage:{label:'Pilotage',icon:'chart'},
+  configurateur:{label:'Configurateur',icon:'ruler'},
+  mediatheque:{label:'Médiathèque',icon:'folder'},
+  communication:{label:'Marketing',icon:'megaphone'},
+  boutique:{label:'Boutique',icon:'bag'},
+};
+const SOON = [['Formation','cap'],['SAV & garantie','wrench'],['Gazette','news'],['Événements','cal'],['Assistant','spark']];
+const ROLES = {
+  repartiteur:{user:'Claire D.',ini:'CD',org:'Service demandes',nav:['home','demandes','mediatheque'],counts:{demandes:37}},
+  direction:{user:'Philippe R.',ini:'PR',org:'Direction commerciale',nav:['home','pilotage','demandes','terrain','mediatheque','boutique'],counts:{}},
+  atc:{user:'Julien M.',ini:'JM',org:'ATC · Serruriers · Ouest',nav:['home','terrain','demandes','configurateur','mediatheque','communication','boutique'],counts:{demandes:4}},
+  iap:{user:'Marc L.',ini:'ML',org:'Serrurerie Lambert · IAP Elite',nav:['home','demandes','configurateur','mediatheque','communication','boutique'],counts:{demandes:2}},
+};
+const state = {brand:'picard', role:'repartiteur', view:'home', points:4820, cfg:{w:930,h:2150,side:'D',sens:'Poussant',pose:'Rénovation',secu:'A2P BP2',step:3}, mediaFilter:'Tout', shopPts:60};
+
+function toast(msg){ $('#toastMsg').textContent=msg; const t=$('#toast'); t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
+
+/* ───────── Sidebar ───────── */
+function renderSide(){
+  const r = ROLES[state.role];
+  const brandName = state.brand==='picard' ? 'Picard' : 'Eliot';
+  $('#side').innerHTML = `
+    <div class="brand"><div class="brand-mark">${brandName[0]}</div><div><div class="brand-name">Espace Pro</div><div class="brand-sub">${brandName}</div></div></div>
+    <nav class="nav">
+      ${r.nav.map(k=>`<a class="${state.view===k?'on':''}" onclick="go('${k}')">${ico(NAV[k].icon)}${NAV[k].label}${r.counts[k]?`<span class="count">${r.counts[k]}</span>`:''}</a>`).join('')}
+      <div class="nav-label">Bientôt</div>
+      ${SOON.map(([l,i])=>`<a class="soon">${ico(i)}${l}<span class="tag">Phase 5</span></a>`).join('')}
+    </nav>
+    <div class="side-foot">${r.user}<br>${r.org}</div>`;
+  $('#avatar').textContent = r.ini;
+}
+function go(v){ state.view=v; render(); $('#side').classList.remove('open'); window.scrollTo({top:0}); }
+
+/* ───────── Helpers ───────── */
+const lvl = l => ({Elite:'p-elite',Premium:'p-premium',Officiel:'p-officiel',ATC:'p-atc',Autre:'p-autre'}[l]);
+function head(eyebrow,title,sub,actions=''){ return `<div class="head"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1>${sub?`<div class="sub">${sub}</div>`:''}</div><div class="actions">${actions}</div></div>`; }
+function kpi(lbl,val,delta,up=true,icon='chart'){ return `<div class="card kpi"><div class="lbl">${ico(icon)}${lbl}</div><div class="val">${val}</div>${delta?`<div class="delta ${up?'up':'down'}">${delta}</div>`:''}</div>`; }
+function ring(p,size=96,label=''){ const r=size/2-8, c=2*Math.PI*r; return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--track)" stroke-width="8"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p/100)}" transform="rotate(-90 ${size/2} ${size/2})" style="transition:stroke-dashoffset 1s"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-weight="700" font-size="${size/5}" fill="var(--ink)">${p}%</text></svg>`; }
+
+/* ───────── Données fictives ───────── */
+const LEADS = [
+  {id:'D-2481',who:'Mme Bernard',where:'Nantes (44)',cp:'44000',what:'Porte blindée palière · A2P BP2',src:'Ma Porte',age:'12 min',sug:'Serrurerie Lambert',lvl:'Elite',dist:'3,2 km',x:118,y:178},
+  {id:'D-2480',who:'M. Leroy',where:'Rennes (35)',cp:'35000',what:'Blindage porte existante',src:'Site web',age:'26 min',sug:'Atelier Keraudren',lvl:'Premium',dist:'5,8 km',x:110,y:140},
+  {id:'D-2479',who:'SCI Les Tilleuls',where:'Angers (49)',cp:'49000',what:'12 portes palières · copropriété',src:'Téléphone',age:'41 min',sug:'Julien M. (ATC)',lvl:'ATC',dist:'Gros projet',x:150,y:180},
+  {id:'D-2478',who:'Mme Petit',where:'Lorient (56)',cp:'56100',what:'Changement de cylindre haute sécurité',src:'Ma Porte',age:'1 h',sug:'Serrures du Scorff',lvl:'Officiel',dist:'7,1 km',x:70,y:160},
+  {id:'D-2477',who:'M. Garnier',where:'Le Mans (72)',cp:'72000',what:'Porte blindée pavillon',src:'Site web',age:'1 h 20',sug:'Fermetures Sarthe',lvl:'Autre',dist:'11 km',x:178,y:150},
+];
+
+/* ───────── Vues ───────── */
+const V = {};
+
+V.home = () => ({
+  repartiteur: () => `
+    ${head('Mardi 24 novembre','Bonjour Claire','37 demandes attendent votre validation, dont 6 sans professionnel à proximité.',`<button class="btn primary" onclick="go('demandes')">${ico('inbox')}Traiter les leads</button>`)}
+    <div class="grid g4">${kpi('À valider','37','+9 depuis 8 h',false,'inbox')}${kpi('Délai moyen de prise en charge','2 h 14','−18 min vs octobre',true,'clock')}${kpi('Acceptées en moins de 24 h','92 %','+4 pts',true,'check')}${kpi('Sans pro à proximité','6','→ ATC',true,'map')}</div>
+    <div class="grid g-main" style="margin-top:16px">
+      <div class="card"><div class="card-h"><h2>Prochaines à valider</h2><span class="link" onclick="go('demandes')">Tout voir</span></div>${leadTable(3)}</div>
+      <div class="card"><div class="card-h"><h2>Pros en retard de réponse</h2></div><div class="list">
+        ${[['Serrurerie Dubois','Officiel','2 demandes · délai dépassé de 3 h'],['Clés & Co','Premium','1 demande · délai dépassé de 1 h'],['Métallerie Rio','Autre','1 demande · réattribuée auto. dans 40 min']].map(([n,l,t])=>`<div class="row"><div class="ava">${n.split(' ').map(w=>w[0]).join('').slice(0,2)}</div><div style="flex:1"><div style="font-weight:600">${n} <span class="pill ${lvl(l)}">${l}</span></div><div class="small muted">${t}</div></div><button class="btn sm" onclick="toast('Relance envoyée par SMS')">Relancer</button></div>`).join('')}
+      </div></div>
+    </div>`,
+  direction: () => `
+    ${head('Semaine 48','Bonjour Philippe','Synthèse de l’activité commerciale et du réseau.',`<button class="btn" onclick="toast('Export PDF généré')">${ico('download')}Exporter</button><button class="btn primary" onclick="go('pilotage')">${ico('chart')}Ouvrir le pilotage</button>`)}
+    <div class="grid g4">${kpi('CA cumulé vs objectif','87 %','+3 pts vs N-1',true,'target')}${kpi('Demandes ce mois','612','+14 %',true,'inbox')}${kpi('Taux de transformation','31 %','+2 pts',true,'check')}${kpi('Couverture du portefeuille','78 %','−4 pts',false,'users')}</div>
+    <div class="grid g-main" style="margin-top:16px">
+      <div class="card"><div class="card-h"><h2>Objectif vs réalisé par marché</h2></div>${marketBars()}</div>
+      <div class="card"><div class="card-h"><h2>Signaux à surveiller</h2></div><div class="list">
+        ${[['danger','Clés & Co (Premium)','CA −32 % sur 3 mois, plus de connexion depuis 41 jours'],['warn','Marché Fenêtriers','Taux de refus des demandes en hausse : 18 %'],['warn','Secteur Est','14 clients non visités depuis plus de 90 jours'],['ok','Serrurerie Lambert','Éligible au maintien Elite, objectif dépassé']].map(([c,t,d])=>`<div class="row" style="align-items:flex-start"><span class="pill p-${c}" style="margin-top:2px">${ico(c==='ok'?'check':'alert')}</span><div><div style="font-weight:600">${t}</div><div class="small muted">${d}</div></div></div>`).join('')}
+      </div></div>
+    </div>`,
+  atc: () => `
+    ${head('Mardi 24 novembre','Bonjour Julien','3 visites aujourd’hui · 2 actions en retard · 4 nouvelles demandes chez vos clients.',`<button class="btn primary" onclick="toast('Enregistrement… dictez votre compte rendu')">${ico('mic')}Compte rendu vocal</button>`)}
+    <div class="grid g-main">
+      <div class="card"><div class="card-h"><h2>Ma journée</h2><span class="link" onclick="go('terrain')">Voir la tournée</span></div><div class="list">
+        ${[['9:30','Serrurerie Lambert','Elite','Nantes · Point trimestriel + nouvelle gamme'],['14:00','Atelier Keraudren','Premium','Rennes · Objectif : passage Elite'],['16:30','Fermetures Sarthe','Autre','Le Mans · Prospection IAP Officiel']].map(([h,n,l,d])=>`<div class="row"><div style="width:50px;font-weight:700">${h}</div><div style="flex:1"><div style="font-weight:600">${n} <span class="pill ${lvl(l)}">${l}</span></div><div class="small muted">${d}</div></div><button class="btn sm" onclick="go('terrain')">Préparer</button></div>`).join('')}
+      </div></div>
+      <div class="card" style="text-align:center"><div class="card-h"><h2>Mon objectif annuel</h2></div>${ring(82,130)}<div style="margin-top:10px;font-weight:600">412 k€ / 500 k€</div><div class="small muted">Il reste 88 k€ · 5 semaines</div>
+        <div style="text-align:left;margin-top:16px" class="list">
+          <div class="row"><span class="small" style="flex:1">Visites du trimestre</span><b>46 / 60</b></div>
+          <div class="row"><span class="small" style="flex:1">Nouveaux IAP</span><b>3 / 4</b></div>
+        </div></div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      ${[['alert','Action en retard','Envoyer le kit vitrine à Clés & Co','p-danger'],['inbox','Leads de mes clients','4 nouvelles, 1 non acceptée depuis 20 h','p-warn'],['file','Nouveau dans la Médiathèque','Fiche technique gamme Altitude v3','p-info']].map(([i,t,d,c])=>`<div class="card hover-lift"><span class="pill ${c}">${ico(i)}${t}</span><div style="margin-top:10px;font-weight:600">${d}</div></div>`).join('')}
+    </div>`,
+  iap: () => `
+    <div class="hero"><div class="eyebrow" style="color:var(--accent-light)">IAP Elite · Serrurerie Lambert</div><h1>Bonjour Marc, 2 nouvelles demandes vous attendent</h1><div class="sub" style="margin-top:6px">Acceptez-les avant ce soir 18 h pour garder votre priorité Elite sur votre secteur.</div>
+      <div style="display:flex;gap:10px;margin-top:18px;position:relative;z-index:1"><button class="btn primary" onclick="go('demandes')">${ico('inbox')}Voir mes leads</button><button class="btn" style="background:#ffffff14;border-color:#ffffff22;color:#fff" onclick="go('configurateur')">${ico('ruler')}Configurer une porte</button></div></div>
+    <div class="grid g4" style="margin-top:16px">${kpi('Mes points','4 820','+350 ce mois',true,'star')}${kpi('Taux de transformation','38 %','Réseau : 31 %',true,'check')}${kpi('Demandes reçues (année)','64','+22 %',true,'inbox')}${kpi('Note clients','4,8 / 5','23 avis',true,'star')}</div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card hover-lift" onclick="go('communication')"><div class="thumb t1">${ico('megaphone')}<span class="badge pill p-cta">Opération nationale</span></div><div style="font-weight:600">Mois de la sécurité</div><div class="small muted">Flyers, posts et pub locale prêts, personnalisés à votre nom. 1 clic pour participer.</div></div>
+      <div class="card hover-lift" onclick="go('mediatheque')"><div class="thumb t3">${ico('file')}<span class="badge pill p-info">Mis à jour</span></div><div style="font-weight:600">Notice de pose · gamme Altitude</div><div class="small muted">Version 3, modifiée hier. Vous l’aviez téléchargée en mars.</div></div>
+      <div class="card hover-lift" onclick="go('boutique')"><div class="thumb t2">${ico('gift')}<span class="badge pill p-elite">Accessible</span></div><div style="font-weight:600">Veste softshell brodée</div><div class="small muted">Vous avez assez de points : 1 900 pts.</div></div>
+    </div>`,
+}[state.role])();
+
+function leadTable(n=LEADS.length){
+  return `<div style="overflow:auto"><table><thead><tr><th>Demande</th><th class="hide-m">Projet</th><th>Pré-attribution</th><th></th></tr></thead><tbody>
+  ${LEADS.slice(0,n).map(l=>`<tr class="row-h" id="r-${l.id}"><td><div style="font-weight:600">${l.who}</div><div class="small muted">${l.where} · ${l.age} · ${l.src}</div></td><td class="hide-m small">${l.what}</td><td><div style="font-weight:600">${l.sug}</div><div class="row" style="gap:6px;margin-top:3px"><span class="pill ${lvl(l.lvl)}">${l.lvl}</span><span class="small muted">${l.dist}</span></div></td><td style="text-align:right;white-space:nowrap"><button class="btn sm" onclick="toast('Choisir un autre professionnel…')">Changer</button> <button class="btn sm primary" onclick="validate('${l.id}')">${ico('check')}Valider</button></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function validate(id){ const r=document.getElementById('r-'+id); if(r){r.classList.add('fade-out'); setTimeout(()=>r.remove(),450);} ROLES.repartiteur.counts.demandes=Math.max(0,ROLES.repartiteur.counts.demandes-1); renderSide(); toast('Lead '+id+' attribué, le professionnel est notifié'); }
+
+function marketBars(){
+  const m=[['Serruriers',92,100],['IAP',104,100],['Fenêtriers',71,100],['Grands comptes',83,100]];
+  return `<div style="display:flex;flex-direction:column;gap:16px">${m.map(([n,v])=>`<div><div class="row" style="justify-content:space-between;margin-bottom:6px"><span style="font-weight:600">${n}</span><span class="small ${v>=100?'up':v<80?'down':'muted'}" style="font-weight:600">${v} %</span></div><div class="bar" style="position:relative"><i style="width:${Math.min(v,100)}%;${v<80?'background:var(--danger)':''}"></i></div></div>`).join('')}</div>`;
+}
+
+V.demandes = () => {
+  if(state.role==='iap') return iapLeads();
+  if(state.role==='atc') return iapLeads(true);
+  const stats = state.role==='direction';
+  return `
+  ${head('Leads', stats?'Leads du réseau':'File de validation', stats?'612 demandes en novembre · toutes sources':'Pré-attribution automatique : Elite → Premium → Officiel → autres clients → ATC',`<button class="btn">${ico('download')}Exporter</button>${stats?'':`<button class="btn primary" onclick="toast('3 demandes validées en lot')">${ico('check')}Valider la sélection</button>`}`)}
+  <div class="grid g4" style="margin-bottom:16px">${kpi('Taux de transformation','31 %','+2 pts',true,'check')}${kpi('Délai moyen de prise en charge','2 h 14','−18 min',true,'clock')}${kpi('Coût par demande signée','42 €','−6 €',true,'target')}${kpi('Statut renseigné','88 %','Objectif 95 %',false,'file')}</div>
+  <div class="grid g-main">
+    <div class="card"><div class="card-h"><h2>${stats?'Dernières demandes':'À valider'}</h2><div class="chips" style="margin-left:auto"><span class="chip on">Toutes</span><span class="chip">Sans pro proche</span><span class="chip hide-m">Gros projets</span></div></div>${leadTable()}</div>
+    <div class="card" style="display:flex;flex-direction:column"><div class="card-h"><h2>Carte des demandes</h2><span class="small muted" style="margin-left:auto">Grand Ouest</span></div>
+      <div class="map">${mapSvg()}</div>
+      <div class="row small" style="gap:10px;margin-top:12px;flex-wrap:wrap"><span class="pill p-elite">Elite</span><span class="pill p-premium">Premium</span><span class="pill p-officiel">Officiel</span><span class="pill p-autre">Autre</span><span class="pill p-atc">ATC</span><span class="pill p-cta">● Demande</span></div>
+    </div>
+  </div>
+  ${stats?`<div class="card" style="margin-top:16px"><div class="card-h"><h2>Entonnoir de transformation · novembre</h2></div>${funnel()}</div>`:''}`;
+};
+function mapSvg(){
+  const pros=[[112,172,'var(--elite)'],[104,134,'var(--premium)'],[66,152,'var(--officiel)'],[176,142,'var(--muted)'],[140,120,'var(--elite)'],[200,190,'var(--officiel)']];
+  return `<svg viewBox="0 0 260 260" preserveAspectRatio="xMidYMid slice">
+    <path d="M20 120 C40 90 80 95 95 80 C110 60 150 70 170 60 C200 55 230 80 240 110 C250 150 235 200 210 225 C180 250 130 245 100 230 C70 220 40 200 35 170 C30 150 10 140 20 120Z" fill="var(--map-land)" stroke="var(--line)" stroke-width="1.5"/>
+    ${pros.map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="18" fill="${c}" opacity=".08"/><circle cx="${x}" cy="${y}" r="5" fill="${c}"/>`).join('')}
+    ${LEADS.map(l=>`<g><circle cx="${l.x}" cy="${l.y}" r="9" fill="var(--cta)" opacity=".3"><animate attributeName="r" values="5;12;5" dur="2.4s" repeatCount="indefinite"/></circle><circle cx="${l.x}" cy="${l.y}" r="4" fill="var(--cta)" stroke="var(--surface)" stroke-width="1.5"/></g>`).join('')}
+  </svg>`;
+}
+function funnel(){
+  const f=[['Reçues',612],['Acceptées',571],['Contactées',540],['Devis envoyés',366],['Signées',190]];
+  return `<div style="display:flex;flex-direction:column;gap:10px">${f.map(([n,v],i)=>`<div class="row"><span style="width:120px" class="small">${n}</span><div style="flex:1"><div style="height:28px;border-radius:8px;background:var(--accent);opacity:${1-i*0.15};width:${v/612*100}%;display:flex;align-items:center;padding-left:10px;color:#fff;font-weight:700;font-size:12px">${v}</div></div><span class="small muted" style="width:48px;text-align:right">${Math.round(v/612*100)} %</span></div>`).join('')}</div>`;
+}
+function iapLeads(atc=false){
+  const items=[
+    {who:'Mme Bernard',where:'Nantes · 3,2 km',what:'Porte blindée palière · A2P BP2',src:'Ma Porte',left:'5 h 42',cfg:true},
+    {who:'M. Caradec',where:'Rezé · 6 km',what:'Blindage de porte existante',src:'Site web',left:'21 h 10',cfg:false},
+  ];
+  const pipe=[['Acceptées',3],['Contactées',5],['Devis envoyé',4],['Signées',2]];
+  return `${head('Leads', atc?'Leads de mes clients':'Mes leads', atc?'Suivez la réactivité de votre portefeuille : un excellent sujet de visite.':'Acceptez vite : votre réactivité compte dans l’attribution des prochaines demandes.')}
+  <div class="grid g2">${items.map((it,i)=>`<div class="card" id="lead${i}"><div class="row"><span class="pill p-warn">${ico('clock')}À accepter sous <span class="timer">${it.left}</span></span><span class="small muted" style="margin-left:auto">via ${it.src}</span></div>
+    <div style="font-size:18px;font-weight:700;margin-top:12px">${it.what}</div><div class="muted">${it.who} · ${it.where}</div>
+    ${it.cfg?`<div class="rule" style="background:var(--accent-soft);color:var(--accent-strong)">${ico('door')}<div><b>Le particulier a déjà configuré sa porte dans Ma Porte</b> : modèle Altitude, chêne clair, 93 × 215 cm. Le configurateur s’ouvrira pré-rempli.</div></div>`:''}
+    <div class="row" style="margin-top:14px">${atc?`<span class="small muted">Attribuée à Serrurerie Lambert · Elite</span><button class="btn sm" style="margin-left:auto" onclick="toast('Rappel envoyé au client')">Relancer</button>`:`<button class="btn" onclick="toast('Demande refusée, motif enregistré')">${ico('x')}Refuser</button><button class="btn primary" style="margin-left:auto" onclick="acceptLead(${i})">${ico('check')}Accepter · +20 pts</button>`}</div></div>`).join('')}</div>
+  <div class="card" style="margin-top:16px"><div class="card-h"><h2>Suivi de mes demandes en cours</h2><span class="small muted" style="margin-left:auto">Chaque statut renseigné rapporte des points</span></div>
+    <div class="grid g4">${pipe.map(([n,v])=>`<div style="background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px"><div class="small muted">${n}</div><div style="font-size:24px;font-weight:700">${v}</div></div>`).join('')}</div></div>`;
+}
+function acceptLead(i){ const c=document.getElementById('lead'+i); c.style.transition='.3s'; c.style.borderColor='var(--ok)'; c.querySelector('.row:last-child').innerHTML=`<span class="pill p-ok">${ico('check')}Acceptée · coordonnées débloquées</span><button class="btn sm primary" style="margin-left:auto" onclick="go('configurateur')">${ico('ruler')}Configurer</button>`; state.points+=20; toast('+20 points · Mme Bernard est prévenue que vous la contactez'); }
+
+V.terrain = () => `
+  ${head('CRM','Tournée du jour','Nantes → Rennes → Le Mans · 312 km',`<button class="btn">${ico('plus')}Nouvelle action</button><button class="btn primary" onclick="toast('Enregistrement… dictez votre compte rendu')">${ico('mic')}Compte rendu vocal</button>`)}
+  <div class="grid g-main">
+    <div class="card">
+      <div class="row" style="align-items:flex-start"><div class="ava" style="width:52px;height:52px;font-size:16px;background:var(--accent-soft);color:var(--accent-strong)">SL</div><div style="flex:1"><div style="font-size:20px;font-weight:700">Serrurerie Lambert</div><div class="muted">Nantes (44) · Marc Lambert, gérant · client depuis 2014</div><div class="row" style="gap:6px;margin-top:6px"><span class="pill p-elite">${ico('star')}IAP Elite</span><span class="pill p-ok">Actif</span><span class="pill p-info">Serruriers</span></div></div><button class="btn sm">${ico('phone')}Appeler</button></div>
+      <div class="grid g4" style="margin-top:18px">${[['CA 2026','148 k€','+12 %'],['Objectif','160 k€','92 %'],['Demandes reçues','64','38 % signées'],['Points','4 820','Boutique : 2 commandes']].map(([a,b,c])=>`<div style="background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px"><div class="small muted">${a}</div><div style="font-size:19px;font-weight:700">${b}</div><div class="small muted">${c}</div></div>`).join('')}</div>
+      <h2 style="margin:20px 0 10px">Historique</h2>
+      <div class="list">${[['Visite','12 oct.','Présentation gamme Altitude. Intéressé par un présentoir showroom.','map'],['Lead','8 oct.','Porte blindée signée, 4 200 € HT (source : Ma Porte)','inbox'],['Commande boutique','2 oct.','5 polos brodés, payés en points','bag'],['Formation','18 sept.','Pose bloc-porte A2P BP3, 2 techniciens certifiés','cap']].map(([t,d,x,i])=>`<div class="row" style="align-items:flex-start"><span class="ava">${ico(i)}</span><div style="flex:1"><div style="font-weight:600">${t} <span class="small muted">· ${d}</span></div><div class="small muted">${x}</div></div></div>`).join('')}</div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="card"><div class="card-h"><h2>Plan d’action</h2></div><div class="list">
+        ${[['Installer un présentoir showroom',true],['Former le 3e technicien en A2P BP3',false],['Lancer l’opération Mois de la sécurité',false]].map(([t,d],i)=>`<label class="row" style="cursor:pointer"><input type="checkbox" ${d?'checked':''} style="accent-color:var(--accent);width:16px;height:16px" onchange="toast(this.checked?'Action terminée':'Action rouverte')"><span style="${d?'text-decoration:line-through;color:var(--muted)':''}">${t}</span></label>`).join('')}
+      </div></div>
+      <div class="card"><div class="card-h"><h2>Tournée</h2></div><div class="list">
+        ${[['9:30','Serrurerie Lambert','Nantes',true],['14:00','Atelier Keraudren','Rennes',false],['16:30','Fermetures Sarthe','Le Mans',false]].map(([h,n,c,on])=>`<div class="row"><span class="pill ${on?'p-elite':'p-autre'}">${h}</span><div><div style="font-weight:600">${n}</div><div class="small muted">${c}</div></div></div>`).join('')}
+      </div></div>
+      <div class="card" style="background:var(--warn-soft);border-color:transparent"><div style="font-weight:600;color:var(--warn-ink)">${ico('alert')} À aborder pendant la visite</div><div class="small" style="color:var(--warn-ink);margin-top:6px">1 demande n’a pas été acceptée depuis 20 h. La notice Altitude v3 n’a pas encore été consultée.</div></div>
+    </div>
+  </div>`;
+
+V.pilotage = () => `
+  ${head('Pilotage','Vue d’ensemble','Novembre 2026 · tous marchés',`<div class="chips"><span class="chip">Semaine</span><span class="chip on">Mois</span><span class="chip">Année</span></div>`)}
+  <div class="grid g4">${kpi('CA cumulé','4,82 M€','87 % de l’objectif',true,'target')}${kpi('Visites réalisées','412','Objectif 480',false,'map')}${kpi('Nouveaux IAP','11','+3 vs N-1',true,'star')}${kpi('Clients actifs sur l’Espace Pro','74 %','+9 pts',true,'users')}</div>
+  <div class="grid g-main" style="margin-top:16px">
+    <div class="card"><div class="card-h"><h2>CA mensuel vs objectif</h2><span class="small muted" style="margin-left:auto">k€</span></div>${lineChart()}</div>
+    <div class="card"><div class="card-h"><h2>Par marché</h2></div>${marketBars()}</div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-h"><h2>Équipe commerciale</h2><span class="link">Tout voir</span></div>
+    <div style="overflow:auto"><table><thead><tr><th>ATC</th><th>Marché</th><th>Objectif</th><th class="hide-m">Visites</th><th class="hide-m">Couverture</th><th>Tendance</th></tr></thead><tbody>
+    ${[['Julien M.','Serruriers · Ouest',82,'46 / 60',88,'up'],['Sophie T.','IAP · Île-de-France',104,'58 / 60',95,'up'],['Karim B.','Fenêtriers · Sud',68,'31 / 60',61,'down'],['Laura P.','Grands comptes',79,'22 / 30',80,'up']].map(([n,m,o,v,c,t])=>`<tr class="row-h"><td style="font-weight:600">${n}</td><td class="small muted">${m}</td><td style="min-width:140px"><div class="row" style="gap:8px"><div class="bar" style="flex:1"><i style="width:${Math.min(o,100)}%;${o<75?'background:var(--danger)':''}"></i></div><b class="small">${o} %</b></div></td><td class="hide-m">${v}</td><td class="hide-m">${c} %</td><td><span class="pill ${t==='up'?'p-ok':'p-danger'}">${t==='up'?'▲':'▼'}</span></td></tr>`).join('')}
+    </tbody></table></div></div>`;
+function lineChart(){
+  const real=[310,340,402,380,455,470,390,350,480,505,520], obj=[350,360,400,410,440,460,420,380,470,500,520,540];
+  const W=560,H=200,mx=W/11,sc=v=>H-20-(v-250)/350*(H-40);
+  const p=a=>a.map((v,i)=>`${i?'L':'M'}${i*mx+10} ${sc(v)}`).join(' ');
+  const mois='JFMAMJJASOND';
+  return `<svg viewBox="0 0 ${W+40} ${H+20}" style="width:100%;height:auto">
+    ${[300,400,500].map(v=>`<line x1="10" x2="${W+10}" y1="${sc(v)}" y2="${sc(v)}" stroke="var(--line)"/><text x="${W+12}" y="${sc(v)+4}" font-size="10" fill="var(--muted)">${v}</text>`).join('')}
+    <path d="${p(real)} L${10*mx+10} ${H-20} L10 ${H-20}Z" fill="var(--accent)" opacity=".12"/>
+    <path d="${p(obj)}" fill="none" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1.5"/>
+    <path d="${p(real)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+    ${real.map((v,i)=>`<circle cx="${i*mx+10}" cy="${sc(v)}" r="3" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>`).join('')}
+    ${[...mois].map((m,i)=>`<text x="${i*mx+10}" y="${H+8}" text-anchor="middle" font-size="10" fill="var(--muted)">${m}</text>`).join('')}
+  </svg><div class="row small muted" style="gap:16px;margin-top:6px"><span><b style="color:var(--accent)">━</b> Réalisé</span><span>┄ Objectif</span></div>`;
+}
+
+/* ───────── Configurateur technique ───────── */
+const STEPS=['Projet','Pose','Dimensions','Ouverture','Sécurité','Finitions','Options','Récapitulatif'];
+V.configurateur = () => {
+  const c=state.cfg;
+  const price = 2480 + (c.secu==='A2P BP3'?640:c.secu==='A2P BP2'?320:0) + (c.h>2200?180:0) + (c.pose==='Neuf'?260:0);
+  return `
+  ${head('Configurateur','Porte blindée · Altitude', `Projet D-2481 · Mme Bernard, Nantes · pré-rempli depuis Ma Porte`,`<button class="btn" onclick="toast('Configuration enregistrée')">Enregistrer</button><button class="btn primary" onclick="toast('Devis PDF généré à votre en-tête')">${ico('file')}Générer le devis</button>`)}
+  <div class="grid cfg-grid" style="grid-template-columns:210px minmax(0,1fr) 300px">
+    <div class="card" style="padding:10px"><div class="steps">${STEPS.map((s,i)=>`<div class="step ${i<c.step?'done':''} ${i===c.step?'on':''}" onclick="state.cfg.step=${i};render()"><span class="n">${i<c.step?'✓':i+1}</span>${s}</div>`).join('')}</div></div>
+    <div class="card">
+      <div class="grid g2" style="gap:18px">
+        <div>
+          <h2 style="margin-bottom:12px">Pose & dimensions</h2>
+          <div class="field"><label>Type de pose</label><div class="opt-grid">${[['Rénovation','Sur bâti existant'],['Neuf','Construction neuve'],['Applique','Côté intérieur'],['Feuillure','Dans la maçonnerie']].map(([o,s])=>`<button class="opt ${c.pose===o?'on':''}" onclick="setCfg('pose','${o}')">${o}<small>${s}</small></button>`).join('')}</div></div>
+          <div class="grid g2" style="gap:10px"><div class="field"><label>Largeur tableau (mm)</label><input class="inp" type="number" value="${c.w}" step="10" oninput="setCfg('w',+this.value,true)"></div><div class="field"><label>Hauteur tableau (mm)</label><input class="inp" type="number" value="${c.h}" step="10" oninput="setCfg('h',+this.value,true)"></div></div>
+          <div class="field"><label>Sens d’ouverture</label><div class="opt-grid">${[['D','Droite'],['G','Gauche']].map(([k,l])=>`<button class="opt ${c.side===k?'on':''}" onclick="setCfg('side','${k}')">${c.sens} ${l.toLowerCase()}</button>`).join('')}</div></div>
+          <div class="field"><label>Niveau de sécurité</label><select class="inp" onchange="setCfg('secu',this.value)">${['A2P BP1','A2P BP2','A2P BP3'].map(s=>`<option ${c.secu===s?'selected':''}>${s}</option>`).join('')}</select></div>
+          ${c.secu==='A2P BP3' && c.pose==='Rénovation' ? `<div class="rule">${ico('alert')}<div><b>Règle bureau d’études</b> : en rénovation, le niveau BP3 impose un renfort de bâti (+ 210 € HT). <a style="color:inherit;font-weight:700;cursor:pointer" onclick="toast('Renfort de bâti ajouté')">Ajouter</a> ou <a style="color:inherit;font-weight:700;cursor:pointer" onclick="setCfg('secu','A2P BP2')">revenir en BP2</a>.</div></div>`:''}
+          ${c.w>1000 ? `<div class="rule" style="background:var(--danger-soft);color:var(--danger)">${ico('x')}<div><b>Hors gamme</b> : la largeur maximale de la gamme Altitude est de 1 000 mm. Alternative : gamme Horizon, jusqu’à 1 200 mm.</div></div>`:''}
+        </div>
+        <div class="door-stage" id="door">${doorSvg()}</div>
+      </div>
+    </div>
+    <div class="card" style="align-self:start;position:sticky;top:84px">
+      <h2 style="margin-bottom:12px">Récapitulatif</h2>
+      ${[['Modèle','Altitude'],['Pose',c.pose],['Dimensions',`${c.w} × ${c.h} mm`],['Ouverture',`${c.sens} ${c.side==='D'?'droite':'gauche'}`],['Sécurité',c.secu],['Finition','Chêne clair · 2 faces'],['Délai estimé','5 semaines']].map(([a,b])=>`<div class="sum-line"><span class="muted">${a}</span><b>${b}</b></div>`).join('')}
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)"><div class="small muted">Votre prix d’achat HT</div><div class="total">${price.toLocaleString('fr-FR')} €</div><div class="small muted">Remise IAP Elite appliquée</div></div>
+      <div class="field" style="margin-top:12px"><label>Votre prix de vente HT (pose incluse)</label><input class="inp" value="${(price*1.55+650).toFixed(0)} €"></div>
+      <div class="grid" style="gap:8px"><button class="btn primary" style="justify-content:center" onclick="toast('Devis PDF généré à votre en-tête')">${ico('file')}Devis client</button><button class="btn" style="justify-content:center" onclick="toast('Commande transmise à l’ADV · +80 pts')">${ico('truck')}Commander</button><button class="btn" style="justify-content:center" onclick="toast('Fiche technique et plan coté téléchargés')">${ico('download')}Fiche technique + plan</button></div>
+    </div>
+  </div>`;
+};
+function setCfg(k,v,soft){ state.cfg[k]=v; if(soft){ const d=document.getElementById('door'); if(d) d.innerHTML=doorSvg(); clearTimeout(setCfg._t); setCfg._t=setTimeout(()=>{const a=document.activeElement, sel=a&&a.selectionStart; render(); },700); } else render(); }
+function doorSvg(){
+  const c=state.cfg, maxH=330, s=maxH/Math.max(c.h,1800), W=Math.max(400,Math.min(c.w,1300))*s, H=Math.max(1800,Math.min(c.h,2600))*s;
+  const x0=60, y0=30, f=10;
+  const hx = c.side==='D' ? x0+f+14 : x0+W-f-14;
+  const hingeX = c.side==='D' ? x0+W-f : x0+f;
+  return `<svg viewBox="0 0 ${W+120} ${H+90}" style="width:100%;max-height:420px">
+    <rect x="${x0}" y="${y0}" width="${W}" height="${H}" fill="var(--frame)" rx="2"/>
+    <rect x="${x0+f}" y="${y0+f}" width="${W-2*f}" height="${H-f}" fill="url(#wood)" stroke="#00000033"/>
+    <defs><linearGradient id="wood" x1="0" x2="1"><stop offset="0" stop-color="#d9bf94"/><stop offset=".5" stop-color="#e6d0aa"/><stop offset="1" stop-color="#d4b789"/></linearGradient></defs>
+    ${[0,1,2].map(i=>`<line x1="${x0+f+18}" x2="${x0+W-f-18}" y1="${y0+f+30+i*(H-80)/3}" y2="${y0+f+30+i*(H-80)/3}" stroke="#00000014"/>`).join('')}
+    <rect x="${hx-3}" y="${y0+H*0.48}" width="6" height="34" rx="3" fill="#2a2a2a"/>
+    <circle cx="${hx}" cy="${y0+H*0.48+46}" r="4" fill="#2a2a2a"/>
+    ${[0.12,0.5,0.85].map(p=>`<rect x="${hingeX-3}" y="${y0+H*p}" width="6" height="20" fill="#6b6b6b"/>`).join('')}
+    <circle cx="${x0+W/2}" cy="${y0+H*0.3}" r="4" fill="none" stroke="#00000055"/>
+    <!-- cotes -->
+    <g stroke="var(--accent-strong)" fill="var(--accent-strong)" font-size="12" font-weight="700" font-family="Inter">
+      <line x1="${x0}" x2="${x0+W}" y1="${y0+H+28}" y2="${y0+H+28}"/><line x1="${x0}" x2="${x0}" y1="${y0+H+20}" y2="${y0+H+36}"/><line x1="${x0+W}" x2="${x0+W}" y1="${y0+H+20}" y2="${y0+H+36}"/>
+      <text x="${x0+W/2}" y="${y0+H+52}" text-anchor="middle" stroke="none">${c.w} mm</text>
+      <line x1="${x0-26}" x2="${x0-26}" y1="${y0}" y2="${y0+H}"/><line x1="${x0-34}" x2="${x0-18}" y1="${y0}" y2="${y0}"/><line x1="${x0-34}" x2="${x0-18}" y1="${y0+H}" y2="${y0+H}"/>
+      <text x="${x0-34}" y="${y0+H/2}" text-anchor="middle" stroke="none" transform="rotate(-90 ${x0-34} ${y0+H/2})">${c.h} mm</text>
+    </g>
+    <path d="M${hingeX} ${y0+H} A ${W-2*f} ${W-2*f} 0 0 ${c.side==='D'?0:1} ${c.side==='D'?hingeX-(W-2*f)*.7:hingeX+(W-2*f)*.7} ${y0+H-(W-2*f)*.7}" fill="none" stroke="var(--muted)" stroke-dasharray="3 4"/>
+  </svg>`;
+}
+
+/* ───────── Médiathèque ───────── */
+const MEDIA=[['Fiche technique Altitude v3','Doc technique','file','t3','PDF · 2,4 Mo','Mis à jour'],['Visuels ambiance Altitude','Photos','image','t1','24 photos HD',''],['Vidéo pose bloc-porte BP3','Vidéos','video','t4','MP4 · 6 min',''],['Argumentaire Mois de la sécurité','Doc commerciale','file','t2','PDF · 8 pages','Nouveau'],['Catalogue 2027','Doc commerciale','file','t5','PDF · 64 pages','Nouveau'],['PV de certification A2P','Doc technique','file','t3','PDF · 1 Mo',''],['Photos produits détourées','Photos','image','t5','120 fichiers PNG',''],['Tuto prise de cotes','Vidéos','video','t1','MP4 · 3 min','']];
+V.mediatheque = () => {
+  const f=state.mediaFilter, list=MEDIA.filter(m=>f==='Tout'||m[1]===f);
+  return `${head('Médiathèque','Toutes vos ressources','Toujours à jour : vous êtes prévenu quand un document que vous utilisez change.',`<button class="btn primary">${ico('download')}Kit de lancement Altitude</button>`)}
+  <div class="row" style="margin-bottom:18px;flex-wrap:wrap"><div class="chips">${['Tout','Photos','Vidéos','Doc commerciale','Doc technique'].map(c=>`<span class="chip ${f===c?'on':''}" onclick="state.mediaFilter='${c}';render()">${c}</span>`).join('')}</div><div class="chips" style="margin-left:auto"><span class="chip">Gamme : toutes ▾</span><span class="chip">Marque : ${state.brand==='picard'?'Picard':'Eliot'} ▾</span></div></div>
+  <div class="grid g4">${list.map(([t,c,i,th,meta,b])=>`<div class="card hover-lift" style="padding:12px"><div class="thumb ${th}">${ico(i)}${b?`<span class="badge pill ${b==='Nouveau'?'p-cta':'p-info'}">${b}</span>`:''}</div><div style="font-weight:600">${t}</div><div class="row small muted" style="margin-top:4px">${c} · ${meta}<button class="icon-btn" style="width:30px;height:30px;margin-left:auto" onclick="event.stopPropagation();toast('Téléchargement lancé')">${ico('download')}</button></div></div>`).join('')}</div>`;
+};
+
+/* ───────── Communication locale ───────── */
+V.communication = () => `
+  ${head('Marketing','Faites-vous connaître localement','Tous les supports sont personnalisés automatiquement avec votre logo et vos coordonnées.')}
+  <div class="hero" style="margin-bottom:16px"><div class="eyebrow" style="color:var(--accent-light)">Opération nationale · du 1er au 31 mars</div><h1 style="font-size:24px">Mois de la sécurité</h1><div class="sub" style="max-width:560px;margin-top:6px">Flyers, affiche vitrine, 8 posts réseaux sociaux et campagne Facebook locale co-financée à 50 % pour les IAP Elite.</div><button class="btn primary" style="margin-top:16px;position:relative;z-index:1" onclick="toast('Inscription confirmée · vos supports sont prêts')">${ico('check')}Je participe</button></div>
+  <div class="grid g-main">
+    <div class="grid g3" style="align-content:start">
+      ${[['Flyer A5','Print · dès 250 ex.','file','t2'],['Carte de visite','Print · 500 ex.','file','t5'],['Marquage véhicule','Print · sur devis','truck','t1'],['Posts réseaux sociaux','Kit mensuel · 8 posts','image','t3'],['Fiche Google Business','Optimisation + avis','google','t4'],['Campagne Facebook locale','Digital · co-financée','megaphone','t2']].map(([t,s,i,th])=>`<div class="card hover-lift" style="padding:12px" onclick="toast('Ouverture de l’éditeur : ${t}')"><div class="thumb ${th}" style="height:100px">${ico(i)}</div><div style="font-weight:600">${t}</div><div class="small muted">${s}</div></div>`).join('')}
+    </div>
+    <div class="card"><div class="card-h"><h2>Aperçu personnalisé</h2></div>
+      <div style="border-radius:12px;overflow:hidden;border:1px solid var(--line)">
+        <div style="background:var(--side-bg);color:#fff;padding:22px;transition:background .4s"><div class="eyebrow" style="color:var(--accent-light)">Votre porte mérite mieux</div><div style="font-family:var(--display);font-size:22px;line-height:1.2">Protégez votre logement avec une porte certifiée A2P</div></div>
+        <div style="padding:16px;background:var(--surface-2)"><div style="font-weight:700">Serrurerie Lambert</div><div class="small muted">12 rue de la Paix, Nantes · 02 40 00 00 00</div><div class="row small" style="margin-top:8px;gap:6px"><span class="pill p-elite">Installateur agréé Elite</span><span class="pill p-autre">★ 4,8 · 23 avis</span></div></div>
+      </div>
+      <div class="field" style="margin-top:14px"><label>Quantité</label><select class="inp"><option>500 ex. · 89 € ou 890 pts</option><option>1000 ex. · 129 € ou 1 290 pts</option></select></div>
+      <button class="btn primary" style="width:100%;justify-content:center" onclick="toast('BAT envoyé pour validation')">Valider le BAT</button>
+    </div>
+  </div>`;
+
+/* ───────── Boutique ───────── */
+const PRODUCTS=[['Veste softshell brodée',1900,95,'t1'],['Polo technicien',450,24,'t5'],['Casquette',300,15,'t2'],['Coffret outils de pose',3200,160,'t3'],['Mug isotherme',250,12,'t4'],['Présentoir showroom',6500,320,'t1'],['Sac à dos chantier',1200,60,'t5'],['Tablette de démonstration',9800,490,'t3']];
+V.boutique = () => {
+  const atc = state.role==='atc' || state.role==='direction';
+  const p = PRODUCTS[0], pts = Math.round(p[1]*state.shopPts/100), eur = (p[2]*(100-state.shopPts)/100).toFixed(2).replace('.',',');
+  return `${head('Boutique', atc?'Commander pour mes clients':'Faites-vous plaisir', atc?'Enveloppe 2026 restante : 2 340 € · les commandes au-delà de 300 € sont validées par votre chef marché':'Payez en points, par carte, ou un mélange des deux.')}
+  ${atc?'':`<div class="card" style="display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap"><div class="ava" style="width:52px;height:52px;background:var(--cta-soft);color:var(--cta-strong);border-color:transparent">${ico('star')}</div><div><div class="small muted">Mon solde</div><div style="font-size:26px;font-weight:700">${state.points.toLocaleString('fr-FR')} points</div></div><div style="flex:1;min-width:220px"><div class="row small" style="justify-content:space-between;margin-bottom:6px"><span class="muted">Comment gagner des points</span></div><div class="chips"><span class="pill p-autre">Demande acceptée +20</span><span class="pill p-autre">Statut renseigné +10</span><span class="pill p-autre">Commande +1 pt / 10 €</span><span class="pill p-autre">Formation +200</span></div></div></div>`}
+  <div class="grid g-main">
+    <div class="grid g3" style="align-content:start">${PRODUCTS.map(([n,pt,e,th])=>`<div class="card hover-lift" style="padding:12px"><div class="thumb ${th}" style="height:110px">${ico('gift')}${!atc&&pt<=state.points?'<span class="badge pill p-ok">Accessible</span>':''}</div><div style="font-weight:600">${n}</div><div class="small muted">${atc?e+' € sur enveloppe':pt.toLocaleString('fr-FR')+' pts ou '+e+' €'}</div></div>`).join('')}</div>
+    <div class="card" style="align-self:start;position:sticky;top:84px"><div class="thumb t1" style="height:150px">${ico('gift')}</div><div style="font-weight:700;font-size:16px">${p[0]}</div><div class="small muted">Brodée avec votre logo · tailles S à XXL</div>
+      ${atc?`<div class="field" style="margin-top:14px"><label>Pour le client</label><select class="inp"><option>Serrurerie Lambert</option><option>Atelier Keraudren</option></select></div><button class="btn primary" style="width:100%;justify-content:center" onclick="toast('Commande envoyée · sur votre enveloppe')">Commander · ${p[2]} €</button>`:`
+      <div class="field" style="margin-top:16px"><label>Répartition points / carte bancaire</label><input class="range" type="range" min="0" max="100" step="5" value="${state.shopPts}" oninput="state.shopPts=+this.value;render()"></div>
+      <div class="row" style="justify-content:space-between"><div><div class="small muted">Points</div><b>${pts.toLocaleString('fr-FR')} pts</b></div><div style="text-align:right"><div class="small muted">Carte bancaire</div><b>${eur} €</b></div></div>
+      <button class="btn primary" style="width:100%;justify-content:center;margin-top:14px" onclick="toast('Commande confirmée · livraison sous 5 jours')">Commander</button>`}
+    </div>
+  </div>`;
+};
+
+/* ───────── Palette ⌘K ───────── */
+const PAL=[['Serrurerie Lambert','Client · IAP Elite','users','terrain'],['D-2481 · Mme Bernard','Lead · Nantes','inbox','demandes'],['Fiche technique Altitude v3','Médiathèque','file','mediatheque'],['Configurer une porte blindée','Action','ruler','configurateur'],['Mois de la sécurité','Marketing','megaphone','communication'],['Veste softshell brodée','Boutique','gift','boutique'],['Objectifs par marché','Pilotage','chart','pilotage']];
+function openPalette(){ $('#overlay').classList.add('open'); const i=$('#palInput'); i.value=''; renderPal(''); setTimeout(()=>i.focus(),30); }
+function closePalette(){ $('#overlay').classList.remove('open'); }
+function renderPal(q){ const allowed=ROLES[state.role].nav; const items=PAL.filter(p=>allowed.includes(p[3])&&(p[0]+p[1]).toLowerCase().includes(q.toLowerCase())); $('#palList').innerHTML = items.length? items.map((p,i)=>`<div class="pal-item ${i===0?'on':''}" onclick="closePalette();go('${p[3]}')">${ico(p[2])}<div><div style="font-weight:600">${p[0]}</div><div class="small muted">${p[1]}</div></div><span class="k">↵</span></div>`).join('') : `<div class="empty-note">Aucun résultat pour « ${q} »</div>`; }
+$('#palInput').addEventListener('input',e=>renderPal(e.target.value));
+document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPalette();} if(e.key==='Escape')closePalette(); if(e.key==='Enter'&&$('#overlay').classList.contains('open')){const f=$('.pal-item');f&&f.click();} });
+
+/* ───────── Contrôles ───────── */
+document.querySelectorAll('#brandSeg button').forEach(b=>b.onclick=()=>{ state.brand=b.dataset.b; document.documentElement.dataset.brand=state.brand; document.querySelectorAll('#brandSeg button').forEach(x=>x.classList.toggle('on',x===b)); render(); toast('Habillage '+(state.brand==='picard'?'Picard':'Eliot')); });
+$('#roleSel').onchange = e => { state.role=e.target.value; state.view='home'; render(); };
+
+function setTheme(t){ document.documentElement.dataset.theme=t; $('#themeBtn').innerHTML=ico(t==='dark'?'sun':'moon'); try{localStorage.setItem('ep-theme',t)}catch(e){} }
+(function(){ let t=null; try{t=localStorage.getItem('ep-theme')}catch(e){} if(!t) t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'; setTheme(t); })();
+$('#themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+function render(){ $('#roleSel').value=state.role; renderSide(); const v=ROLES[state.role].nav.includes(state.view)?state.view:'home'; state.view=v; $('#view').innerHTML=V[v](); $('#view').style.animation='none'; $('#view').offsetHeight; $('#view').style.animation=''; }
+render();
+</script>
+</body>
+</html>

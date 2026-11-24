@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace Pro — Présentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#f7f2e8; --cream-2:#fbf7ef; --line:#e7dfd0; --ink:#0f1f33; --ink-2:#2c3d55; --muted:#6c7a8c;
+  --navy:#0c2340; --blue-1:#1d4f86; --blue-2:#2f6fb2; --blue-3:#6fa3d8; --blue-4:#cfe0f2; --blue-5:#e8f0f9;
+  --cta:#e8692f; --cta-soft:#fde9de;
+  --display:'Fraunces',Georgia,serif; --font:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#1b2433;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+.stage{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden}
+.slide{width:1600px;height:900px;background:var(--cream);position:absolute;padding:80px 96px;display:none;overflow:hidden;transform-origin:center}
+.slide.on{display:block;animation:in .45s cubic-bezier(.16,1,.3,1)}
+@keyframes in{from{opacity:0;transform:var(--s) translateY(14px)}to{opacity:1;transform:var(--s)}}
+.eyebrow{font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue-2);font-weight:700}
+h1{font-family:var(--display);font-weight:600;font-size:76px;line-height:1.02;letter-spacing:-.02em;color:var(--navy)}
+h2{font-family:var(--display);font-weight:600;font-size:54px;line-height:1.06;letter-spacing:-.015em;color:var(--navy)}
+h3{font-size:22px;font-weight:700;color:var(--navy)}
+p,li{font-size:20px;line-height:1.5;color:var(--ink-2)}
+.foot{position:absolute;left:96px;right:96px;bottom:40px;display:flex;justify-content:space-between;font-size:14px;color:var(--muted)}
+.foot b{color:var(--navy)}
+.logo{display:flex;align-items:center;gap:12px}
+.mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue-2),var(--blue-1));color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:19px}
+svg.i{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.card{background:#fffdf9;border:1px solid var(--line);border-radius:20px;padding:26px}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;padding:7px 14px;border-radius:30px;background:var(--blue-5);color:var(--blue-1)}
+.pill.cta{background:var(--cta-soft);color:#c9541f}
+.pill.dark{background:var(--navy);color:#fff}
+
+/* Slide 1 */
+.s1{background:linear-gradient(90deg,var(--cream) 0 57%,var(--navy) 57%)}
+.s1 .left{width:740px}
+.s1 .right{position:absolute;right:80px;top:80px;bottom:110px;width:560px;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.before{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.before span{font-size:16px;padding:8px 14px;border-radius:30px;border:1px dashed #c9bfae;color:var(--muted);text-decoration:line-through;text-decoration-color:#c9541f88}
+.promise{display:flex;gap:18px;align-items:flex-start;background:#ffffff0d;border:1px solid #ffffff1f;border-radius:18px;padding:22px 24px;color:#e8eef6}
+.promise .ic{width:52px;height:52px;border-radius:14px;background:var(--blue-2);display:grid;place-items:center;color:#fff;flex:none}
+.promise h3{color:#fff;font-size:23px}
+.promise p{color:#a9bdd6;font-size:17px;margin-top:4px}
+.nums{display:flex;gap:42px;margin-top:46px}
+.nums div b{display:block;font-family:var(--display);font-size:52px;color:var(--blue-2);line-height:1}
+.nums div span{font-size:15px;color:var(--muted)}
+
+/* Slide 2 */
+.loop-wrap{display:grid;grid-template-columns:600px 1fr;gap:40px;margin-top:30px;align-items:center}
+.loop svg{width:100%;height:auto}
+.legend{display:flex;flex-direction:column;gap:14px}
+.leg{display:flex;gap:16px;align-items:flex-start}
+.leg .n{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px;flex:none;margin-top:2px}
+.leg h3{font-size:20px}
+.leg p{font-size:17px;margin-top:1px}
+.leg.cta .n{background:var(--cta)}
+
+/* Slide 3 */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:36px}
+.who{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line)}
+.who:first-of-type{border-top:0}
+.who .r{width:250px;font-weight:700;font-size:18px;color:var(--navy)}
+.who .m{display:flex;flex-wrap:wrap;gap:8px}
+.who .m span{font-size:14px;font-weight:600;padding:5px 11px;border-radius:20px;background:var(--blue-5);color:var(--blue-1)}
+.col-h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.col-h .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.mods{display:grid;grid-template-columns:repeat(8,1fr);gap:12px;margin-top:26px}
+.mod{background:var(--navy);color:#fff;border-radius:16px;padding:16px 14px;display:flex;flex-direction:column;gap:10px}
+.mod svg{color:var(--blue-3)}
+.mod b{font-size:16px}
+.mod small{font-size:13px;color:#a9bdd6;line-height:1.35}
+
+/* Slide 4 */
+.timeline{position:relative;margin-top:44px}
+.tl-row{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.phase{background:#fffdf9;border:1px solid var(--line);border-radius:18px;padding:20px;position:relative}
+.phase .k{font-family:var(--display);font-size:38px;color:var(--blue-2);line-height:1}
+.phase h3{font-size:18px;margin-top:10px}
+.phase ul{list-style:none;margin-top:10px}
+.phase li{font-size:15px;line-height:1.4;padding:3px 0 3px 16px;position:relative}
+.phase li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--blue-3)}
+.phase.first{background:var(--navy);border-color:var(--navy)}
+.phase.first h3,.phase.first li{color:#fff}
+.phase.first .k{color:var(--blue-3)}
+.track{margin-top:14px;display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.track div{grid-column:2 / 6;background:repeating-linear-gradient(135deg,var(--blue-5) 0 14px,var(--blue-4) 14px 28px);border-radius:14px;padding:14px 20px;font-weight:600;color:var(--blue-1);font-size:16px;display:flex;align-items:center;gap:12px}
+.needs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+.need{display:flex;gap:14px;align-items:center;background:var(--cta-soft);border-radius:16px;padding:16px 18px;font-size:16px;font-weight:600;color:#7a3413}
+.need svg{color:var(--cta)}
+
+.nav{position:fixed;bottom:16px;right:16px;opacity:.55;transition:opacity .2s;display:flex;gap:8px;align-items:center;background:#0c2340cc;backdrop-filter:blur(8px);padding:8px 10px;border-radius:30px;z-index:5}
+.nav button{border:0;background:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px}
+.nav button:hover{background:#ffffff1a}
+.nav:hover{opacity:1}
+.dots{display:flex;gap:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#ffffff55;cursor:pointer}
+.dots i.on{background:var(--cta);width:22px;border-radius:8px}
+
+@media print{
+  @page{size:1600px 900px;margin:0}
+  html,body{background:none}
+  .stage{position:static;display:block}
+  .slide{display:block!important;position:relative;transform:none!important;animation:none!important;page-break-after:always;break-after:page}
+  .nav{display:none}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+<!-- ───────── 1. Vision ───────── -->
+<section class="slide s1">
+  <div class="left">
+    <div class="logo"><div class="mark">P</div><b style="font-size:18px;color:var(--navy)">Espace Pro</b><span style="color:var(--muted);font-size:15px">· Picard Serrures & Eliot</span></div>
+    <div class="eyebrow" style="margin-top:70px">Le concept</div>
+    <h1 style="margin-top:14px">Un seul espace<br>pour vendre, piloter<br>et fidéliser.</h1>
+    <p style="margin-top:24px;max-width:620px">Une plateforme unique pour les équipes Picard et tout le réseau de professionnels, avec deux habillages de marque.</p>
+    <div class="before"><span>Fichiers Excel</span><span>Leads par mail</span><span>Docs éparpillées</span><span>Commandes par téléphone</span><span>Pas de suivi des leads</span></div>
+    <div class="nums"><div><b>500+</b><span>demandes / mois</span></div><div><b>~50</b><span>utilisateurs internes</span></div><div><b>300–1 500</b><span>professionnels</span></div></div>
+  </div>
+  <div class="right">
+    <div class="promise"><div class="ic"><svg class="i"><use href="#inbox"/></svg></div><div><h3>Vendre plus</h3><p>Chaque demande de particulier arrive au bon professionnel, suivie jusqu’à la signature.</p></div></div>
+    <div class="promise"><div class="ic"><svg class="i"><use href="#chart"/></svg></div><div><h3>Piloter mieux</h3><p>Objectifs, visites et résultats en temps réel, du commercial jusqu’au CODIR.</p></div></div>
+    <div class="promise"><div class="ic" style="background:var(--cta)"><svg class="i"><use href="#star"/></svg></div><div><h3>Fidéliser le réseau</h3><p>Des outils utiles au quotidien, des points et des avantages qui donnent envie de revenir.</p></div></div>
+  </div>
+  <div class="foot" style="right:auto"><span><b>Espace Pro</b> · Note de cadrage · novembre 2026</span></div>
+</section>
+
+<!-- ───────── 2. La boucle ───────── -->
+<section class="slide">
+  <div class="eyebrow">Comment ça marche</div>
+  <h2 style="margin-top:12px">Une boucle vertueuse,<br>du particulier à la porte posée.</h2>
+  <div class="loop-wrap">
+    <div class="loop">
+      <svg viewBox="-130 0 740 520">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#6fa3d8"/></marker></defs>
+        <circle cx="260" cy="260" r="190" fill="none" stroke="#cfe0f2" stroke-width="2" stroke-dasharray="6 8"/>
+        <g id="arcs"></g>
+        <circle cx="260" cy="260" r="104" fill="#0c2340"/>
+        <text x="260" y="246" text-anchor="middle" font-family="Fraunces" font-size="30" font-weight="600" fill="#fff">Espace Pro</text>
+        <text x="260" y="278" text-anchor="middle" font-family="Inter" font-size="15" fill="#a9bdd6">données fiables</text>
+        <text x="260" y="298" text-anchor="middle" font-family="Inter" font-size="15" fill="#a9bdd6">de bout en bout</text>
+        <g id="nodes"></g>
+      </svg>
+    </div>
+    <div class="legend">
+      <div class="leg"><span class="n">1</span><div><h3>Ma Porte · le particulier rêve sa porte</h3><p>Le simulateur grand public transforme l’envie en demande qualifiée.</p></div></div>
+      <div class="leg"><span class="n">2</span><div><h3>Leads · le bon pro, au bon endroit</h3><p>Pré-attribution par zone : Elite → Premium → Officiel → autres → ATC. Validation par le répartiteur.</p></div></div>
+      <div class="leg"><span class="n">3</span><div><h3>Configurateur · la porte devient technique</h3><p>Le pro reprend les choix du client, prend les cotes, puis génère devis, plan et commande.</p></div></div>
+      <div class="leg"><span class="n">4</span><div><h3>Commande · production et suivi</h3><p>Transmission à l’ADV, puis à Navision. Chaque statut alimente les taux de transformation.</p></div></div>
+      <div class="leg cta"><span class="n">5</span><div><h3>Points · chaque action est récompensée</h3><p>Accepter, renseigner, commander, se former : on gagne des points.</p></div></div>
+      <div class="leg cta"><span class="n">6</span><div><h3>Boutique & Marketing</h3><p>Les points financent goodies et campagnes : plus de visibilité, donc plus de demandes.</p></div></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Espace Pro</b> · Le parcours</span><span>2 / 4</span></div>
+</section>
+
+<!-- ───────── 3. Un espace par profil ───────── -->
+<section class="slide">
+  <div class="eyebrow">Pour qui</div>
+  <h2 style="margin-top:12px">Un seul outil, un espace taillé pour chaque profil.</h2>
+  <div class="cols">
+    <div class="card">
+      <div class="col-h"><div class="ic" style="background:var(--navy)"><svg class="i"><use href="#users"/></svg></div><h3>Équipes Picard</h3></div>
+      <div class="who"><span class="r">CODIR · Direction</span><span class="m"><span>Pilotage</span><span>Toutes les données</span></span></div>
+      <div class="who"><span class="r">Chefs de service · marchés</span><span class="m"><span>Pilotage de leur périmètre</span><span>CRM</span></span></div>
+      <div class="who"><span class="r">Commerciaux (ATC)</span><span class="m"><span>CRM</span><span>Configurateur</span><span>Boutique pour clients</span></span></div>
+      <div class="who"><span class="r">Répartiteur</span><span class="m"><span>Leads</span></span></div>
+      <div class="who"><span class="r">Administrateur</span><span class="m"><span>Règles</span><span>Catalogues</span><span>Droits</span></span></div>
+    </div>
+    <div class="card">
+      <div class="col-h"><div class="ic" style="background:var(--cta)"><svg class="i"><use href="#key"/></svg></div><h3>Réseau de professionnels</h3></div>
+      <div class="who"><span class="r">IAP Elite · Premium · Officiel</span><span class="m"><span>Leads prioritaires</span><span>Avantages par niveau</span></span></div>
+      <div class="who"><span class="r">Serruriers</span><span class="m"><span>Configurateur</span><span>Médiathèque</span></span></div>
+      <div class="who"><span class="r">Fenêtriers</span><span class="m"><span>Contenus dédiés</span><span>Boutique</span></span></div>
+      <div class="who"><span class="r">Dans chaque entreprise</span><span class="m"><span>Gérant : accès complet</span><span>Équipe : accès limité</span></span></div>
+      <div class="who"><span class="r">Tous</span><span class="m"><span>Points</span><span>Marketing</span></span></div>
+    </div>
+  </div>
+  <div class="mods">
+    <div class="mod"><svg class="i"><use href="#inbox"/></svg><b>Leads</b><small>Attribution, suivi, statistiques</small></div>
+    <div class="mod"><svg class="i"><use href="#map"/></svg><b>CRM</b><small>Comptes, visites, actions</small></div>
+    <div class="mod"><svg class="i"><use href="#chart"/></svg><b>Pilotage</b><small>Objectifs, tableaux de bord</small></div>
+    <div class="mod"><svg class="i"><use href="#ruler"/></svg><b>Configurateur</b><small>Porte technique, devis</small></div>
+    <div class="mod"><svg class="i"><use href="#folder"/></svg><b>Médiathèque</b><small>Photos, vidéos, docs</small></div>
+    <div class="mod"><svg class="i"><use href="#megaphone"/></svg><b>Marketing</b><small>Print, réseaux, Google</small></div>
+    <div class="mod"><svg class="i"><use href="#bag"/></svg><b>Boutique</b><small>Goodies, tenues, PLV</small></div>
+    <div class="mod" style="background:var(--cta)"><svg class="i" style="color:#fff"><use href="#star"/></svg><b>Points</b><small style="color:#fde9de">Fidélité du réseau</small></div>
+  </div>
+  <div class="foot"><span><b>Espace Pro</b> · Ensuite : Formation, SAV & garantie, Avis clients, Assistant, Gazette, Événements</span><span>3 / 4</span></div>
+</section>
+
+<!-- ───────── 4. Déploiement ───────── -->
+<section class="slide">
+  <div class="eyebrow">Feuille de route</div>
+  <h2 style="margin-top:12px">Un déploiement par étapes,<br>chaque phase apporte de la valeur.</h2>
+  <div class="timeline">
+    <div class="tl-row">
+      <div class="phase first"><div class="k">0</div><h3>Cadrage</h3><ul><li>Design system aux deux marques</li><li>Maquettes validées</li><li>Modèle de données</li></ul></div>
+      <div class="phase"><div class="k">1</div><h3>Socle & Leads</h3><ul><li>Comptes et rôles</li><li>Attribution des leads</li><li>Médiathèque</li></ul></div>
+      <div class="phase"><div class="k">2</div><h3>CRM & Pilotage</h3><ul><li>Fin des fichiers Excel</li><li>Objectifs et visites</li><li>Tableaux de bord CODIR</li></ul></div>
+      <div class="phase"><div class="k">3</div><h3>Points & Boutique</h3><ul><li>Soldes déjà acquis dès la phase 1</li><li>Paiement points et CB</li></ul></div>
+      <div class="phase"><div class="k">4</div><h3>Marketing local</h3><ul><li>Print et réseaux sociaux</li><li>Google Business</li><li>Campagnes locales</li></ul></div>
+      <div class="phase"><div class="k">5</div><h3>Extensions</h3><ul><li>Navision : commandes</li><li>Formation, SAV</li><li>Assistant, Événements</li></ul></div>
+    </div>
+    <div class="track"><div><svg class="i"><use href="#ruler"/></svg>En parallèle : Configurateur, avec le bureau d’études. Gamme pilote portes blindées, puis serrures et cylindres.</div></div>
+  </div>
+  <h3 style="margin-top:44px">Pour démarrer, il nous faut</h3>
+  <div class="needs" style="margin-top:14px">
+    <div class="need"><svg class="i"><use href="#image"/></svg>Chartes Picard & Eliot</div>
+    <div class="need"><svg class="i"><use href="#key"/></svg>Accord DSI sur Navision</div>
+    <div class="need"><svg class="i"><use href="#file"/></svg>Fichiers de règles du BE</div>
+    <div class="need"><svg class="i"><use href="#users"/></svg>Un groupe pilote ATC et IAP</div>
+  </div>
+  <div class="foot"><span><b>Espace Pro</b> · Feuille de route</span><span>4 / 4</span></div>
+</section>
+</div>
+
+<div class="nav"><button onclick="go(-1)" aria-label="Précédent">←</button><div class="dots" id="dots"></div><button onclick="go(1)" aria-label="Suivant">→</button></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></symbol>
+  <symbol id="chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></symbol>
+  <symbol id="star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></symbol>
+  <symbol id="map" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="ruler" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 7v4M10 7v3M14 7v4M18 7v3"/></symbol>
+  <symbol id="folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="megaphone" viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M17 8a5 5 0 0 1 0 8"/></symbol>
+  <symbol id="bag" viewBox="0 0 24 24"><path d="M5 7h14l-1 13H6z"/><path d="M9 7a3 3 0 0 1 6 0"/></symbol>
+  <symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></symbol>
+  <symbol id="key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2"/></symbol>
+  <symbol id="image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
+  <symbol id="file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="door" viewBox="0 0 24 24"><path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="15" cy="12" r="1"/></symbol>
+  <symbol id="truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+</svg>
+
+<script>
+/* Boucle : 6 étapes autour du cercle */
+(function(){
+  const N=[['door','Ma Porte'],['inbox','Leads'],['ruler','Configurateur'],['truck','Commande'],['star','Points'],['megaphone','Marketing']];
+  const cx=260,cy=260,R=190; let nodes='',arcs='';
+  N.forEach(([ic,l],i)=>{
+    const a=-Math.PI/2+i*2*Math.PI/6, x=cx+R*Math.cos(a), y=cy+R*Math.sin(a), cta=i>=4;
+    const a2=a+2*Math.PI/6, s=a+0.33, e=a2-0.33;
+    arcs+=`<path d="M${cx+R*Math.cos(s)} ${cy+R*Math.sin(s)} A${R} ${R} 0 0 1 ${cx+R*Math.cos(e)} ${cy+R*Math.sin(e)}" fill="none" stroke="#6fa3d8" stroke-width="3" marker-end="url(#ar)"/>`;
+    const cs=Math.cos(a), side=Math.abs(cs)>0.3; const lx = side ? x+(cs>0?54:-54) : x; const ly = side ? y+6 : y+(Math.sin(a)>0?66:-54); const anc = side ? (cs>0?'start':'end') : 'middle';
+    nodes+=`<circle cx="${x}" cy="${y}" r="42" fill="${cta?'#e8692f':'#fffdf9'}" stroke="${cta?'#e8692f':'#2f6fb2'}" stroke-width="2.5"/>
+      <svg x="${x-17}" y="${y-17}" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${cta?'#fff':'#1d4f86'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#${ic}"/></svg>
+      <circle cx="${x+30}" cy="${y-30}" r="13" fill="#0c2340"/><text x="${x+30}" y="${y-25.5}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="13" fill="#fff">${i+1}</text>
+      <text x="${lx}" y="${ly}" text-anchor="${anc}" font-family="Inter" font-weight="700" font-size="17" fill="#0c2340">${l}</text>`;
+  });
+  document.getElementById('arcs').innerHTML=arcs; document.getElementById('nodes').innerHTML=nodes;
+})();
+
+/* Navigation & mise à l'échelle */
+const slides=[...document.querySelectorAll('.slide')]; let cur=0;
+const dots=document.getElementById('dots'); dots.innerHTML=slides.map((_,i)=>`<i onclick="show(${i})"></i>`).join('');
+function fit(){ const s=Math.min(innerWidth/1600,innerHeight/900)*0.96; slides.forEach(sl=>{sl.style.setProperty('--s',`scale(${s})`);sl.style.transform=`scale(${s})`;}); }
+function show(i){ cur=Math.max(0,Math.min(slides.length-1,i)); slides.forEach((s,k)=>s.classList.toggle('on',k===cur)); [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===cur)); }
+function go(d){ show(cur+d); }
+addEventListener('keydown',e=>{ if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(1);} if(['ArrowLeft','PageUp'].includes(e.key))go(-1); });
+addEventListener('resize',fit); fit(); show(0);
+</script>
+</body>
+</html>
