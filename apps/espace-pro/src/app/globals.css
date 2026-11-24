@@ -207,19 +207,105 @@ select { background-position: right 12px center; }
 .esquisse .trait {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: dessiner 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: dessiner 0.9s cubic-bezier(0.45, 0, 0.15, 1) forwards;
 }
-.esquisse .trait-fondu,
+.esquisse .trait-fondu {
+  opacity: 0;
+  animation: apparaitre 0.7s ease-out forwards, flux 5s linear infinite;
+}
 .esquisse .annotation {
   opacity: 0;
-  animation: apparaitre 0.9s ease-out forwards;
+  animation: apparaitre 0.7s ease-out forwards;
 }
-.esquisse .scene {
-  animation: sceneFin 6.5s ease-in-out forwards;
+.esquisse .pulse {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 2.2s ease-out infinite;
+}
+.scene-vie {
+  animation: sceneVie 6.5s cubic-bezier(0.3, 0, 0.2, 1) forwards;
 }
 .legende {
-  animation: apparaitre 0.8s ease-out 0.3s both;
+  animation: legende 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s both;
 }
+.progression {
+  animation: remplir 6.5s linear forwards;
+}
+
+/* Verre liquide : flou, saturation, liseré lumineux et reflet qui balaie la surface */
+.verre {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03) 45%, rgba(255, 255, 255, 0.07));
+  -webkit-backdrop-filter: blur(22px) saturate(125%);
+  backdrop-filter: blur(22px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.06),
+    inset 0 0 24px rgba(255, 255, 255, 0.05),
+    0 24px 60px -24px rgba(2, 8, 23, 0.7);
+}
+.verre::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
+  transform: translateX(-60%);
+  animation: reflet 6.5s ease-in-out infinite;
+}
+.verre-clair {
+  position: relative;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.45));
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 1px 2px rgba(11, 37, 69, 0.04),
+    0 30px 60px -30px rgba(11, 37, 69, 0.25);
+}
+[data-theme="dark"] .verre-clair {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 30px 60px -30px rgba(0, 0, 0, 0.7);
+}
+
+/* Halos lumineux qui dérivent derrière le verre */
+.halo {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  pointer-events: none;
+  animation: deriver 18s ease-in-out infinite alternate;
+}
+
+/* Profondeur : la carte et les pastilles suivent la souris */
+.profondeur {
+  --mx: 0;
+  --my: 0;
+  perspective: 1200px;
+}
+.carte-profondeur {
+  transform: rotateY(calc(var(--mx) * 6deg)) rotateX(calc(var(--my) * -6deg));
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.puce-profondeur {
+  transform: translate(calc(var(--mx) * 18px), calc(var(--my) * 18px));
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.puce-entree {
+  opacity: 0;
+  animation: puceEntree 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) forwards, puceSortie 0.4s ease-in 5.9s forwards;
+}
+.puce-flotte {
+  animation: flotter 4s ease-in-out infinite alternate;
+}
+
 @keyframes dessiner {
   to {
     stroke-dashoffset: 0;
@@ -235,13 +321,101 @@ select { background-position: right 12px center; }
     transform: none;
   }
 }
-@keyframes sceneFin {
-  0%,
-  88% {
-    opacity: 1;
+@keyframes flux {
+  to {
+    stroke-dashoffset: -0.3;
+  }
+}
+@keyframes pulse {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.4);
   }
   100% {
     opacity: 0;
+    transform: scale(2.4);
+  }
+}
+@keyframes sceneVie {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(6px);
+  }
+  8%,
+  90% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.03);
+    filter: blur(4px);
+  }
+}
+@keyframes legende {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes remplir {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+@keyframes reflet {
+  0%,
+  55% {
+    transform: translateX(-60%);
+  }
+  100% {
+    transform: translateX(60%);
+  }
+}
+@keyframes deriver {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(12%, -10%) scale(1.15);
+  }
+  100% {
+    transform: translate(-8%, 8%) scale(0.92);
+  }
+}
+@keyframes puceEntree {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes puceSortie {
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+}
+@keyframes flotter {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-8px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -251,5 +425,14 @@ select { background-position: right 12px center; }
   .esquisse .trait-fondu,
   .esquisse .annotation {
     opacity: 1;
+  }
+  .verre::after,
+  .halo,
+  .esquisse .pulse {
+    animation: none;
+  }
+  .carte-profondeur,
+  .puce-profondeur {
+    transform: none;
   }
 }
