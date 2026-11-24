@@ -9,10 +9,10 @@ const variants: Record<Variant, string> = {
   success: "bg-success-soft text-success",
   warning: "bg-warning-soft text-warning",
   danger: "bg-danger-soft text-danger",
-  /** Niveaux IAP : du plus affirmé au plus discret */
-  elite: "bg-text text-surface",
-  premium: "border border-accent text-accent",
-  officiel: "bg-accent-soft text-accent-strong",
+  /** Niveaux IAP, codes couleur de la charte : Elite noir et or, Premium or et noir, Officiel bleu ciel et bleu nuit */
+  elite: "bg-[#111111] font-semibold text-[#d9ae3b] ring-1 ring-inset ring-[#d9ae3b]/50",
+  premium: "bg-[#d9ae3b] font-semibold text-[#111111]",
+  officiel: "bg-[#cfe7f8] font-semibold text-[#0b2545]",
   atc: "bg-success-soft text-success",
 };
 

@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Segmented } from "@/components/ui/segmented";
 import type { Entonnoir, LeadGestion, Notification, StatsLeadManager as Stats } from "@/lib/data/types";
 import { formatDuree } from "@/lib/format";
+import { CarteLeads } from "./carte-leads";
 import { PanneauEntonnoir } from "./entonnoir";
 import { Envois } from "./envois";
 import { BoutonNouveauLead } from "./formulaire-lead";
@@ -15,7 +16,7 @@ import { GestionLeads } from "./gestion-leads";
 import { StatsLeadManager } from "./stats-lead-manager";
 import { TableauLeads } from "./tableau-leads";
 
-type Vue = "tableau" | "liste" | "stats" | "envois";
+type Vue = "tableau" | "liste" | "carte" | "stats" | "envois";
 
 /** Page Leads des équipes internes : poste du Lead Manager, statistiques et journal des envois. */
 export function LeadsReels({
@@ -77,6 +78,7 @@ export function LeadsReels({
           options={[
             { value: "tableau", label: "Tableau" },
             { value: "liste", label: "Liste", count: leads.length },
+            { value: "carte", label: "Carte" },
             { value: "stats", label: "Statistiques" },
             { value: "envois", label: "E-mails et SMS", count: stats?.notifications_en_attente || undefined },
           ]}
@@ -85,6 +87,7 @@ export function LeadsReels({
       <div className="mt-6 flex flex-col gap-8">
         {vue === "tableau" ? <TableauLeads leads={leads} peutGerer={peutAttribuer} /> : null}
         {vue === "liste" ? <GestionLeads leads={leads} peutGerer={peutAttribuer} /> : null}
+        {vue === "carte" ? <CarteLeads leads={leads} /> : null}
         {vue === "stats" ? (
           <>
             {stats ? <StatsLeadManager s={stats} jours={30} /> : null}

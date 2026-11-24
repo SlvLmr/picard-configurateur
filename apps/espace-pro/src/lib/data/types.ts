@@ -152,7 +152,7 @@ export type StatsLeadManager = {
   motifs_perte: Record<string, number>;
   activite: { jour: string; qualifies: number; attribues: number }[];
   par_auteur: { nom: string; actions: number }[];
-  installateurs: { nom: string; niveau: NiveauIAP | null; recus: number; acceptes: number; refus: number; expires: number; signes: number; nps: string | null }[];
+  installateurs: { nom: string; niveau: NiveauIAP | null; departement: string | null; type_compte: string; commercial: string | null; zone: string | null; recus: number; acceptes: number; refus: number; expires: number; signes: number; nps: string | null }[];
   nps_client: Nps;
   nps_installateur: Nps;
   facturation: { facture: number; rembourse: number; offerts: number };

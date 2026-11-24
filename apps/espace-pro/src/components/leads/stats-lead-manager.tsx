@@ -1,6 +1,10 @@
+"use client";
+
+import { useState } from "react";
+import { Combobox } from "@/components/ui/combobox";
 import { NiveauBadge } from "@/components/ui/badge";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
-import { Repartition } from "@/components/ui/repartition";
+import { Jauge } from "@/components/ui/jauge";
 import type { Nps, StatsLeadManager } from "@/lib/data/types";
 import { formatDuree } from "@/lib/format";
 
@@ -18,23 +22,38 @@ function Chiffre({ label, valeur, note }: { label: string; valeur: React.ReactNo
 }
 
 function BlocNps({ titre, n }: { titre: string; n: Nps }) {
+  const score = n.score;
+  const ton = score === null ? "accent" : score >= 30 ? "success" : score >= 0 ? "warning" : "danger";
+  const lignes = [
+    { label: "Promoteurs", aide: "9 ou 10", v: n.promoteurs, c: "var(--success)" },
+    { label: "Passifs", aide: "7 ou 8", v: n.passifs, c: "var(--line-strong)" },
+    { label: "Détracteurs", aide: "0 à 6", v: n.detracteurs, c: "var(--danger)" },
+  ];
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-baseline justify-between gap-4">
-        <p className="font-semibold text-text">{titre}</p>
-        <p className="tabular text-sm text-text-3">
-          {n.reponses} réponse{n.reponses > 1 ? "s" : ""} sur {n.envoyees} envoyée{n.envoyees > 1 ? "s" : ""}
-        </p>
-      </div>
-      <p className="font-display tabular text-3xl font-bold text-text">{n.score === null ? "–" : `${n.score > 0 ? "+" : ""}${n.score}`}</p>
-      <Repartition
-        label={`Répartition des réponses : ${titre}`}
-        segments={[
-          { label: "Promoteurs (9-10)", value: n.promoteurs, color: "var(--success)" },
-          { label: "Passifs (7-8)", value: n.passifs, color: "var(--line-strong)" },
-          { label: "Détracteurs (0-6)", value: n.detracteurs, color: "var(--danger)" },
-        ]}
+    <div className="flex flex-col items-center gap-4 rounded-lg bg-sunken p-5">
+      <p className="self-start font-semibold text-text">{titre}</p>
+      <Jauge
+        value={score === null ? 0 : score + 100}
+        max={200}
+        label={`NPS ${titre}`}
+        valueLabel={score === null ? "–" : `${score > 0 ? "+" : ""}${score}`}
+        sousTitre={score === null ? "Pas encore de réponse" : `${n.reponses} réponse${n.reponses > 1 ? "s" : ""} sur ${n.envoyees}`}
+        tone={ton}
+        size={176}
       />
+      <ul className="flex w-full flex-col gap-3">
+        {lignes.map((l) => (
+          <li key={l.label} className="grid grid-cols-[minmax(0,1fr)_32px] items-center gap-x-3 gap-y-1">
+            <span className="text-sm text-text">
+              {l.label} <span className="text-xs text-text-3">{l.aide}</span>
+            </span>
+            <span className="tabular row-span-2 text-right text-sm font-semibold text-text">{l.v}</span>
+            <span className="h-1 rounded-full bg-surface">
+              <span className="block h-full rounded-full" style={{ width: n.reponses ? `${(l.v / n.reponses) * 100}%` : 0, background: l.c }} />
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -153,54 +172,105 @@ export function StatsLeadManager({ s, jours }: { s: StatsLeadManager; jours: num
         </Panel>
 
         <Panel>
-          <PanelHeader title="Satisfaction (NPS)" description="Note de recommandation de 0 à 10" />
-          <PanelBody className="grid gap-8 sm:grid-cols-2">
+          <PanelHeader title="Satisfaction (NPS)" description="Part de promoteurs moins part de détracteurs, de -100 à +100" />
+          <PanelBody className="grid gap-4 sm:grid-cols-2">
             <BlocNps titre="Clients finaux" n={s.nps_client} />
             <BlocNps titre="Installateurs" n={s.nps_installateur} />
           </PanelBody>
         </Panel>
       </div>
 
-      <Panel>
-        <PanelHeader title="Par installateur" description="Leads reçus, réactivité, ventes et satisfaction client" />
-        {s.installateurs.length === 0 ? (
-          <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucun lead attribué sur la période.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead>
-                <tr className="border-t border-line text-left text-xs text-text-3">
-                  <th className="px-6 py-3 font-medium">Installateur</th>
-                  <th className="px-3 py-3 text-right font-medium">Reçus</th>
-                  <th className="px-3 py-3 text-right font-medium">Acceptés</th>
-                  <th className="px-3 py-3 text-right font-medium">Refus</th>
-                  <th className="px-3 py-3 text-right font-medium">Délais dépassés</th>
-                  <th className="px-3 py-3 text-right font-medium">Signés</th>
-                  <th className="px-6 py-3 text-right font-medium">NPS client</th>
-                </tr>
-              </thead>
-              <tbody>
-                {s.installateurs.map((i) => (
-                  <tr key={i.nom} className="border-t border-line">
+      <TableauInstallateurs lignes={s.installateurs} />
+    </div>
+  );
+}
+
+/** Tableau par installateur, filtrable par commercial, zone et famille. */
+function TableauInstallateurs({ lignes }: { lignes: StatsLeadManager["installateurs"] }) {
+  const [atc, setAtc] = useState("tous");
+  const [zone, setZone] = useState("toutes");
+  const [famille, setFamille] = useState("toutes");
+  const unique = (xs: (string | null)[]) => Array.from(new Set(xs.filter(Boolean) as string[])).sort((a, b) => a.localeCompare(b, "fr"));
+  const atcs = unique(lignes.map((l) => l.commercial));
+  const zones = unique(lignes.map((l) => l.zone?.toUpperCase() ?? null));
+  const visibles = lignes.filter(
+    (l) =>
+      (atc === "tous" || l.commercial === atc) &&
+      (zone === "toutes" || l.zone?.toUpperCase() === zone) &&
+      (famille === "toutes" || (famille === "IAP" ? l.type_compte === "IAP" : famille === "Fenêtrier" ? l.type_compte === "Fenêtrier" : l.type_compte !== "IAP" && l.type_compte !== "Fenêtrier")),
+  );
+  const total = visibles.reduce((t, l) => ({ recus: t.recus + l.recus, acceptes: t.acceptes + l.acceptes, signes: t.signes + l.signes }), { recus: 0, acceptes: 0, signes: 0 });
+  return (
+    <Panel>
+      <PanelHeader title="Par installateur" description={`${visibles.length} installateur${visibles.length > 1 ? "s" : ""}, ${total.recus} leads reçus, ${pct(total.acceptes, total.recus)} % acceptés, ${total.signes} signés`} />
+      <div className="grid gap-2 px-6 pb-4 sm:grid-cols-3">
+        <Combobox label="Commercial" value={atc} onChange={setAtc} recherche options={[{ value: "tous", label: "Tous les commerciaux" }, ...atcs.map((a) => ({ value: a, label: a }))]} />
+        <Combobox label="Zone" value={zone} onChange={setZone} options={[{ value: "toutes", label: "Toutes les zones" }, ...zones.map((z) => ({ value: z, label: `Zone ${z}` }))]} />
+        <Combobox
+          label="Famille"
+          value={famille}
+          onChange={setFamille}
+          options={[
+            { value: "toutes", label: "Toutes les familles" },
+            { value: "IAP", label: "IAP" },
+            { value: "Fenêtrier", label: "Fenêtriers" },
+            { value: "autres", label: "Autres" },
+          ]}
+        />
+      </div>
+      {visibles.length === 0 ? (
+        <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucun installateur pour ces critères.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[880px] text-sm">
+            <thead>
+              <tr className="border-t border-line text-left text-xs text-text-3">
+                <th className="px-6 py-3 font-medium">Installateur</th>
+                <th className="px-3 py-3 font-medium">Commercial</th>
+                <th className="px-3 py-3 text-right font-medium">Reçus</th>
+                <th className="px-3 py-3 font-medium">Acceptés</th>
+                <th className="px-3 py-3 text-right font-medium">Refus</th>
+                <th className="px-3 py-3 text-right font-medium">Délais dépassés</th>
+                <th className="px-3 py-3 text-right font-medium">Signés</th>
+                <th className="px-6 py-3 text-right font-medium">NPS client</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visibles.map((i) => {
+                const taux = pct(i.acceptes, i.recus);
+                return (
+                  <tr key={i.nom} className="border-t border-line transition-colors hover:bg-sunken">
                     <td className="px-6 py-3">
                       <span className="flex items-center gap-2">
                         <span className="truncate font-medium text-text">{i.nom}</span>
                         {i.niveau ? <NiveauBadge type={i.niveau} /> : null}
                       </span>
+                      <span className="text-xs text-text-3">Département {i.departement ?? "?"}</span>
                     </td>
-                    <td className="tabular px-3 py-3 text-right">{i.recus}</td>
-                    <td className="tabular px-3 py-3 text-right">{pct(i.acceptes, i.recus)} %</td>
+                    <td className="px-3 py-3">
+                      <span className="block truncate text-text">{i.commercial ?? "–"}</span>
+                      {i.zone ? <span className="text-xs text-text-3">Zone {i.zone.toUpperCase()}</span> : null}
+                    </td>
+                    <td className="tabular px-3 py-3 text-right font-semibold">{i.recus}</td>
+                    <td className="px-3 py-3">
+                      <span className="flex items-center gap-2">
+                        <span className="h-1 w-16 overflow-hidden rounded-full bg-sunken">
+                          <span className="block h-full rounded-full" style={{ width: `${taux}%`, background: taux >= 80 ? "var(--success)" : taux >= 50 ? "var(--warning)" : "var(--danger)" }} />
+                        </span>
+                        <span className="tabular">{taux} %</span>
+                      </span>
+                    </td>
                     <td className="tabular px-3 py-3 text-right">{i.refus}</td>
-                    <td className={`tabular px-3 py-3 text-right ${i.expires ? "text-danger" : ""}`}>{i.expires}</td>
+                    <td className={`tabular px-3 py-3 text-right ${i.expires ? "font-semibold text-danger" : ""}`}>{i.expires}</td>
                     <td className="tabular px-3 py-3 text-right">{i.signes}</td>
                     <td className="tabular px-6 py-3 text-right">{i.nps ?? "–"}</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Panel>
-    </div>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Panel>
   );
 }

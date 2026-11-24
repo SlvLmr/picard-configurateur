@@ -3,7 +3,7 @@ import type { LeadStatutDb } from "@/lib/data/types";
 /** Libellés et teintes des statuts de lead, partagés par la liste, la fiche et l'entonnoir. */
 export const STATUTS_LEAD: Record<LeadStatutDb, { label: string; badge: "neutral" | "accent" | "warning" | "success" | "danger" | "officiel" }> = {
   a_valider: { label: "À valider", badge: "warning" },
-  attribue: { label: "En attente de l’installateur", badge: "officiel" },
+  attribue: { label: "En attente de l’installateur", badge: "accent" },
   accepte: { label: "Accepté", badge: "accent" },
   contacte: { label: "Contacté", badge: "accent" },
   rdv: { label: "Rendez-vous", badge: "accent" },
@@ -14,7 +14,7 @@ export const STATUTS_LEAD: Record<LeadStatutDb, { label: string; badge: "neutral
 };
 
 export const TEMPERATURES = {
-  froid: { label: "Froid", badge: "officiel" },
+  froid: { label: "Froid", badge: "accent" },
   tiede: { label: "Tiède", badge: "warning" },
   chaud: { label: "Chaud", badge: "danger" },
 } as const;
