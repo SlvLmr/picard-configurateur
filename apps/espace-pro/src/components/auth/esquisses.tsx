@@ -1,162 +1,202 @@
 "use client";
 
-import {
-  BellRing, CalendarDays, Download, FileCheck2, FileDown, ShieldCheck, Target, Timer, TrendingUp, Users, type LucideIcon,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 /**
  * Esquisses animées de la page de connexion : chaque scène se dessine au crayon,
  * reste un instant, puis laisse place à la suivante. Elles racontent ce que propose l'Espace Pro.
  * Respecte « réduire les animations » : la première scène s'affiche alors fixe.
  */
-type Puce = { icone: LucideIcon; texte: string; x: string; y: string };
-const SCENES: { titre: string; texte: string; puces: [Puce, Puce] }[] = [
-  {
-    titre: "Configurez chaque porte au millimètre",
-    texte: "Cotes, sécurité, finitions : le devis est prêt en quelques étapes.",
-    puces: [
-      { icone: ShieldCheck, texte: "Blindage A2P BP2", x: "-6%", y: "14%" },
-      { icone: FileCheck2, texte: "Devis prêt", x: "72%", y: "78%" },
-    ],
-  },
-  {
-    titre: "Recevez et suivez vos leads",
-    texte: "Chaque demande part vers l’installateur le plus proche, suivie jusqu’à la signature.",
-    puces: [
-      { icone: BellRing, texte: "Nouveau lead, Lyon 3e", x: "-8%", y: "86%" },
-      { icone: Timer, texte: "Accepté en 12 min", x: "66%", y: "8%" },
-    ],
-  },
-  {
-    titre: "Téléchargez brochures et notices",
-    texte: "Documents commerciaux et techniques, toujours à jour.",
-    puces: [
-      { icone: FileDown, texte: "Catalogue 2027, PDF", x: "-6%", y: "24%" },
-      { icone: Download, texte: "248 téléchargements", x: "-6%", y: "86%" },
-    ],
-  },
-  {
-    titre: "Développez vos ventes",
-    texte: "Chiffre, objectifs et campagnes, zone par zone.",
-    puces: [
-      { icone: TrendingUp, texte: "+18 % sur un an", x: "-4%", y: "10%" },
-      { icone: Target, texte: "Objectif à 94 %", x: "68%", y: "92%" },
-    ],
-  },
-  {
-    titre: "Ne manquez aucun rendez-vous",
-    texte: "Salons, formations et visites dans un seul calendrier.",
-    puces: [
-      { icone: CalendarDays, texte: "Salon régional, 14 mars", x: "-8%", y: "90%" },
-      { icone: Users, texte: "Formation pose, 2 places", x: "62%", y: "6%" },
-    ],
-  },
-];
+/** Une planche par module : position sur le grand plan, titre, chiffre clé. */
+const SCENES = [
+  { module: "Configurateur", titre: "Chaque porte au millimètre", texte: "Cotes, sécurité, finitions : le devis est prêt en quelques étapes.", x: 0, y: 0, chiffre: 930, suffixe: " mm", legende: "largeur de passage" },
+  { module: "Leads", titre: "Vos leads en temps réel", texte: "Chaque demande part vers l’installateur le plus proche.", x: 560, y: -80, chiffre: 12, suffixe: " min", legende: "pour accepter un lead" },
+  { module: "Médiathèque", titre: "Brochures et notices à jour", texte: "Documents commerciaux et techniques, en un clic.", x: 1100, y: 60, chiffre: 248, suffixe: "", legende: "téléchargements ce mois" },
+  { module: "Ventes", titre: "Développez vos ventes", texte: "Chiffre, objectifs et campagnes, zone par zone.", x: 260, y: 420, chiffre: 18, suffixe: " %", prefixe: "+", legende: "de chiffre sur un an" },
+  { module: "Calendrier", titre: "Aucun rendez-vous manqué", texte: "Salons, formations et visites dans un seul calendrier.", x: 860, y: 460, chiffre: 14, suffixe: " mars", legende: "prochain salon régional" },
+] as const;
 
-const DUREE = 6500;
+const DUREE = 3800;
+const DESSINS = [Porte, Lead, Brochure, Pilotage, Calendrier];
+
+/** Centre d'une planche sur le grand plan */
+const centre = (k: number) => [SCENES[k].x + 200, SCENES[k].y + 150] as const;
 
 export function Esquisses() {
   const [i, setI] = useState(0);
+  const [prec, setPrec] = useState(0);
   const [reduit, setReduit] = useState(false);
   const [cycle, setCycle] = useState(0);
+  const [taille, setTaille] = useState({ l: 1000, h: 700 });
   const zone = useRef<HTMLDivElement>(null);
+
+  // Le plan suit la taille réelle du panneau : la planche active en occupe l'essentiel.
+  useEffect(() => {
+    const el = zone.current;
+    if (!el) return;
+    const o = new ResizeObserver(([e]) => setTaille({ l: Math.max(1, e.contentRect.width), h: Math.max(1, e.contentRect.height) }));
+    o.observe(el);
+    return () => o.disconnect();
+  }, []);
 
   useEffect(() => {
     const m = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReduit(m.matches);
     if (m.matches) return;
-    const t = setInterval(() => setI((x) => (x + 1) % SCENES.length), DUREE);
+    const t = setInterval(() => {
+      setI((x) => {
+        setPrec(x);
+        return (x + 1) % SCENES.length;
+      });
+    }, DUREE);
     return () => clearInterval(t);
   }, [cycle]);
 
-  // Léger effet de profondeur : la carte et les pastilles suivent la souris.
-  useEffect(() => {
-    const el = zone.current;
-    if (!el || reduit) return;
-    let raf = 0;
-    const bouger = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      const mx = (e.clientX - r.left) / r.width - 0.5;
-      const my = (e.clientY - r.top) / r.height - 0.5;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        el.style.setProperty("--mx", mx.toFixed(3));
-        el.style.setProperty("--my", my.toFixed(3));
-      });
-    };
-    const section = el.closest("section") ?? el;
-    section.addEventListener("pointermove", bouger as EventListener);
-    return () => section.removeEventListener("pointermove", bouger as EventListener);
-  }, [reduit]);
-
   const aller = (k: number) => {
+    setPrec(i);
     setI(k);
     setCycle((c) => c + 1);
   };
 
   const scene = SCENES[i];
+  const [cx, cy] = centre(i);
+  const [px, py] = centre(prec);
+  const echelle = Math.min((taille.l * 0.66) / 400, (taille.h * 0.86) / 330);
+  const camera = `translate(${taille.l / 2 - echelle * cx}px, ${taille.h / 2 - echelle * cy}px) scale(${echelle})`;
+  const trajet = `M${px} ${py}C${px + (cx - px) * 0.2} ${py - 160} ${cx - (cx - px) * 0.2} ${cy - 160} ${cx} ${cy}`;
 
   return (
-    <div ref={zone} className="profondeur relative flex flex-1 flex-col justify-center py-10">
-      <div className="relative w-full max-w-lg">
-        <div className="verre carte-profondeur rounded-lg p-6">
-          <div key={i} className={reduit ? "" : "scene-vie"}>
-            <svg viewBox="0 0 400 300" className="esquisse h-auto w-full" role="img" aria-label={scene.titre}>
-              <defs>
-                <filter id="crayon" x="-5%" y="-5%" width="110%" height="110%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="1" seed="3" result="bruit" />
-                  <feDisplacementMap in="SourceGraphic" in2="bruit" scale="1.6" />
-                </filter>
-                <pattern id="quadrillage" width="20" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M20 0H0V20" fill="none" stroke="#ffffff" strokeOpacity="0.06" strokeWidth="1" />
-                </pattern>
-              </defs>
-              <rect width="400" height="300" fill="url(#quadrillage)" />
-              <g filter="url(#crayon)">
-                {i === 0 ? <Porte /> : i === 1 ? <Lead /> : i === 2 ? <Brochure /> : i === 3 ? <Pilotage /> : <Calendrier />}
+    <div className="flex min-h-0 flex-1 flex-col">
+      {/* Grand plan : toutes les planches, la caméra se déplace de l'une à l'autre */}
+      <div ref={zone} className="plan-fondu relative min-h-0 flex-1">
+      <svg viewBox={`0 0 ${taille.l} ${taille.h}`} className="esquisse absolute inset-0 size-full" role="img" aria-label={scene.titre}>
+        <defs>
+          <filter id="crayon" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="1" seed="3" result="bruit" />
+            <feDisplacementMap in="SourceGraphic" in2="bruit" scale="1.6" />
+          </filter>
+          <pattern id="quadrillage" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M20 0H0V20" fill="none" stroke="#ffffff" strokeOpacity="0.05" strokeWidth="0.8" />
+          </pattern>
+          <pattern id="quadrillage-fort" width="100" height="100" patternUnits="userSpaceOnUse">
+            <path d="M100 0H0V100" fill="none" stroke="#ffffff" strokeOpacity="0.07" strokeWidth="1" />
+          </pattern>
+        </defs>
+        <g className="camera" style={{ transform: camera, transition: reduit ? "none" : undefined }}>
+          <rect x="-2000" y="-2000" width="5600" height="4800" fill="url(#quadrillage)" />
+          <rect x="-2000" y="-2000" width="5600" height="4800" fill="url(#quadrillage-fort)" />
+          {/* Liaisons entre les modules */}
+          {SCENES.slice(0, -1).map((_, k) => {
+            const [ax, ay] = centre(k);
+            const [bx, by] = centre(k + 1);
+            return <path key={k} d={`M${ax} ${ay}Q${(ax + bx) / 2} ${Math.min(ay, by) - 140} ${bx} ${by}`} className="liaison" fill="none" stroke="#ebbc4e" strokeOpacity="0.18" strokeWidth="1.2" strokeDasharray="4 8" />;
+          })}
+          {SCENES.map((s, k) => {
+            const Dessin = DESSINS[k];
+            const actif = k === i;
+            return (
+              <g key={actif ? `actif-${i}-${cycle}` : k} transform={`translate(${s.x} ${s.y})`} className={actif ? "planche-active" : "fige"} filter="url(#crayon)">
+                <Cartouche numero={k + 1} nom={s.module} actif={actif} />
+                <Dessin />
               </g>
-            </svg>
+            );
+          })}
+          {/* Comète laiton qui file d'une planche à la suivante */}
+          {!reduit && prec !== i ? (
+            <g key={`comete-${i}-${cycle}`}>
+              <path d={trajet} className="sillage" fill="none" stroke="#ebbc4e" strokeWidth="2" strokeLinecap="round" pathLength={1} />
+              <circle r="5" fill="#ffd36b">
+                <animateMotion dur="0.85s" fill="freeze" path={trajet} keyTimes="0;1" keySplines="0.7 0 0.2 1" calcMode="spline" />
+              </circle>
+            </g>
+          ) : null}
+        </g>
+      </svg>
+      </div>
+
+      {/* Balayage lumineux à chaque changement */}
+      {!reduit ? <span key={`balayage-${i}-${cycle}`} className="balayage" /> : null}
+
+      {/* Repères d'angle façon planche technique */}
+      <span className="repere left-6 top-6 border-l border-t" />
+      <span className="repere right-6 top-6 border-r border-t" />
+      <span className="repere bottom-6 left-6 border-b border-l" />
+      <span className="repere bottom-6 right-6 border-b border-r" />
+
+      {/* Texte, chiffre clé et modules */}
+      <div className="relative px-12 pb-10 xl:px-16">
+        <div className="flex items-end justify-between gap-8">
+          <div key={`t-${i}-${cycle}`} className="flex min-h-40 min-w-0 flex-col justify-end">
+            <p className="kicker text-sm font-semibold text-cta">
+              {String(i + 1).padStart(2, "0")} <span className="text-white/40">sur 05</span>, {scene.module}
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-semibold text-white xl:text-3xl">
+              {scene.titre.split(" ").map((mot, k) => (
+                <Fragment key={k}>
+                {k > 0 ? " " : null}
+                <span className="mot-masque">
+                  <span className="mot" style={{ animationDelay: `${0.25 + k * 0.05}s` }}>{mot}</span>
+                </span>
+                </Fragment>
+              ))}
+            </h2>
+            <p className="sous-titre mt-3 max-w-md text-base text-nav-muted">{scene.texte}</p>
           </div>
+          <Compteur key={`c-${i}-${cycle}`} valeur={scene.chiffre} prefixe={"prefixe" in scene ? scene.prefixe : ""} suffixe={scene.suffixe} legende={scene.legende} reduit={reduit} />
         </div>
 
-        {scene.puces.map((p, k) => {
-          const Icone = p.icone;
-          return (
-            <div key={`${i}-${k}`} className="puce-profondeur absolute" style={{ left: p.x, top: p.y }} aria-hidden>
-              <div className={reduit ? "" : "puce-entree"} style={{ animationDelay: `${0.9 + k * 0.5}s, 5.9s` }}>
-                <div className={reduit ? "verre rounded-full" : "verre puce-flotte rounded-full"} style={{ animationDelay: `${k * 1.3}s` }}>
-                  <span className="relative flex items-center gap-2 whitespace-nowrap px-4 py-2 text-xs font-semibold text-white">
-                    <Icone className="size-4 text-cta" aria-hidden />
-                    {p.texte}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div key={`t-${i}`} className={reduit ? "mt-10" : "legende mt-10"}>
-        <p className="font-display text-xl font-semibold text-white">{scene.titre}</p>
-        <p className="mt-2 max-w-sm text-sm text-nav-muted">{scene.texte}</p>
-      </div>
-
-      <div className="mt-6 flex gap-2">
-        {SCENES.map((s, k) => (
-          <button
-            key={s.titre}
-            type="button"
-            onClick={() => aller(k)}
-            aria-label={s.titre}
-            aria-current={k === i ? "step" : undefined}
-            className={`relative h-1 overflow-hidden rounded-full bg-white/20 transition-all duration-500 ${k === i ? "w-10" : "w-3 hover:bg-white/40"}`}
-          >
-            {k === i ? <span key={`${i}-${cycle}`} className={reduit ? "absolute inset-0 bg-cta" : "progression absolute inset-y-0 left-0 bg-cta"} /> : null}
-          </button>
-        ))}
+        <nav aria-label="Modules de l’Espace Pro" className="mt-10 grid grid-cols-5 gap-3">
+          {SCENES.map((s, k) => (
+            <button key={s.module} type="button" onClick={() => aller(k)} aria-current={k === i ? "step" : undefined} className="group flex flex-col gap-2 text-left">
+              <span className="relative h-0.5 overflow-hidden rounded-full bg-white/15">
+                {k === i ? <span key={`${i}-${cycle}`} className={reduit ? "absolute inset-0 bg-cta" : "progression absolute inset-y-0 left-0 bg-cta"} /> : null}
+                {k < i ? <span className="absolute inset-0 bg-white/40" /> : null}
+              </span>
+              <span className={`truncate text-xs font-semibold transition-colors ${k === i ? "text-white" : "text-white/40 group-hover:text-white/70"}`}>{s.module}</span>
+            </button>
+          ))}
+        </nav>
       </div>
     </div>
+  );
+}
+
+/** Chiffre clé qui défile jusqu'à sa valeur */
+function Compteur({ valeur, prefixe, suffixe, legende, reduit }: { valeur: number; prefixe: string; suffixe: string; legende: string; reduit: boolean }) {
+  const [n, setN] = useState(reduit ? valeur : 0);
+  useEffect(() => {
+    if (reduit) return;
+    let raf = 0;
+    const debut = performance.now() + 300;
+    const pas = (t: number) => {
+      const p = Math.min(1, Math.max(0, (t - debut) / 800));
+      setN(Math.round(valeur * (1 - Math.pow(1 - p, 4))));
+      if (p < 1) raf = requestAnimationFrame(pas);
+    };
+    raf = requestAnimationFrame(pas);
+    return () => cancelAnimationFrame(raf);
+  }, [valeur, reduit]);
+  return (
+    <div className="compteur hidden shrink-0 text-right xl:block">
+      <p className="font-display text-3xl font-semibold tabular text-cta">
+        {prefixe}
+        {n}
+        <span className="text-xl">{suffixe}</span>
+      </p>
+      <p className="mt-1 text-xs text-nav-muted">{legende}</p>
+    </div>
+  );
+}
+
+/** Cartouche de planche : numéro et nom du module */
+function Cartouche({ numero, nom, actif }: { numero: number; nom: string; actif: boolean }) {
+  return (
+    <g className="cartouche" opacity={actif ? 1 : 0.6}>
+      <path d="M-20 -20h120M-20 -20v40" fill="none" stroke="#ebbc4e" strokeOpacity="0.6" strokeWidth="1" />
+      <text x="-12" y="-28" fill="#ebbc4e" fontSize="11" fontStyle="italic" fontFamily="Archivo, sans-serif">
+        {`Planche ${String(numero).padStart(2, "0")}, ${nom.toLowerCase()}`}
+      </text>
+    </g>
   );
 }
 
@@ -167,7 +207,7 @@ function T({ d, delai = 0, laiton = false, pointille = false, epais = 1.6 }: { d
       d={d}
       pathLength={1}
       className={pointille ? "trait-fondu" : "trait"}
-      style={{ animationDelay: `${delai * 0.65}s` }}
+      style={{ animationDelay: `${0.45 + delai * 0.38}s` }}
       fill="none"
       stroke={laiton ? "#ebbc4e" : "#ffffff"}
       strokeOpacity={laiton ? 0.95 : 0.7}
@@ -181,7 +221,7 @@ function T({ d, delai = 0, laiton = false, pointille = false, epais = 1.6 }: { d
 
 function Texte({ x, y, children, delai = 0, ancre = "middle" }: { x: number; y: number; children: string; delai?: number; ancre?: "start" | "middle" | "end" }) {
   return (
-    <text x={x} y={y} textAnchor={ancre} className="annotation" style={{ animationDelay: `${delai * 0.65}s` }} fill="#ebbc4e" fontSize="11" fontStyle="italic" fontFamily="Archivo, sans-serif">
+    <text x={x} y={y} textAnchor={ancre} className="annotation" style={{ animationDelay: `${0.45 + delai * 0.38}s` }} fill="#ebbc4e" fontSize="11" fontStyle="italic" fontFamily="Archivo, sans-serif">
       {children}
     </text>
   );
@@ -285,5 +325,5 @@ function Calendrier() {
 
 /* Onde laiton qui pulse autour d'un point clé une fois le dessin terminé. */
 function Pulse({ cx, cy, delai = 0 }: { cx: number; cy: number; delai?: number }) {
-  return <circle cx={cx} cy={cy} r={10} className="pulse" style={{ animationDelay: `${delai}s` }} fill="none" stroke="#ebbc4e" strokeWidth={1.2} />;
+  return <circle cx={cx} cy={cy} r={10} className="pulse" style={{ animationDelay: `${0.45 + delai * 0.38}s` }} fill="none" stroke="#ebbc4e" strokeWidth={1.2} />;
 }
