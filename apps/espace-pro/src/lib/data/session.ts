@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { supabaseConfigure } from "@/lib/supabase/config";
 import { supabaseServeur } from "@/lib/supabase/server";
-import { ROLE_MODULES, type ModuleId } from "@/lib/roles";
+import { MODULES, ROLE_MODULES, type ModuleId } from "@/lib/roles";
 import type { ProfilReel } from "./types";
 
 /** Profil Espace Pro de l'utilisateur connecté, ou null (non connecté, ou sans profil). */
@@ -37,5 +37,6 @@ export const peutAttribuer = (p: ProfilReel | null) => !!p && (p.role === "admin
 export const modulesAutorises = cache(async (profil: ProfilReel): Promise<ModuleId[]> => {
   const { data, error } = await supabaseServeur().rpc("ep_modules_autorises");
   if (error || !Array.isArray(data)) return ROLE_MODULES[profil.role];
-  return data as ModuleId[];
+  // Une rubrique ajoutée en base avant la version de l'application qui la connaît est ignorée
+  return (data as string[]).filter((m): m is ModuleId => m in MODULES);
 });
