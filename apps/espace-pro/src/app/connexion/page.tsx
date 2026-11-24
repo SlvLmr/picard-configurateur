@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { FormulaireConnexion } from "./formulaire";
 
 export const metadata: Metadata = { title: "Connexion" };
@@ -20,12 +19,7 @@ export default function Page() {
           <h1 className="font-display text-xl font-semibold text-text">Connexion</h1>
           <p className="mt-2 text-sm text-text-2">Utilisez l’adresse e-mail communiquée par Picard Serrures.</p>
           <FormulaireConnexion />
-          <p className="mt-8 text-xs text-text-3">
-            Pas encore d’accès ? Demandez-le à votre commercial.{" "}
-            <Link href="/accueil" className="font-medium text-accent hover:underline">
-              Voir la démonstration
-            </Link>
-          </p>
+          <p className="mt-8 text-xs text-text-3">Pas encore d’accès, ou mot de passe oublié ? Contactez votre commercial Picard Serrures.</p>
         </div>
       </section>
     </main>

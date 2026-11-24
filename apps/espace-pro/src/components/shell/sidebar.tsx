@@ -9,7 +9,7 @@ import { STATS_LEADS, LEADS_CLIENT } from "@/lib/mock/leads";
 import { NAV_ICONS } from "./nav-icons";
 import type { ProfilReel } from "@/lib/data/types";
 
-export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigate: () => void; profil: ProfilReel | null }) {
+export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigate: () => void; profil: ProfilReel }) {
   const pathname = usePathname();
   const { persona, brand } = useSession();
   const modules = ROLE_MODULES[persona.role];
@@ -61,21 +61,10 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
       </nav>
 
       <div className="border-t border-white/10 px-6 py-4">
-        {profil ? (
-          <>
-            <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-white">
               {profil.prenom} {profil.nom}
             </p>
             <p className="text-xs text-nav-muted">Connecté, {ROLE_LABEL[profil.role].toLowerCase()}</p>
-          </>
-        ) : (
-          <>
-            <p className="text-sm font-medium text-white">
-              {persona.prenom} {persona.nom}
-            </p>
-            <p className="text-xs text-nav-muted">{persona.societe ?? persona.fonction}</p>
-          </>
-        )}
         <Link href="/design-system" onClick={onNavigate} className="mt-3 inline-block text-xs text-nav-muted underline-offset-4 hover:text-white hover:underline">
           Design system
         </Link>

@@ -3,12 +3,30 @@
 import { useEffect, useState } from "react";
 import { ToastProvider } from "@/components/ui/toast";
 import type { ProfilReel } from "@/lib/data/types";
+import { useSession } from "@/lib/session";
 import { CommandPalette } from "./command-palette";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
-export function AppShell({ children, profil }: { children: React.ReactNode; profil: ProfilReel | null }) {
+const PERSONA_PAR_ROLE: Record<ProfilReel["role"], string> = {
+  admin: "claire",
+  repartiteur: "claire",
+  atc: "julien",
+  codir: "philippe",
+  chef_service: "philippe",
+  chef_marche: "philippe",
+  client_gerant: "marc",
+  client_equipe: "marc",
+};
+
+export function AppShell({ children, profil }: { children: React.ReactNode; profil: ProfilReel }) {
+  const { persona, setPersona } = useSession();
   const [menu, setMenu] = useState(false);
+
+  // Seul l'administrateur peut prévisualiser les écrans des autres profils.
+  useEffect(() => {
+    if (profil.role !== "admin" && persona.id !== PERSONA_PAR_ROLE[profil.role]) setPersona(PERSONA_PAR_ROLE[profil.role]);
+  }, [profil.role, persona.id, setPersona]);
   const [search, setSearch] = useState(false);
 
   useEffect(() => {

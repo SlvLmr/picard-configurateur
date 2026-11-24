@@ -56,9 +56,10 @@ Projet **Commerce**, partagé avec l'outil Commerce existant. Toutes les tables 
 - Supprimer les données de démonstration : `delete from ep_leads where demo;`
 
 ## Connexion
-Page `/connexion` : mot de passe ou lien par e-mail. Sans connexion, l'application reste en mode démonstration (données fictives).
-L'adresse de retour du lien (`/auth/callback`) doit être autorisée dans Supabase (Authentication, URL Configuration).
-Les inscriptions du projet Commerce sont réservées à une liste d'adresses (déclencheur `inscriptions_reservees`) : à adapter pour ouvrir l'Espace Pro aux autres utilisateurs.
+- Accès uniquement par **identifiant et mot de passe** (`/connexion`). Toute autre page renvoie vers la connexion si aucune session n'est ouverte (`src/middleware.ts`).
+- Un compte connecté sans profil `ep_profils` actif voit un écran « Accès en cours de préparation ».
+- Les comptes sont créés par l'administrateur (pas d'inscription libre). Les inscriptions du projet Commerce sont réservées à une liste d'adresses (déclencheur `inscriptions_reservees`) : à adapter pour ouvrir l'Espace Pro à d'autres utilisateurs.
+- Le sélecteur « Aperçu en tant que » est réservé à l'administrateur : il affiche les écrans des autres profils avec des données de démonstration.
 
 ## Prochaines étapes techniques
 1. Ouvrir la connexion aux utilisateurs Espace Pro (invitation par l'administrateur).
@@ -66,6 +67,5 @@ Les inscriptions du projet Commerce sont réservées à une liste d'adresses (d�
 3. Formulaire de Ma Porte et du site → insertion directe dans `ep_leads`.
 4. Import des comptes non IAP (serruriers, fenêtriers) depuis Navision ou fichier.
 
-## Démonstration
-En attendant l'authentification, le sélecteur en haut de page permet de voir l'outil en tant que :
-répartitrice (Claire), commercial (Julien), directeur commercial (Philippe), client IAP Elite (Marc).
+## Aperçu des profils (administrateur)
+Personas disponibles : répartitrice (Claire), commercial (Julien), directeur commercial (Philippe), client IAP Elite (Marc).
