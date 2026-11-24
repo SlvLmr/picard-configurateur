@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge, NiveauBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import { Segmented } from "@/components/ui/segmented";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
@@ -99,23 +100,17 @@ export function LeadQueue({ leads, compact = false, readOnly = false }: { leads:
                 <div className="min-w-0">
                   {l.alternatives.length && !readOnly ? (
                     <>
-                      <label htmlFor={`dest-${l.id}`} className="sr-only">
-                        Destinataire du lead {l.id}
-                      </label>
-                      <select
-                        id={`dest-${l.id}`}
-                        value={choix[l.id] ?? -1}
-                        onChange={(e) => setChoix((c) => ({ ...c, [l.id]: Number(e.target.value) }))}
-                        className="h-8 w-full max-w-64 cursor-pointer appearance-none truncate rounded-md border border-transparent bg-transparent pr-8 text-sm font-semibold text-text hover:border-line-strong focus:border-accent"
-                        style={{ backgroundImage: "var(--chevron)", backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center", paddingLeft: 0 }}
-                      >
-                        <option value={-1}>{l.suggestion.nom} (suggéré)</option>
-                        {l.alternatives.map((a, i) => (
-                          <option key={a.nom} value={i}>
-                            {a.nom}
-                          </option>
-                        ))}
-                      </select>
+                      <Combobox
+                        size="sm"
+                        className="max-w-64"
+                        label={`Destinataire du lead ${l.id}`}
+                        value={String(choix[l.id] ?? -1)}
+                        onChange={(v) => setChoix((c) => ({ ...c, [l.id]: Number(v) }))}
+                        options={[
+                          { value: "-1", label: l.suggestion.nom, detail: "Suggestion automatique", prefixe: <NiveauBadge type={l.suggestion.type} /> },
+                          ...l.alternatives.map((a, i) => ({ value: String(i), label: a.nom, prefixe: <NiveauBadge type={a.type} /> })),
+                        ]}
+                      />
                     </>
                   ) : (
                     <p className="text-sm font-semibold text-text">{d.nom}</p>
