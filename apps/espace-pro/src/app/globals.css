@@ -168,6 +168,34 @@
   .bg-nav-gradient {
     background: var(--nav-gradient);
   }
+  /* Barre de défilement du menu : fine, translucide, visible au survol */
+  .scroll-nav {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    scrollbar-gutter: stable;
+  }
+  .scroll-nav:hover,
+  .scroll-nav:focus-within {
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  }
+  .scroll-nav::-webkit-scrollbar {
+    width: 8px;
+  }
+  .scroll-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-nav::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .scroll-nav:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.28);
+  }
+  .scroll-nav::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.45);
+  }
 }
 
 :root {

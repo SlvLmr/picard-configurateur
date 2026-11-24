@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LogoEspacePro, SymboleEspacePro } from "@/components/marque/logo-espace-pro";
 import { FormulaireConnexion } from "./formulaire";
 
 export const metadata: Metadata = { title: "Connexion" };
@@ -7,15 +8,15 @@ export default function Page() {
   return (
     <main className="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <section className="relative hidden overflow-hidden bg-nav p-12 text-nav-text lg:flex lg:flex-col">
-        <span className="font-display text-lg font-semibold text-white">Espace Pro</span>
+        <LogoEspacePro sousTitre="Picard Serrures et Eliot" />
         <div className="mt-auto max-w-md">
           <p className="font-display text-2xl font-semibold text-white">Les leads, les clients et les outils du réseau, au même endroit.</p>
-          <p className="mt-4 text-base text-nav-muted">Picard Serrures et Eliot</p>
         </div>
         <PlanDecor />
       </section>
       <section className="flex items-center justify-center px-4 py-12 sm:px-8">
         <div className="w-full max-w-sm">
+          <SymboleEspacePro className="mb-6 size-12 lg:hidden" />
           <h1 className="font-display text-xl font-semibold text-text">Connexion</h1>
           <p className="mt-2 text-sm text-text-2">Utilisez l’adresse e-mail communiquée par Picard Serrures.</p>
           <FormulaireConnexion />

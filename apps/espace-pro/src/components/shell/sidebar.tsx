@@ -6,6 +6,8 @@ import { cn } from "@/lib/cn";
 import type { ProfilReel } from "@/lib/data/types";
 import { MODULES, ROLE_LABEL, ROLE_MODULES, SECTIONS_MENU, type ModuleId } from "@/lib/roles";
 import { useSession } from "@/lib/session";
+import { LogoEspacePro } from "@/components/marque/logo-espace-pro";
+import { LogoMarque } from "@/components/marque/logo-picard";
 import { NAV_ICONS } from "./nav-icons";
 
 export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigate: () => void; profil: ProfilReel }) {
@@ -26,7 +28,7 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
           onClick={onNavigate}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors",
+            "flex h-8 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors",
             active ? "bg-white/20 text-white shadow-sm" : "text-nav-text hover:bg-white/10 hover:text-white",
           )}
         >
@@ -44,20 +46,20 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
         open ? "translate-x-0" : "-translate-x-full",
       )}
     >
-      <div className="px-6 pb-6 pt-6">
-        <Link href="/accueil" onClick={onNavigate} className="block rounded-sm">
-          <span className="font-display block text-lg font-semibold leading-6 text-white">Espace Pro</span>
-          <span className="block text-xs text-nav-muted">{brand === "picard" ? "Picard Serrures" : "Eliot"}</span>
+      <div className="flex flex-col gap-4 px-5 pb-4 pt-5">
+        <LogoMarque marque={brand} className="h-7" />
+        <Link href="/accueil" onClick={onNavigate} className="block rounded-md" aria-label="Espace Pro, accueil">
+          <LogoEspacePro />
         </Link>
       </div>
 
-      <nav aria-label="Modules" className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 pb-6">
+      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-4 overflow-y-auto px-3 pb-4">
         <ul className="flex flex-col gap-0.5">
           <Entree id="accueil" />
         </ul>
         {sections.map((s) => (
           <div key={s.titre}>
-            <p className="px-3 pb-2 text-xs font-semibold text-nav-muted">{s.titre}</p>
+            <p className="px-3 pb-1 text-xs font-semibold text-nav-muted">{s.titre}</p>
             <ul className="flex flex-col gap-0.5">
               {s.modules.map((id) => (
                 <Entree key={id} id={id} />
@@ -66,18 +68,18 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
           </div>
         ))}
         {autorises.has("administration") ? (
-          <ul className="mt-auto flex flex-col gap-0.5 border-t border-white/10 pt-4">
+          <ul className="mt-auto flex flex-col gap-0.5 border-t border-white/10 pt-3">
             <Entree id="administration" />
           </ul>
         ) : null}
       </nav>
 
-      <div className="border-t border-white/10 px-6 py-4">
+      <div className="border-t border-white/10 px-5 py-3">
         <p className="truncate text-sm font-medium text-white">
           {profil.prenom} {profil.nom}
         </p>
         <p className="text-xs text-nav-muted">Connecté, {ROLE_LABEL[profil.role].toLowerCase()}</p>
-        <Link href="/design-system" onClick={onNavigate} className="mt-3 inline-block text-xs text-nav-muted underline-offset-4 hover:text-white hover:underline">
+        <Link href="/design-system" onClick={onNavigate} className="mt-2 inline-block text-xs text-nav-muted underline-offset-4 hover:text-white hover:underline">
           Design system
         </Link>
       </div>
