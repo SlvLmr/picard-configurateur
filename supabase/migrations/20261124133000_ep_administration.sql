@@ -22,10 +22,7 @@ alter table public.ep_invitations enable row level security;
 revoke all on public.ep_invitations from anon, authenticated;
 comment on table public.ep_invitations is 'Espace Pro : invitations en attente (profil créé à la création du compte)';
 
-create function public.ep_est_admin() returns boolean
-language sql stable security definer set search_path = '' as $$
-  select coalesce((select role = 'admin' from public.ep_profils where id = auth.uid() and actif), false)
-$$;
+-- ep_est_admin() est déjà créée par la migration ep_mediatheque.
 
 -- Liste des comptes (avec ou sans profil Espace Pro)
 create function public.ep_admin_utilisateurs()
@@ -143,7 +140,7 @@ begin
 end $$;
 
 revoke execute on function
-  public.ep_est_admin(), public.ep_admin_utilisateurs(),
+  public.ep_admin_utilisateurs(),
   public.ep_admin_definir_profil(uuid, public.ep_role, text, text, uuid, uuid, boolean),
   public.ep_admin_inviter(text, public.ep_role, text, text, uuid, uuid),
   public.ep_admin_invitations(), public.ep_admin_annuler_invitation(uuid),
@@ -151,7 +148,7 @@ revoke execute on function
 from public, anon;
 revoke execute on function public.ep_profil_depuis_invitation() from authenticated;
 grant execute on function
-  public.ep_est_admin(), public.ep_admin_utilisateurs(),
+  public.ep_admin_utilisateurs(),
   public.ep_admin_definir_profil(uuid, public.ep_role, text, text, uuid, uuid, boolean),
   public.ep_admin_inviter(text, public.ep_role, text, text, uuid, uuid),
   public.ep_admin_invitations(), public.ep_admin_annuler_invitation(uuid), public.ep_admin_commerciaux()
