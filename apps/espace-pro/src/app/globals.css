@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ════════════════════════════════════════════════════════════════════
+   TOKENS — Espace Pro
+   1. Primitives (palette brute, ne jamais utiliser dans les composants)
+   2. Sémantiques (ce que les composants consomment)
+   Les teintes exactes seront recalées sur les chartes Picard / Eliot.
+   ════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* — Primitives : camaïeu de bleus — */
+  --bleu-950: #071a33;
+  --bleu-900: #0b2545;
+  --bleu-800: #12355f;
+  --bleu-700: #1a4a80;
+  --bleu-600: #2563a6;
+  --bleu-500: #3a7cc4;
+  --bleu-400: #6a9cd6;
+  --bleu-300: #9dbee6;
+  --bleu-200: #c9dbf1;
+  --bleu-100: #e3edf8;
+
+  /* — Primitives : crème — */
+  --creme-50: #fffdf8;
+  --creme-100: #f7f3ea;
+  --creme-200: #f0eadd;
+  --creme-300: #e4dccb;
+  --creme-400: #cfc4ae;
+
+  /* — Primitives : laiton (action) — */
+  --laiton-300: #f2cf7a;
+  --laiton-400: #ebbc4e;
+  --laiton-500: #e3a92b;
+  --laiton-600: #c98f17;
+
+  /* — Sémantiques : clair — */
+  --bg: var(--creme-100);
+  --surface: var(--creme-50);
+  --surface-sunken: var(--creme-200);
+  --line: var(--creme-300);
+  --line-strong: var(--creme-400);
+  --text: var(--bleu-900);
+  --text-2: #3b4f6b;
+  --text-3: #5f6f86;
+  --accent: var(--bleu-600);
+  --accent-strong: var(--bleu-700);
+  --accent-soft: var(--bleu-100);
+  --cta: var(--laiton-500);
+  --cta-hover: var(--laiton-400);
+  --cta-text: var(--bleu-900);
+  --nav-bg: var(--bleu-900);
+  --nav-text: #dce6f2;
+  --nav-muted: #8ea3bf;
+  --nav-hover: var(--bleu-800);
+  --nav-active: var(--bleu-700);
+  --success: #2d7a4f;
+  --success-soft: #e2f1e8;
+  --danger: #b3372c;
+  --danger-soft: #f8e2df;
+  --warning: #a8610b;
+  --warning-soft: #faebd3;
+  --focus: var(--bleu-500);
+
+  color-scheme: light;
+}
+
+/* Habillage Eliot : même système, bleus tirés vers le pétrole */
+[data-brand="eliot"] {
+  --accent: #1f6f8b;
+  --accent-strong: #165a72;
+  --accent-soft: #dcedf2;
+  --nav-bg: #0d3442;
+  --nav-hover: #134555;
+  --nav-active: #1b5869;
+  --text: #0d2c3a;
+}
+
+[data-theme="dark"] {
+  --bg: #0a1628;
+  --surface: #0f2036;
+  --surface-sunken: #0c1a2e;
+  --line: #1c3252;
+  --line-strong: #2a4669;
+  --text: #e8eef6;
+  --text-2: #b4c3d6;
+  --text-3: #8698b0;
+  --accent: #7daee8;
+  --accent-strong: #a5c8f0;
+  --accent-soft: #16304f;
+  --cta: var(--laiton-400);
+  --cta-hover: var(--laiton-300);
+  --cta-text: var(--bleu-950);
+  --nav-bg: #071222;
+  --nav-text: #dce6f2;
+  --nav-muted: #7f93ad;
+  --nav-hover: #10223a;
+  --nav-active: #16304f;
+  --success: #6cc595;
+  --success-soft: #12322a;
+  --danger: #ef8a80;
+  --danger-soft: #3a1a18;
+  --warning: #e8b062;
+  --warning-soft: #33250f;
+  --focus: var(--bleu-400);
+  color-scheme: dark;
+}
+
+[data-theme="dark"][data-brand="eliot"] {
+  --accent: #6cc0d6;
+  --accent-strong: #9ad6e5;
+  --accent-soft: #123640;
+  --nav-bg: #06171e;
+  --text: #e6f0f3;
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply font-sans text-sm;
+    font-feature-settings: "tnum" 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Largeur de dessin pour titres : Archivo semi-étendu */
+  .font-display {
+    font-variation-settings: "wdth" 112;
+  }
+  .font-condensed {
+    font-variation-settings: "wdth" 88;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+:root {
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f6f86' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+select { background-position: right 12px center; }
