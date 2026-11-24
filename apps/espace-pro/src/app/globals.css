@@ -814,3 +814,42 @@ select { background-position: right 12px center; }
     transition: none;
   }
 }
+
+/* Frise du calendrier : les événements se posent, la ligne du jour se dessine */
+.frise-evenement {
+  animation: frise-evenement 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.frise-evenement > span:first-child {
+  animation: frise-duree 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: inherit;
+}
+@keyframes frise-evenement {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes frise-duree {
+  from {
+    transform: scaleX(0);
+  }
+}
+.frise-aujourdhui {
+  transform-origin: top;
+  animation: frise-aujourdhui 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes frise-aujourdhui {
+  from {
+    transform: translateX(-50%) scaleY(0);
+  }
+  to {
+    transform: translateX(-50%) scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .frise-evenement,
+  .frise-evenement > span:first-child,
+  .frise-aujourdhui {
+    animation: none;
+  }
+}

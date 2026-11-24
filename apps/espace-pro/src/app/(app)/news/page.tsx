@@ -3,7 +3,7 @@ import { PageNews } from "@/components/communication/page-news";
 import { annoncesActives } from "@/lib/data/accueil";
 import { profilCourant } from "@/lib/data/session";
 
-export const metadata: Metadata = { title: "News" };
+export const metadata: Metadata = { title: "Messages" };
 
 export default async function Page() {
   const [profil, annonces] = await Promise.all([profilCourant(), annoncesActives()]);

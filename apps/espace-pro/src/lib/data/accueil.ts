@@ -133,7 +133,7 @@ export async function tousEvenements(): Promise<ElementAgenda[]> {
   }));
 }
 
-/** Toutes les annonces en cours visibles par l'utilisateur (page News). */
+/** Toutes les annonces en cours visibles par l'utilisateur (page Messages). */
 export async function annoncesActives(): Promise<Annonce[]> {
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const { data } = await supabaseServeur()

@@ -48,7 +48,7 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   animations: { label: "Animations", href: "/animations", phase: 3 },
   boutique: { label: "Boutique", href: "/boutique", phase: 3 },
   sav: { label: "SAV", href: "/sav", phase: 2 },
-  news: { label: "News", href: "/news", phase: 1 },
+  news: { label: "Messages", href: "/news", phase: 1 },
   calendrier: { label: "Calendrier", href: "/calendrier", phase: 1 },
   administration: { label: "Administration", href: "/administration", phase: 1 },
 };

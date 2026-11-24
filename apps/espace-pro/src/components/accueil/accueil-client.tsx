@@ -317,7 +317,7 @@ export function AccueilClient({
           </p>
         </Carte>
 
-        {/* ───────── Fil Picard, dans l'esprit du canal News ───────── */}
+        {/* ───────── Fil Picard, dans l'esprit de la page Messages ───────── */}
         <Carte id="fil" titre="Picard Serrures" compteur="canal officiel" lien={{ href: "/news", label: "Ouvrir le canal" }}>
           {fil.length ? (
             <ol className="flex flex-col gap-3 rounded-md bg-sunken p-4">
