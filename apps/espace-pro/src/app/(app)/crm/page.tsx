@@ -1,6 +1,7 @@
-import { Building2, Coins, Handshake, Inbox } from "lucide-react";
+import { Building2, Coins, Handshake, Inbox, Route } from "lucide-react";
 import type { Metadata } from "next";
 import { Portefeuille } from "@/components/crm/portefeuille";
+import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiBand } from "@/components/ui/kpi";
 import { PageHeader } from "@/components/ui/page-header";
@@ -10,6 +11,8 @@ import { profilCourant } from "@/lib/data/session";
 import { formatNumber } from "@/lib/format";
 
 export const metadata: Metadata = { title: "CRM" };
+// Données propres à l’utilisateur connecté : jamais de rendu statique.
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const profil = await profilCourant();
@@ -40,6 +43,12 @@ export default async function Page() {
           atc
             ? "Vos comptes, leur niveau et leur activité. Ouvrez une fiche pour préparer une visite."
             : "Tous les comptes du réseau, leur niveau, leur commercial et leur activité sur les douze derniers mois."
+        }
+        actions={
+          <ButtonLink href="/crm/tournee" variant={atc ? "primary" : "secondary"}>
+            <Route aria-hidden />
+            {atc ? "Ma tournée" : "Tournées et actions"}
+          </ButtonLink>
         }
       />
       <KpiBand

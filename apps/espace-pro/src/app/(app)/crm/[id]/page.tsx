@@ -2,6 +2,7 @@ import { ArrowLeft, CircleCheck, Coins, Handshake, Inbox, MapPin, UserRound } fr
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActivitesCompte } from "@/components/crm/activites-compte";
 import { LIBELLE_EVENEMENT, LIBELLE_STATUT, VARIANTE_STATUT, formatJour } from "@/components/crm/statuts";
 import { Badge, NiveauBadge } from "@/components/ui/badge";
 import { Cote } from "@/components/ui/cote";
@@ -10,11 +11,13 @@ import { KpiBand } from "@/components/ui/kpi";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Picto } from "@/components/ui/picto";
-import { commerciaux, ficheCompte, peutVoirCrm } from "@/lib/data/crm";
+import { activitesCompte, commerciaux, ficheCompte, peutVoirCrm } from "@/lib/data/crm";
 import { profilCourant } from "@/lib/data/session";
 import { formatNumber } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Fiche compte" };
+// Données propres à l’utilisateur connecté : jamais de rendu statique.
+export const dynamic = "force-dynamic";
 
 /** Paliers de points affichés sur la fiche (en attendant le catalogue de la boutique). */
 const PALIERS = [1000, 2500, 5000, 10000];
@@ -32,6 +35,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   const [fiche, noms] = await Promise.all([ficheCompte(params.id), commerciaux()]);
   if (!fiche) notFound();
+  const suivi = await activitesCompte(params.id);
   const { compte: c, leads, evenements, points } = fiche;
   const commercial = noms.find((n) => n.id === c.commercialId);
   const traites = leads.filter((l) => !["a_valider", "attribue"].includes(l.statut)).length;
@@ -70,6 +74,10 @@ export default async function Page({ params }: { params: { id: string } }) {
           { label: "Points", value: formatNumber(c.points), icon: Coins, tone: "cta", note: `${points.length} mouvements` },
         ]}
       />
+
+      <div className="mt-8">
+        <ActivitesCompte compteId={c.id} activites={suivi.activites} actions={suivi.actions} plans={suivi.plans} peutEcrire={suivi.peutEcrire} />
+      </div>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
         <Panel>
@@ -135,7 +143,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           </Panel>
 
           <Panel>
-            <PanelHeader title="Historique" description="Les derniers événements sur les leads de ce compte" />
+            <PanelHeader title="Historique des leads" description="Les derniers événements sur les leads de ce compte" />
             {evenements.length ? (
               <ol className="border-t border-line px-6 py-4">
                 {evenements.slice(0, 12).map((e, i) => (
