@@ -1,195 +1,240 @@
-import { BadgeEuro, CalendarClock, Handshake, Target, TrendingDown, TrendingUp, TriangleAlert, Users } from "lucide-react";
+import { BadgeEuro, CalendarRange, Scale, Target, TriangleAlert } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Jauge } from "@/components/ui/jauge";
 import { KpiBand } from "@/components/ui/kpi";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Picto } from "@/components/ui/picto";
-import type { Signal, SynthesePilotage } from "@/lib/data/pilotage";
-import type { StatsLeads } from "@/lib/data/types";
-import { BarreObjectif, Evolution } from "./barre-objectif";
+import type { DetailPilotage, LigneCA, Signal, TableauPilotage } from "@/lib/data/pilotage";
+import { ChoixMois } from "./choix-mois";
 import { CourbeMensuelle } from "./courbe-mensuelle";
+import { DetailDimension } from "./detail-dimension";
+import { LiensSegmentes } from "./liens-segmentes";
 import { MOIS_LONGS, NOMS_GAMMES, enMillions, evolution, montantCourt, ratio } from "./montants";
-import { TableauCommerciaux } from "./tableau-commerciaux";
+import { lienPilotage, type EtatVue } from "./navigation";
+import { etatAvancement, nomPropre, nomZone } from "./seuils";
+import { TableauDimension, type LigneTableau } from "./tableau-dimension";
 
-export function VuePilotage({ synthese, signaux, leads }: { synthese: SynthesePilotage; signaux: Signal[]; leads: StatsLeads | null }) {
-  const s = synthese.societe;
-  const fin = synthese.dernier_mois ? MOIS_LONGS[synthese.dernier_mois - 1] : null;
-  const atteinte = ratio(s.realise_cumul, s.budget_cumul);
-  const evol = evolution(s.realise_cumul, s.n1_cumul);
-  const reste = Math.max(0, s.budget_annuel - s.realise_cumul);
-  const moisRestants = 12 - synthese.dernier_mois;
-  const tendance = synthese.mois.filter((m) => m.realise !== null).slice(-7).map((m) => m.realise as number);
+const LIBELLES_VUE = { societe: "Société", zone: "Par zone", atc: "Par ATC", gamme: "Par gamme" } as const;
+
+export function VuePilotage({
+  t,
+  etat,
+  societe,
+  detail,
+  signaux,
+}: {
+  t: TableauPilotage;
+  etat: EtatVue;
+  societe: DetailPilotage | null;
+  detail: DetailPilotage | null;
+  signaux: Signal[];
+}) {
+  const mensuel = etat.periode === "mois";
+  const moisAffiche = t.mois;
+  const nomMois = MOIS_LONGS[Math.max(moisAffiche, 1) - 1];
+  const chiffres = (l: LigneCA) =>
+    mensuel
+      ? { realise: l.mois_realise, reference: l.mois_budget_prorata, n1: l.mois_n1 }
+      : { realise: l.realise_cumul, reference: l.budget_prorata, n1: l.n1_prorata };
+
+  const s = chiffres(t.societe);
+  const pct = ratio(s.realise, s.reference);
+  const etatSociete = etatAvancement(pct, t.seuils);
+  const ecart = s.realise - s.reference;
+  const evol = evolution(s.realise, s.n1);
+  const enCours = moisAffiche === t.dernier_mois && t.jours.ratio < 1;
+  const tendance = (societe?.mois ?? []).filter((m) => m.realise !== null).slice(-7).map((m) => m.realise as number);
+
+  const lignesZones: LigneTableau[] = t.zones.map((z) => ({
+    cle: z.zone,
+    titre: nomZone(z.zone),
+    sousTitre: `${z.atc} ATC`,
+    ...chiffres(z),
+    href: lienPilotage(etat, { vue: "zone", cle: z.zone }),
+    selectionne: etat.vue === "zone" && etat.cle === z.zone,
+  }));
+  const lignesAtc: LigneTableau[] = t.atc.map((a) => ({
+    cle: a.id,
+    titre: `${a.prenom} ${nomPropre(a.nom)}`,
+    sousTitre: [nomZone(a.zone), a.fonction].filter(Boolean).join(", "),
+    couleur: a.couleur,
+    ...chiffres(a),
+    href: lienPilotage(etat, { vue: "atc", cle: a.id }),
+    selectionne: etat.vue === "atc" && etat.cle === a.id,
+  }));
+  const lignesGammes: LigneTableau[] = t.gammes.map((g) => ({
+    cle: g.gamme,
+    titre: NOMS_GAMMES[g.gamme] ?? nomPropre(g.gamme),
+    ...chiffres(g),
+    href: lienPilotage(etat, { vue: "gamme", cle: g.gamme }),
+    selectionne: etat.vue === "gamme" && etat.cle === g.gamme,
+  }));
+  const lignes = etat.vue === "zone" ? lignesZones : etat.vue === "atc" ? lignesAtc : lignesGammes;
+  const choisie = lignes.find((l) => l.selectionne) ?? null;
+
+  const periodeTexte = mensuel
+    ? `${nomMois.charAt(0).toUpperCase()}${nomMois.slice(1)} ${t.annee}`
+    : `Cumul ${t.annee} à fin ${MOIS_LONGS[Math.max(t.dernier_mois, 1) - 1]}`;
 
   return (
     <>
       <PageHeader
         title="Pilotage commercial"
-        meta={<Badge variant="success">Données de l’outil Commerce</Badge>}
+        meta={<Badge variant="success">Données Picard ATC</Badge>}
         description={
-          fin
-            ? `Chiffre d’affaires ${synthese.annee} arrêté à fin ${fin}, comparé au budget et à ${synthese.annee - 1} sur la même période.`
-            : `Aucun réalisé saisi pour ${synthese.annee} pour l’instant.`
+          enCours
+            ? `${periodeTexte}. Mois en cours : ${t.jours.ecoules} jours ouvrés écoulés sur ${t.jours.ouvres}, le budget est compté au prorata.`
+            : `${periodeTexte}, comparé au budget et à ${t.annee - 1} à la même date.`
         }
       />
+
+      <div className="mb-8 flex flex-wrap items-center gap-3">
+        <LiensSegmentes
+          label="Vue"
+          options={(Object.keys(LIBELLES_VUE) as (keyof typeof LIBELLES_VUE)[]).map((v) => ({
+            href: lienPilotage(etat, { vue: v, cle: null }),
+            label: LIBELLES_VUE[v],
+            actif: etat.vue === v,
+            compte: v === "zone" ? t.zones.length : v === "atc" ? t.atc.length : v === "gamme" ? t.gammes.length : undefined,
+          }))}
+        />
+        <LiensSegmentes
+          label="Période"
+          options={[
+            { href: lienPilotage(etat, { periode: "cumul" }), label: "Cumul année", actif: !mensuel },
+            { href: lienPilotage(etat, { periode: "mois" }), label: "Un mois", actif: mensuel },
+          ]}
+        />
+        {mensuel ? <ChoixMois etat={etat} mois={moisAffiche} dernier={t.dernier_mois} annee={t.annee} /> : null}
+      </div>
 
       <KpiBand
         items={[
           {
-            label: "Réalisé à date",
-            value: enMillions(s.realise_cumul),
+            label: mensuel ? `Réalisé en ${nomMois}` : "Réalisé à date",
+            value: enMillions(s.realise),
             unit: "M€",
             icon: BadgeEuro,
             tone: "cta",
-            delta: evol !== null ? { text: `${evol > 0 ? "+" : "−"}${Math.abs(evol)} % sur un an`, sens: evol >= 0 ? "up" : "down", bon: evol >= 0 } : undefined,
-            trend: tendance.length > 1 ? tendance : undefined,
+            trend: !mensuel && tendance.length > 1 ? tendance : undefined,
+            href: lienPilotage(etat, { vue: "atc", cle: null }),
           },
           {
-            label: "Atteinte du budget à date",
-            value: atteinte ?? "–",
+            label: "Avancement",
+            value: pct ?? "–",
             unit: "%",
             icon: Target,
-            tone: atteinte !== null && atteinte >= 100 ? "success" : atteinte !== null && atteinte < 90 ? "warning" : "accent",
-            note: `Budget à date : ${montantCourt(s.budget_cumul)}`,
+            tone: etatSociete.tone === "accent" ? "accent" : etatSociete.tone,
+            note: `${etatSociete.label}, budget à date ${montantCourt(s.reference)}`,
+            href: lienPilotage(etat, { vue: "zone", cle: null }),
           },
           {
-            label: "Reste à faire sur l’année",
-            value: enMillions(reste),
-            unit: "M€",
-            icon: CalendarClock,
-            tone: "neutral",
-            note: moisRestants > 0 ? `Soit ${montantCourt(reste / moisRestants)} par mois sur ${moisRestants} mois` : "Année terminée",
+            label: "Écart au budget à date",
+            value: `${ecart >= 0 ? "+" : "−"}${montantCourt(Math.abs(ecart))}`,
+            icon: Scale,
+            tone: ecart >= 0 ? "success" : "danger",
+            note: !mensuel ? `Budget annuel ${montantCourt(t.societe.budget_annuel)}` : undefined,
+            href: lienPilotage(etat, { vue: "gamme", cle: null }),
           },
           {
-            label: "Transformation des leads",
-            value: leads?.transformation_pct ?? "–",
-            unit: "%",
-            icon: Handshake,
-            tone: "success",
-            note: leads ? `${leads.recus} leads reçus sur 90 jours` : undefined,
+            label: `Par rapport à ${t.annee - 1}`,
+            value: evol === null ? "–" : `${evol > 0 ? "+" : evol < 0 ? "−" : ""}${Math.abs(evol)}`,
+            unit: evol === null ? undefined : "%",
+            icon: CalendarRange,
+            tone: evol === null ? "neutral" : evol >= 0 ? "success" : "danger",
+            note: `${montantCourt(s.n1)} à la même date`,
+            href: lienPilotage(etat, { vue: "zone", cle: null }),
           },
         ]}
       />
 
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-        <Panel>
-          <PanelHeader title="Chiffre d’affaires mensuel" description="Survolez un mois pour le détail" />
-          <PanelBody>
-            <CourbeMensuelle mois={synthese.mois} annee={synthese.annee} />
-          </PanelBody>
-        </Panel>
-        <Panel>
-          <PanelHeader title="Objectif annuel" description={`Budget ${synthese.annee} : ${montantCourt(s.budget_annuel)}`} />
-          <PanelBody className="flex flex-col items-center gap-6">
-            <Jauge
-              value={s.realise_cumul}
-              max={s.budget_annuel}
-              target={s.budget_cumul}
-              label="Réalisé par rapport au budget annuel"
-              valueLabel={`${ratio(s.realise_cumul, s.budget_annuel) ?? 0} %`}
-              sousTitre={`${montantCourt(s.realise_cumul)} sur ${montantCourt(s.budget_annuel)}`}
-              tone={atteinte !== null && atteinte >= 100 ? "success" : "accent"}
-              size={260}
-            />
-            <p className="max-w-xs text-center text-xs text-text-3">Le trait noir indique où il faudrait être aujourd’hui pour tenir le budget.</p>
-          </PanelBody>
-        </Panel>
-      </div>
-
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-        <Panel>
-          <PanelHeader title="Équipe commerciale" description={`${synthese.commerciaux.length} commerciaux, cumul à date`} />
-          <TableauCommerciaux commerciaux={synthese.commerciaux} />
-        </Panel>
-        <div className="flex flex-col gap-8">
-          <Panel>
-            <PanelHeader title="Par gamme" description="Atteinte du budget et évolution sur un an" />
-            <ul>
-              {synthese.gammes.map((g) => (
-                <li key={g.gamme} className="border-t border-line px-6 py-4">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-semibold text-text">{NOMS_GAMMES[g.gamme] ?? g.gamme}</span>
-                    <span className="flex items-center gap-2">
-                      <span className="tabular text-sm text-text-2">{montantCourt(g.realise_cumul)}</span>
-                      <Evolution valeur={evolution(g.realise_cumul, g.n1_cumul)} />
-                    </span>
-                  </div>
-                  <div className="mt-2">
-                    <BarreObjectif pct={ratio(g.realise_cumul, g.budget_cumul)} label={`Atteinte du budget, gamme ${g.gamme}`} />
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-          <SignauxPanel signaux={signaux} />
+      {etat.vue === "societe" ? (
+        <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+          <div className="flex min-w-0 flex-col gap-8">
+            <Panel>
+              <PanelHeader title="Chiffre d’affaires mensuel" description="Survolez un mois pour le détail" />
+              <PanelBody>{societe ? <CourbeMensuelle mois={societe.mois} annee={t.annee} /> : null}</PanelBody>
+            </Panel>
+            <Panel>
+              <PanelHeader title="Par gamme" actions={<Link href={lienPilotage(etat, { vue: "gamme" })} className="text-sm font-medium text-accent hover:underline">Détail</Link>} />
+              <TableauDimension lignes={lignesGammes} seuils={t.seuils} libelle="Gamme" />
+            </Panel>
+          </div>
+          <div className="flex min-w-0 flex-col gap-8">
+            <Panel>
+              <PanelHeader title="Par zone" actions={<Link href={lienPilotage(etat, { vue: "zone" })} className="text-sm font-medium text-accent hover:underline">Détail</Link>} />
+              <ul>
+                {lignesZones.map((z) => {
+                  const p = ratio(z.realise, z.reference);
+                  const st = etatAvancement(p, t.seuils);
+                  return (
+                    <li key={z.cle} className="border-t border-line">
+                      <Link href={z.href} scroll={false} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-sunken">
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-semibold text-text">{z.titre}</span>
+                          <span className="block text-xs text-text-3">{z.sousTitre}</span>
+                        </span>
+                        <span className="tabular text-sm text-text-2">{montantCourt(z.realise)}</span>
+                        <Badge variant={st.tone}>{p !== null ? `${p} %` : "–"}</Badge>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Panel>
+            <Panel>
+              <PanelHeader title="Signaux à surveiller" />
+              {signaux.length === 0 ? (
+                <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucun signal particulier.</p>
+              ) : (
+                <ul>
+                  {signaux.slice(0, 6).map((sg) => (
+                    <li key={sg.titre + sg.detail} className="flex gap-3 border-t border-line px-6 py-4">
+                      <Picto icon={TriangleAlert} tone={sg.niveau} size="sm" />
+                      <span className="min-w-0">
+                        <span className="block font-semibold text-text">{sg.titre}</span>
+                        <span className="mt-0.5 block text-sm text-text-2">{sg.detail}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          </div>
         </div>
-      </div>
-
-      {leads ? <EntonnoirLeads stats={leads} /> : null}
-    </>
-  );
-}
-
-function SignauxPanel({ signaux }: { signaux: Signal[] }) {
-  const icone = (s: Signal) => (s.type === "commercial" ? Users : s.type === "gamme" ? TrendingDown : TriangleAlert);
-  return (
-    <Panel>
-      <PanelHeader title="Signaux à surveiller" description={signaux.length ? `${signaux.length} points d’attention` : undefined} />
-      {signaux.length ? (
-        <ul>
-          {signaux.map((s, i) => (
-            <li key={`${s.type}-${i}`} className="flex gap-3 border-t border-line px-6 py-4">
-              <Picto icon={icone(s)} tone={s.niveau} size="sm" />
-              <div className="min-w-0">
-                <p className="font-semibold text-text">{s.titre}</p>
-                <p className="mt-0.5 text-sm text-text-2">{s.detail}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
       ) : (
-        <div className="flex gap-3 border-t border-line px-6 py-4">
-          <Picto icon={TrendingUp} tone="success" size="sm" />
-          <p className="text-sm text-text-2">Aucun signal : tous les commerciaux sont au-dessus de 85 % de leur budget et aucune gamme ne recule.</p>
+        <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <Panel className="min-w-0">
+            <PanelHeader
+              title={etat.vue === "zone" ? "Zones" : etat.vue === "atc" ? "ATC" : "Gammes"}
+              description="Classées par chiffre d’affaires. Choisissez une ligne pour le détail."
+            />
+            <TableauDimension lignes={lignes} seuils={t.seuils} libelle={etat.vue === "zone" ? "Zone" : etat.vue === "atc" ? "ATC" : "Gamme"} />
+          </Panel>
+          <div className="order-first min-w-0 xl:order-none">
+            {choisie && detail ? (
+              <DetailDimension
+                detail={detail}
+                titre={choisie.titre}
+                sousTitre={choisie.sousTitre}
+                realise={choisie.realise}
+                reference={choisie.reference}
+                n1={choisie.n1}
+                seuils={t.seuils}
+                etat={etat}
+              />
+            ) : (
+              <Panel className="hidden xl:block">
+                <PanelHeader title="Détail" />
+                <p className="border-t border-line px-6 py-8 text-sm text-text-2">
+                  Choisissez {etat.vue === "zone" ? "une zone" : etat.vue === "atc" ? "un ATC" : "une gamme"} dans la liste pour voir sa courbe mois par mois et sa ventilation.
+                </p>
+              </Panel>
+            )}
+          </div>
         </div>
       )}
-    </Panel>
-  );
-}
-
-function EntonnoirLeads({ stats }: { stats: StatsLeads }) {
-  const p = stats.par_statut;
-  const n = (k: keyof typeof p) => p[k] ?? 0;
-  const etapes = [
-    { label: "Leads reçus", valeur: stats.recus },
-    { label: "Acceptés par un professionnel", valeur: n("accepte") + n("contacte") + n("devis") + n("signe") + n("perdu") },
-    { label: "Clients contactés", valeur: n("contacte") + n("devis") + n("signe") + n("perdu") },
-    { label: "Devis envoyés", valeur: n("devis") + n("signe") },
-    { label: "Ventes signées", valeur: n("signe") },
-  ];
-  const max = Math.max(etapes[0].valeur, 1);
-  return (
-    <Panel className="mt-8">
-      <PanelHeader title="Parcours des leads" description="90 derniers jours, de la réception à la signature" />
-      <PanelBody>
-        <ol className="flex flex-col gap-3">
-          {etapes.map((e, i) => (
-            <li key={e.label} className="grid grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] items-center gap-4">
-              <span className="text-sm text-text-2">{e.label}</span>
-              <span className="h-6 rounded-sm bg-sunken">
-                <span
-                  className="block h-6 rounded-sm transition-[width] duration-700 ease-out"
-                  style={{ width: `${(e.valeur / max) * 100}%`, background: i === etapes.length - 1 ? "var(--success)" : "var(--accent)", opacity: i === etapes.length - 1 ? 1 : 1 - i * 0.15 }}
-                />
-              </span>
-              <span className="tabular w-24 text-right text-sm">
-                <span className="font-semibold text-text">{e.valeur}</span>
-                {i > 0 ? <span className="text-text-3"> ({Math.round((e.valeur / max) * 100)} %)</span> : null}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </PanelBody>
-    </Panel>
+    </>
   );
 }
