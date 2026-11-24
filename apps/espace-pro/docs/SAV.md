@@ -42,6 +42,13 @@
 - **Qualité :** tableau des non-conformités par produit ou cause, actions correctives, tendance.
 - **Pilotage :** volume par type, délai moyen de résolution interne, taux de prise sous garantie, produits les plus concernés.
 
+## Choix provisoires appliqués dans la première version
+- Pas de reprise de l'historique Qualios.
+- Avoirs seulement tracés (référence et montant), émis dans Navision.
+- Pièces détachées demandées par une demande SAV de type « pièces détachées ».
+- Aucune information envoyée au particulier.
+- Notifications uniquement dans l'Espace Pro (compteur « réponse attendue »), pas d'e-mail.
+
 ## Questions encore ouvertes
 1. Faut-il **reprendre l'historique** des dossiers SAV de Qualios ? Si oui, sous quelle forme peut-on l'exporter ?
 2. Les **avoirs** sont-ils émis dans Navision ? L'Espace Pro doit-il seulement les tracer, ou les déclencher ?
