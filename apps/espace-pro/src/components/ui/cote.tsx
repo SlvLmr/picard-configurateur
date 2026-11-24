@@ -10,9 +10,9 @@ const fill: Record<Tone, string> = {
 };
 
 /**
- * La cote : une ligne de cote de plan technique (deux butées, une valeur).
- * Élément signature de l'Espace Pro. Sert à représenter une mesure entre
- * deux bornes : objectif, délai, progression vers un palier.
+ * La cote : une ligne de cote de plan technique, graduée comme un réglet.
+ * Élément signature de l'Espace Pro. Représente une mesure entre deux bornes :
+ * objectif, délai, progression vers un palier.
  */
 export function Cote({
   value,
@@ -33,7 +33,6 @@ export function Cote({
   startLabel?: React.ReactNode;
   endLabel?: React.ReactNode;
   targetLabel?: string;
-  /** Libellé accessible */
   label: string;
   tone?: Tone;
   className?: string;
@@ -41,54 +40,47 @@ export function Cote({
   const pct = Math.max(0, Math.min(100, (value / max) * 100));
   const targetPct = target !== undefined ? Math.max(0, Math.min(100, (target / max) * 100)) : undefined;
   const labelPos = Math.max(6, Math.min(94, pct));
+  const graduations = Array.from({ length: 21 }, (_, i) => i * 5);
 
   return (
-    <div
-      role="meter"
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={max}
-      aria-valuenow={value}
-      className={cn("w-full", className)}
-    >
+    <div role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={max} aria-valuenow={value} className={cn("w-full", className)}>
       <div className="relative h-12">
-        {/* Valeur */}
+        {/* Valeur, dans une étiquette */}
         <span
-          className="tabular absolute top-0 -translate-x-1/2 whitespace-nowrap text-sm font-bold text-text"
+          className="tabular absolute top-0 -translate-x-1/2 whitespace-nowrap rounded-sm bg-text px-2 text-xs font-semibold leading-5 text-surface"
           style={{ left: `${labelPos}%` }}
         >
           {valueLabel}
         </span>
         {/* Butées */}
-        <span aria-hidden className="absolute bottom-0 left-0 h-5 w-px bg-text-3" />
-        <span aria-hidden className="absolute bottom-0 right-0 h-5 w-px bg-text-3" />
-        {/* Ligne de cote avec flèches */}
-        <span aria-hidden className="absolute bottom-2 left-px right-px h-px bg-text-3" />
-        <svg aria-hidden className="absolute bottom-1 left-px size-2 text-text-3" viewBox="0 0 8 8">
-          <path d="M0 4 8 1v6z" fill="currentColor" />
-        </svg>
-        <svg aria-hidden className="absolute bottom-1 right-px size-2 text-text-3" viewBox="0 0 8 8">
-          <path d="M8 4 0 1v6z" fill="currentColor" />
-        </svg>
+        <span aria-hidden className="absolute bottom-0 left-0 h-6 w-px bg-text-2" />
+        <span aria-hidden className="absolute bottom-0 right-0 h-6 w-px bg-text-2" />
+        {/* Graduations du réglet */}
+        {graduations.slice(1, -1).map((g) => (
+          <span
+            key={g}
+            aria-hidden
+            className={cn("absolute bottom-0 w-px bg-text-3", g % 50 === 0 ? "opacity-80" : g % 10 === 0 ? "opacity-60" : "opacity-40")}
+            style={{ left: `${g}%`, height: g % 50 === 0 ? 7 : g % 10 === 0 ? 5 : 3 }}
+          />
+        ))}
+        {/* Piste */}
+        <span aria-hidden className="absolute left-px right-px h-2 rounded-full bg-sunken" style={{ bottom: 10 }} />
         {/* Mesure */}
         <span
           aria-hidden
-          className={cn("absolute left-0 h-1 rounded-sm transition-[width] duration-700 ease-out", fill[tone])}
-          style={{ width: `${pct}%`, bottom: 6 }}
+          className={cn("absolute left-0 h-2 rounded-full transition-[width] duration-700 ease-out", fill[tone])}
+          style={{ width: `${pct}%`, bottom: 10 }}
         />
         {/* Repère de valeur */}
-        <span
-          aria-hidden
-          className="absolute w-px -translate-x-1/2 bg-text"
-          style={{ left: `${pct}%`, top: 22, bottom: 0 }}
-        />
+        <span aria-hidden className="absolute w-0.5 -translate-x-1/2 rounded-full bg-text" style={{ left: `${pct}%`, top: 22, bottom: 4 }} />
         {/* Objectif */}
         {targetPct !== undefined ? (
           <span
             aria-hidden
-            className="absolute bottom-0 h-3 w-0.5 -translate-x-1/2 bg-accent-strong"
-            style={{ left: `${targetPct}%` }}
             title={targetLabel}
+            className="absolute size-2 -translate-x-1/2 rotate-45 bg-accent-strong"
+            style={{ left: `${targetPct}%`, bottom: 20 }}
           />
         ) : null}
       </div>

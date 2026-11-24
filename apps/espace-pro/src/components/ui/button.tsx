@@ -3,15 +3,16 @@ import { forwardRef } from "react";
 import { cn } from "@/lib/cn";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
-type Size = "sm" | "md";
+type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors duration-150 ease-out disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
 
 const variants: Record<Variant, string> = {
   /** Une seule action principale par zone. Laiton : la couleur de l'action. */
-  primary: "bg-cta text-cta-text font-semibold hover:bg-cta-hover",
-  secondary: "border border-line-strong bg-surface text-text hover:bg-sunken",
+  primary:
+    "bg-cta text-cta-text font-semibold shadow-cta hover:-translate-y-px hover:bg-cta-hover active:translate-y-0 active:shadow-none",
+  secondary: "border border-line-strong bg-surface text-text shadow-card hover:border-text-3 hover:bg-sunken",
   ghost: "text-text-2 hover:bg-sunken hover:text-text",
   danger: "border border-line-strong bg-surface text-danger hover:bg-danger-soft",
 };
@@ -19,9 +20,10 @@ const variants: Record<Variant, string> = {
 const sizes: Record<Size, string> = {
   sm: "h-8 px-3 text-sm",
   md: "h-10 px-4 text-sm",
+  lg: "h-12 px-6 text-base [&_svg]:size-5",
 };
 
-const iconSizes: Record<Size, string> = { sm: "size-8", md: "size-10" };
+const iconSizes: Record<Size, string> = { sm: "size-8", md: "size-10", lg: "size-12" };
 
 export type ButtonStyleProps = { variant?: Variant; size?: Size; iconOnly?: boolean };
 

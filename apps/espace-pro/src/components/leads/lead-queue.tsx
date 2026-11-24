@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { formatDuree } from "@/lib/format";
 import type { Destinataire, Lead } from "@/lib/mock/leads";
+import { SourcePicto } from "./source-picto";
 
 type Filtre = "tous" | "sans_pro" | "gros";
 
@@ -80,7 +81,9 @@ export function LeadQueue({ leads, compact = false, readOnly = false }: { leads:
                   leaving === l.id && "translate-x-4 opacity-0",
                 )}
               >
-                <div className="min-w-0">
+                <div className="flex min-w-0 gap-3">
+                  <SourcePicto source={l.source} />
+                  <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold text-text">{l.contact}</span>
                     <span className="text-text-3">{l.ville} ({l.departement})</span>
@@ -90,6 +93,7 @@ export function LeadQueue({ leads, compact = false, readOnly = false }: { leads:
                   <p className="tabular mt-1 text-xs text-text-3">
                     Reçu il y a {formatDuree(l.recuIlYaMin)}, via {l.source}
                   </p>
+                  </div>
                 </div>
 
                 <div className="min-w-0">

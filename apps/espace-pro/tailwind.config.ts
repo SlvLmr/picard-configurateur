@@ -26,6 +26,8 @@ const config: Config = {
       cta: "var(--cta)",
       "cta-hover": "var(--cta-hover)",
       "cta-text": "var(--cta-text)",
+      "cta-soft": "var(--cta-soft)",
+      "cta-deep": "var(--cta-deep)",
       nav: "var(--nav-bg)",
       "nav-text": "var(--nav-text)",
       "nav-muted": "var(--nav-muted)",
@@ -88,6 +90,7 @@ const config: Config = {
     },
     extend: {
       maxWidth: { page: "1280px", prose: "64ch" },
+      boxShadow: { card: "var(--shadow-card)", cta: "var(--shadow-cta)" },
       transitionTimingFunction: { out: "cubic-bezier(0.2, 0.8, 0.2, 1)" },
     },
   },

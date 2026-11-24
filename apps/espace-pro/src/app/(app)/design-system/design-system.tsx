@@ -1,6 +1,10 @@
 "use client";
 
-import { Check, Download, Plus } from "lucide-react";
+import { Check, Coins, Download, Hourglass, Inbox, Plus, Timer } from "lucide-react";
+import { Jauge } from "@/components/ui/jauge";
+import { KpiBand } from "@/components/ui/kpi";
+import { Picto } from "@/components/ui/picto";
+import { Repartition } from "@/components/ui/repartition";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +13,6 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Segmented } from "@/components/ui/segmented";
-import { StatBand } from "@/components/ui/stat-band";
 import { useToast } from "@/components/ui/toast";
 
 const COULEURS = [
@@ -139,6 +142,10 @@ export function DesignSystem() {
 
       <Section titre="Boutons" description="Deux tailles : 32 px dans les listes, 40 px ailleurs. Le libellé dit exactement ce qui se passe.">
         <div className="flex flex-wrap items-center gap-3">
+          <Button variant="primary" size="lg" onClick={() => toast("Lead attribué à Serrurerie Lambert")}>
+            <Inbox aria-hidden />
+            Traiter les leads
+          </Button>
           <Button variant="primary" onClick={() => toast("Lead attribué à Serrurerie Lambert")}>
             <Check aria-hidden />
             Attribuer
@@ -201,7 +208,7 @@ export function DesignSystem() {
         </div>
       </Section>
 
-      <Section titre="La cote" description="L’élément signature. Une ligne de cote de plan technique : deux butées, une mesure, une valeur. Elle remplace les barres de progression génériques.">
+      <Section titre="La cote" description="L’élément signature : une ligne de cote graduée comme un réglet, avec deux butées, une mesure et sa valeur. Elle remplace les barres de progression génériques.">
         <div className="grid gap-12 md:grid-cols-3">
           <Cote label="Objectif" value={412} max={500} valueLabel="412 k€" startLabel="Chiffre d’affaires" endLabel="500 k€" />
           <Cote label="Délai" value={1100} max={1440} tone="warning" valueLabel="Encore 5 h 40" startLabel="Reçu" endLabel="Réattribution" />
@@ -209,13 +216,47 @@ export function DesignSystem() {
         </div>
       </Section>
 
-      <Section titre="Bande d’indicateurs" description="Une seule par page, en tête. Quatre indicateurs au plus, séparés par des filets.">
-        <StatBand
+      <Section titre="Pictos" description="Un picto signale la nature d’une information, dans un carré teinté selon son sens. Le laiton signale ce qui rapporte (points, Ma Porte).">
+        <div className="flex flex-wrap items-center gap-3">
+          <Picto icon={Inbox} />
+          <Picto icon={Coins} tone="cta" />
+          <Picto icon={Check} tone="success" />
+          <Picto icon={Hourglass} tone="warning" />
+          <Picto icon={Timer} tone="danger" />
+          <Picto icon={Inbox} tone="neutral" />
+          <Picto icon={Inbox} tone="nav" size="lg" />
+          <Picto icon={Inbox} size="sm" />
+        </div>
+      </Section>
+
+      <Section titre="Indicateurs clés" description="Une seule bande par page, en tête. Picto, valeur forte, évolution colorée selon qu’elle est bonne ou mauvaise, tendance sur 7 périodes.">
+        <KpiBand
           items={[
-            { label: "À valider", value: 37, note: "9 de plus depuis 8 h", tone: "negative" },
-            { label: "Délai moyen", value: "2 h 14", note: "18 min de moins", tone: "positive" },
-            { label: "Acceptés sous 24 h", value: "92 %" },
-            { label: "Sans pro à proximité", value: 6 },
+            { label: "À valider", value: 37, icon: Inbox, tone: "cta", delta: { text: "+9 depuis 8 h", sens: "up", bon: false }, trend: [22, 25, 19, 28, 31, 27, 37] },
+            { label: "Délai moyen", value: "2 h 14", icon: Timer, delta: { text: "−18 min", sens: "down", bon: true }, trend: [190, 176, 168, 160, 151, 142, 134] },
+            { label: "Acceptés sous 24 h", value: 92, unit: "%", icon: Hourglass, tone: "success", delta: { text: "+4 pts", sens: "up", bon: true }, trend: [81, 84, 83, 87, 88, 90, 92] },
+            { label: "Points", value: "4 820", icon: Coins, tone: "cta", note: "Prochain palier à 6 500" },
+          ]}
+        />
+      </Section>
+
+      <Section titre="Jauge" description="Un instrument de mesure gradué : pour l’indicateur principal d’un panneau (objectif annuel, palier). L’aiguille donne la valeur, le trait noir l’objectif.">
+        <div className="flex flex-wrap gap-12">
+          <Jauge value={412} max={500} target={450} label="Objectif" valueLabel="82 %" sousTitre="412 k€ sur 500 k€" />
+          <Jauge value={4820} max={6500} label="Palier" valueLabel="4 820 pts" sousTitre="Encore 1 680 points" tone="cta" />
+          <Jauge value={71} max={100} label="Marché" valueLabel="71 %" sousTitre="Fenêtriers" tone="danger" />
+        </div>
+      </Section>
+
+      <Section titre="Répartition" description="Une barre segmentée pour montrer comment un total se décompose.">
+        <Repartition
+          className="max-w-xl"
+          label="Leads par statut"
+          segments={[
+            { label: "Contactés", value: 21, color: "var(--bleu-400)" },
+            { label: "Devis envoyés", value: 25, color: "var(--accent)" },
+            { label: "Signés", value: 12, color: "var(--success)" },
+            { label: "Perdus", value: 14, color: "var(--danger)" },
           ]}
         />
       </Section>

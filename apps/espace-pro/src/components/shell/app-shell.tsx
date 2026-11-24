@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { ToastProvider } from "@/components/ui/toast";
+import type { ProfilReel } from "@/lib/data/types";
 import { CommandPalette } from "./command-palette";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children, profil }: { children: React.ReactNode; profil: ProfilReel | null }) {
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
 
@@ -27,10 +28,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         Aller au contenu
       </a>
       <div className="lg:grid lg:grid-cols-[240px_1fr]">
-        <Sidebar open={menu} onNavigate={() => setMenu(false)} />
+        <Sidebar open={menu} onNavigate={() => setMenu(false)} profil={profil} />
         {menu ? <div className="fixed inset-0 z-30 bg-[#071a33]/40 lg:hidden" onClick={() => setMenu(false)} aria-hidden /> : null}
         <div className="min-w-0">
-          <Topbar onMenu={() => setMenu(true)} onSearch={() => setSearch(true)} />
+          <Topbar onMenu={() => setMenu(true)} onSearch={() => setSearch(true)} profil={profil} />
           <main id="contenu" className="mx-auto w-full max-w-page px-4 py-8 sm:px-8 sm:py-12">
             {children}
           </main>

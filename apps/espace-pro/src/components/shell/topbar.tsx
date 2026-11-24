@@ -1,12 +1,14 @@
 "use client";
 
-import { Menu, Moon, Search, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LogIn, LogOut, Menu, Moon, Search, Sun } from "lucide-react";
+import { seDeconnecter } from "@/app/connexion/actions";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
-import { PERSONAS } from "@/lib/roles";
+import type { ProfilReel } from "@/lib/data/types";
+import { PERSONAS, ROLE_LABEL } from "@/lib/roles";
 import { useSession } from "@/lib/session";
 
-export function Topbar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () => void }) {
+export function Topbar({ onMenu, onSearch, profil }: { onMenu: () => void; onSearch: () => void; profil: ProfilReel | null }) {
   const { persona, setPersona, brand, setBrand, theme, setTheme } = useSession();
 
   return (
@@ -29,22 +31,23 @@ export function Topbar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () 
 
         <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 sm:flex-none">
           <label className="sr-only" htmlFor="persona">
-            Voir en tant que
+            Aperçu en tant que
           </label>
           <select
             id="persona"
             value={persona.id}
             onChange={(e) => setPersona(e.target.value)}
-            className="h-10 min-w-0 flex-1 cursor-pointer sm:flex-none appearance-none truncate rounded-md border border-line-strong bg-surface pl-3 pr-8 text-sm font-medium text-text sm:max-w-none"
+            title="Aperçu des écrans selon le profil (données de démonstration)"
+            className="h-10 min-w-0 flex-1 cursor-pointer appearance-none truncate rounded-md border border-line-strong bg-surface pl-3 pr-8 text-sm font-medium text-text sm:flex-none"
             style={{ backgroundImage: "var(--chevron)", backgroundRepeat: "no-repeat" }}
           >
             {PERSONAS.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.prenom}, {p.societe ? `${p.societe}` : p.fonction}
+                Aperçu : {p.prenom}, {p.societe ?? p.fonction}
               </option>
             ))}
           </select>
-          <div className="hidden md:block">
+          <div className="hidden xl:block">
             <Segmented
               label="Marque"
               value={brand}
@@ -63,6 +66,18 @@ export function Topbar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () 
           >
             {theme === "dark" ? <Sun /> : <Moon />}
           </Button>
+          {profil ? (
+            <form action={seDeconnecter}>
+              <Button type="submit" variant="ghost" iconOnly aria-label={`Se déconnecter (${profil.prenom ?? ""}, ${ROLE_LABEL[profil.role]})`} title="Se déconnecter">
+                <LogOut />
+              </Button>
+            </form>
+          ) : (
+            <ButtonLink href="/connexion" variant="secondary" className="hidden sm:inline-flex">
+              <LogIn aria-hidden />
+              Se connecter
+            </ButtonLink>
+          )}
         </div>
       </div>
     </header>

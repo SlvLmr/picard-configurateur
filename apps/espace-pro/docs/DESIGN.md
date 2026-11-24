@@ -33,10 +33,15 @@ Grille de 4 px : 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96. Les échelles Tai
 Rayons : 4 (étiquettes), 8 (boutons, champs), 12 (panneaux).
 
 ## Composants
-`Button`, `Badge` / `NiveauBadge`, `Panel`, `PageHeader`, `StatBand`, `Field` / `Input` / `Select`, `Segmented`, `Cote`, `Avatar`, `EmptyState`, `Toast`.
+`Button` (sm, md, lg), `Badge` / `NiveauBadge`, `Picto`, `KpiBand`, `Sparkline`, `Jauge`, `Cote`, `Repartition`, `Panel`, `PageHeader`, `Field` / `Input` / `Select`, `Segmented`, `Avatar`, `EmptyState`, `Toast`.
+
+- **Picto** : carré teinté selon le sens (bleu information, laiton ce qui rapporte, vert, ambre, rouge).
+- **KpiBand** : picto, valeur forte, évolution colorée selon qu'elle est bonne ou mauvaise, tendance sur 7 périodes.
+- **Jauge** : cadran gradué avec aiguille, pour l'indicateur principal d'un panneau.
+- **Bouton principal** : laiton en relief (reflet, ombre portée), soulèvement au survol, enfoncement au clic.
 
 ## La cote
-Élément signature : une ligne de cote (deux butées, une mesure, une valeur).
+Élément signature : une ligne de cote graduée comme un réglet (deux butées, une mesure, une valeur en étiquette).
 Uniquement pour une mesure entre deux bornes : objectif, délai, palier.
 
 ## Règles de mise en page

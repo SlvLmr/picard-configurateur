@@ -50,6 +50,10 @@
   --cta: var(--laiton-500);
   --cta-hover: var(--laiton-400);
   --cta-text: var(--bleu-900);
+  --cta-soft: #fbf0d6;
+  --cta-deep: #8a5f0b;
+  --shadow-card: 0 1px 2px rgba(11, 37, 69, 0.04), 0 4px 16px -8px rgba(11, 37, 69, 0.1);
+  --shadow-cta: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(11, 37, 69, 0.2), 0 6px 16px -6px rgba(201, 143, 23, 0.6);
   --nav-bg: var(--bleu-900);
   --nav-text: #dce6f2;
   --nav-muted: #8ea3bf;
@@ -92,6 +96,10 @@
   --cta: var(--laiton-400);
   --cta-hover: var(--laiton-300);
   --cta-text: var(--bleu-950);
+  --cta-soft: #33280f;
+  --cta-deep: #f2cf7a;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow-cta: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px -6px rgba(235, 188, 78, 0.45);
   --nav-bg: #071222;
   --nav-text: #dce6f2;
   --nav-muted: #7f93ad;

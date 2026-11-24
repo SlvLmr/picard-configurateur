@@ -1,6 +1,7 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { CircleCheck, Download, Hourglass, MapPinOff, Timer } from "lucide-react";
+import { KpiBand } from "@/components/ui/kpi";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelHeader } from "@/components/ui/panel";
@@ -57,12 +58,12 @@ export function LeadsParRole() {
           </Button>
         }
       />
-      <StatBand
+      <KpiBand
         items={[
-          { label: "Taux de transformation", value: `${s.tauxTransformation} %`, note: "2 points de plus", tone: "positive" },
-          { label: "Délai moyen de prise en charge", value: formatDuree(s.delaiMoyenMin), note: "18 min de moins", tone: "positive" },
-          { label: "Acceptés en moins de 24 h", value: `${s.accepteesSous24h} %` },
-          { label: "Sans pro à proximité", value: s.sansProProche, note: "Renvoyés aux commerciaux" },
+          { label: "Taux de transformation", value: s.tauxTransformation, unit: "%", icon: CircleCheck, tone: "success", delta: { text: "+2 pts", sens: "up", bon: true }, trend: [26, 27, 29, 28, 30, 29, 31] },
+          { label: "Délai moyen de prise en charge", value: formatDuree(s.delaiMoyenMin), icon: Timer, delta: { text: "−18 min", sens: "down", bon: true }, trend: [190, 176, 168, 160, 151, 142, 134] },
+          { label: "Acceptés en moins de 24 h", value: s.accepteesSous24h, unit: "%", icon: Hourglass, tone: "accent" },
+          { label: "Sans pro à proximité", value: s.sansProProche, icon: MapPinOff, tone: "warning", note: "Renvoyés aux commerciaux" },
         ]}
       />
       <Panel className="mt-8">

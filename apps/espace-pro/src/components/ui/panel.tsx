@@ -2,7 +2,7 @@ import { cn } from "@/lib/cn";
 
 /** Conteneur pour un ensemble de données qu'on manipule. Ne pas l'utiliser pour décorer. */
 export function Panel({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  return <section className={cn("rounded-lg border border-line bg-surface", className)} {...props} />;
+  return <section className={cn("rounded-lg border border-line bg-surface shadow-card", className)} {...props} />;
 }
 
 export function PanelHeader({
