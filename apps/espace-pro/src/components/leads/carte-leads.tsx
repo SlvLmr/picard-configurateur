@@ -2,7 +2,7 @@
 
 import { ChevronRight, Locate, Minus, Plus, X } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Segmented } from "@/components/ui/segmented";
@@ -23,9 +23,12 @@ const GAGNES = ["signe", "pose"];
 const TEINTE: Record<Mesure, string> = { recus: "var(--accent)", a_traiter: "var(--cta)", gagnes: "var(--success)" };
 const VUE_INITIALE: Vue = { x: 0, y: 0, w: LARGEUR_CARTE, h: HAUTEUR_CARTE };
 const RATIO = HAUTEUR_CARTE / LARGEUR_CARTE;
+const ZONES: Zone[] = [...DEPARTEMENTS, ...PAYS_VOISINS];
+const PAR_CODE = new Map(ZONES.map((z) => [z.code, z]));
 
 const mesurer = (l: LeadGestion, m: Mesure) => (m === "recus" ? true : m === "a_traiter" ? A_TRAITER.includes(l.statut) : GAGNES.includes(l.statut));
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+const versTexte = (v: Vue) => `${v.x.toFixed(2)} ${v.y.toFixed(2)} ${v.w.toFixed(2)} ${v.h.toFixed(2)}`;
 
 /** Boîte englobante d'un tracé SVG à coordonnées absolues. */
 function boite(d: string) {
@@ -39,6 +42,62 @@ function boite(d: string) {
   }
   return { x0, y0, x1, y1 };
 }
+const BOITES = new Map(ZONES.map((z) => [z.code, boite(z.d)]));
+
+/**
+ * Fond de carte : ne se redessine que si les couleurs ou la sélection changent,
+ * jamais pendant un zoom ou un déplacement (la caméra agit directement sur le viewBox).
+ */
+const FondCarte = memo(function FondCarte({
+  remplissages,
+  choisi,
+  pret,
+  onSurvol,
+  onClic,
+}: {
+  remplissages: Map<string, string>;
+  choisi: string | null;
+  pret: boolean;
+  onSurvol: (code: string) => void;
+  onClic: (code: string) => void;
+}) {
+  return (
+    <>
+      {/* Ombre légère, sans filtre */}
+      <g transform="translate(0 5)" fill="#0b2545" opacity={0.1} pointerEvents="none">
+        {DEPARTEMENTS.map((d) => (
+          <path key={d.code} d={d.d} />
+        ))}
+      </g>
+      {PAYS_VOISINS.map((p) => (
+        <path
+          key={p.code}
+          d={p.d}
+          fill={remplissages.get(p.code) ?? "color-mix(in srgb, var(--surface-sunken) 75%, var(--surface))"}
+          stroke="var(--surface)"
+          strokeWidth={1.2}
+          vectorEffect="non-scaling-stroke"
+          onPointerEnter={() => onSurvol(p.code)}
+          onClick={() => onClic(p.code)}
+        />
+      ))}
+      {DEPARTEMENTS.map((d, i) => (
+        <path
+          key={d.code}
+          d={d.d}
+          fill={remplissages.get(d.code) ?? "var(--surface)"}
+          stroke="var(--surface)"
+          strokeWidth={0.9}
+          vectorEffect="non-scaling-stroke"
+          className="transition-[fill,opacity] duration-500 ease-out"
+          style={{ opacity: pret ? (choisi && choisi !== d.code ? 0.5 : 1) : 0, transitionDelay: pret && !choisi ? `${(i % 24) * 12}ms` : "0ms" }}
+          onPointerEnter={() => onSurvol(d.code)}
+          onClick={() => onClic(d.code)}
+        />
+      ))}
+    </>
+  );
+});
 
 function TroisChiffres({ info, grand = false }: { info: Info | null | undefined; grand?: boolean }) {
   return (
@@ -66,14 +125,17 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
   const [mesure, setMesure] = useState<Mesure>("recus");
   const [periode, setPeriode] = useState<Periode>("90");
   const [rendu, setRendu] = useState<Rendu>("aplats");
-  const [survol, setSurvol] = useState<{ code: string; x: number; y: number } | null>(null);
+  const [survol, setSurvol] = useState<string | null>(null);
   const [choisi, setChoisi] = useState<string | null>(null);
+  /** Vue « posée » : ne change qu'à la fin d'un mouvement (étiquettes, tailles des bulles) */
   const [vue, setVue] = useState<Vue>(VUE_INITIALE);
   const [pret, setPret] = useState(false);
   const [deplacement, setDeplacement] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
+  const bulleRef = useRef<HTMLDivElement>(null);
   const anim = useRef<number>(0);
+  const fin = useRef<ReturnType<typeof setTimeout>>();
   const vueCourante = useRef<Vue>(VUE_INITIALE);
   const glisse = useRef<{ x: number; y: number; vue: Vue; bouge: boolean } | null>(null);
 
@@ -81,8 +143,6 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
     const t = setTimeout(() => setPret(true), 40);
     return () => clearTimeout(t);
   }, []);
-
-  const boites = useMemo(() => new Map([...DEPARTEMENTS, ...PAYS_VOISINS].map((z) => [z.code, boite(z.d)])), []);
 
   const dansPeriode = useMemo(() => {
     const depuis = Date.now() - Number(periode) * 86400000;
@@ -106,30 +166,46 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
   }, [dansPeriode, mesure]);
 
   const max = Math.max(1, ...Array.from(parZone.values()).map((v) => v.mesure));
-  const zoom = LARGEUR_CARTE / vue.w;
-  const trait = 1 / zoom;
 
-  /* ── Caméra : glissement doux vers une vue cible ── */
-  const appliquer = (v: Vue) => {
+  const remplissages = useMemo(() => {
+    const m = new Map<string, string>();
+    if (rendu === "bulles") return m;
+    parZone.forEach((v, code) => {
+      if (!v.mesure) return;
+      const part = Math.round(14 + Math.pow(v.mesure / max, 0.7) * 76);
+      m.set(code, `color-mix(in srgb, ${TEINTE[mesure]} ${part}%, var(--surface))`);
+    });
+    return m;
+  }, [parZone, max, mesure, rendu]);
+
+  /* ── Caméra : le viewBox est modifié directement, sans rendu React à chaque image ── */
+  const poser = useCallback((v: Vue, immediat = false) => {
     vueCourante.current = v;
-    setVue(v);
-  };
-  const allerA = useCallback((cible: Vue) => {
-    cancelAnimationFrame(anim.current);
-    const depart = { ...vueCourante.current };
-    const t0 = performance.now();
-    const pas = (t: number) => {
-      const k = ease(Math.min(1, (t - t0) / 650));
-      appliquer({
-        x: depart.x + (cible.x - depart.x) * k,
-        y: depart.y + (cible.y - depart.y) * k,
-        w: depart.w + (cible.w - depart.w) * k,
-        h: depart.h + (cible.h - depart.h) * k,
-      });
-      if (k < 1) anim.current = requestAnimationFrame(pas);
-    };
-    anim.current = requestAnimationFrame(pas);
+    svgRef.current?.setAttribute("viewBox", versTexte(v));
+    clearTimeout(fin.current);
+    if (immediat) setVue(v);
+    else fin.current = setTimeout(() => setVue({ ...vueCourante.current }), 120);
   }, []);
+
+  const allerA = useCallback(
+    (cible: Vue) => {
+      cancelAnimationFrame(anim.current);
+      const depart = { ...vueCourante.current };
+      const t0 = performance.now();
+      const pas = (t: number) => {
+        const k = ease(Math.min(1, (t - t0) / 600));
+        poser({
+          x: depart.x + (cible.x - depart.x) * k,
+          y: depart.y + (cible.y - depart.y) * k,
+          w: depart.w + (cible.w - depart.w) * k,
+          h: depart.h + (cible.h - depart.h) * k,
+        });
+        if (k < 1) anim.current = requestAnimationFrame(pas);
+      };
+      anim.current = requestAnimationFrame(pas);
+    },
+    [poser],
+  );
 
   const zoomer = useCallback(
     (facteur: number, cx?: number, cy?: number) => {
@@ -149,66 +225,75 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
     return { x: v.x + ((clientX - r.left) / r.width) * v.w, y: v.y + ((clientY - r.top) / r.height) * v.h };
   };
 
-  // Molette : zoom autour du curseur, sans faire défiler la page
+  // Molette : zoom progressif autour du curseur, sans faire défiler la page
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
     const roue = (e: WheelEvent) => {
       e.preventDefault();
+      cancelAnimationFrame(anim.current);
       const r = svg.getBoundingClientRect();
       const v = vueCourante.current;
-      zoomer(e.deltaY < 0 ? 1.3 : 1 / 1.3, v.x + ((e.clientX - r.left) / r.width) * v.w, v.y + ((e.clientY - r.top) / r.height) * v.h);
+      const facteur = Math.exp(-e.deltaY * 0.0022);
+      const w = Math.min(LARGEUR_CARTE * 1.15, Math.max(70, v.w / facteur));
+      const h = w * RATIO;
+      const px = v.x + ((e.clientX - r.left) / r.width) * v.w;
+      const py = v.y + ((e.clientY - r.top) / r.height) * v.h;
+      poser({ x: px - ((px - v.x) / v.w) * w, y: py - ((py - v.y) / v.h) * h, w, h });
     };
     svg.addEventListener("wheel", roue, { passive: false });
     return () => svg.removeEventListener("wheel", roue);
-  }, [zoomer]);
-
-  const cadrer = (code: string) => {
-    const b = boites.get(code);
-    if (!b) return;
-    const w = Math.max(b.x1 - b.x0 + 120, (b.y1 - b.y0 + 120) / RATIO, 150);
-    const h = w * RATIO;
-    allerA({ x: (b.x0 + b.x1) / 2 - w / 2, y: (b.y0 + b.y1) / 2 - h / 2, w, h });
-  };
+  }, [poser]);
 
   const recentrer = () => {
     setChoisi(null);
     allerA(VUE_INITIALE);
   };
 
-  const cliquer = (code: string) => {
-    if (glisse.current?.bouge) return;
-    if (choisi === code) recentrer();
-    else {
-      setChoisi(code);
-      cadrer(code);
-    }
+  const choisiRef = useRef<string | null>(null);
+  choisiRef.current = choisi;
+  const onClic = useCallback(
+    (code: string) => {
+      if (glisse.current?.bouge) return;
+      if (choisiRef.current === code) {
+        setChoisi(null);
+        allerA(VUE_INITIALE);
+      } else {
+        setChoisi(code);
+        const b = BOITES.get(code);
+        if (!b) return;
+        const w = Math.max(b.x1 - b.x0 + 120, (b.y1 - b.y0 + 120) / RATIO, 150);
+        const h = w * RATIO;
+        allerA({ x: (b.x0 + b.x1) / 2 - w / 2, y: (b.y0 + b.y1) / 2 - h / 2, w, h });
+      }
+    },
+    [allerA],
+  );
+  const onSurvol = useCallback((code: string) => {
+    if (!glisse.current?.bouge) setSurvol(code);
+  }, []);
+
+  /** L'infobulle suit le curseur sans rendu React (position modifiée directement). */
+  const suivre = (e: React.PointerEvent) => {
+    const c = cadreRef.current;
+    const b = bulleRef.current;
+    if (!c || !b) return;
+    const r = c.getBoundingClientRect();
+    const x = Math.max(8, Math.min(e.clientX - r.left + 16, r.width - 248));
+    b.style.transform = `translate(${x}px, ${e.clientY - r.top + 16}px)`;
   };
 
-  const positionner = (e: React.PointerEvent | React.MouseEvent, code: string) => {
-    const c = cadreRef.current?.getBoundingClientRect();
-    if (c) setSurvol({ code, x: e.clientX - c.left, y: e.clientY - c.top });
-  };
-
-  const remplissage = (code: string) => {
-    const v = parZone.get(code)?.mesure ?? 0;
-    if (rendu === "bulles" || !v) return "var(--surface)";
-    const part = Math.round(14 + Math.pow(v / max, 0.7) * 76);
-    return `color-mix(in srgb, ${TEINTE[mesure]} ${part}%, var(--surface))`;
-  };
-
-  const zones: Zone[] = [...DEPARTEMENTS, ...PAYS_VOISINS];
-  const zoneDe = (code: string | null) => (code ? zones.find((z) => z.code === code) ?? null : null);
-  const nomZone = (code: string) => zoneDe(code)?.nom ?? code;
+  const zoom = LARGEUR_CARTE / vue.w;
+  const trait = 1 / zoom;
+  const nomZone = (code: string) => PAR_CODE.get(code)?.nom ?? code;
   const classement = Array.from(parZone.entries())
     .filter(([, v]) => v.mesure > 0)
     .sort((a, b) => b[1].mesure - a[1].mesure)
     .slice(0, 10);
   const leadsChoisis = choisi ? dansPeriode.filter((l) => l.departement === choisi).sort((a, b) => b.recuLe.localeCompare(a.recuLe)) : [];
   const totalMesure = dansPeriode.filter((l) => mesurer(l, mesure)).length;
-  const zSurvol = zoneDe(survol?.code ?? null);
-  const zChoisi = zoneDe(choisi);
-  const largeurCadre = cadreRef.current?.clientWidth ?? 600;
+  const zSurvol = survol ? PAR_CODE.get(survol) ?? null : null;
+  const zChoisi = choisi ? PAR_CODE.get(choisi) ?? null : null;
 
   return (
     <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
@@ -223,16 +308,17 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
         <div ref={cadreRef} className="relative mx-4 mb-3 overflow-hidden rounded-lg border border-line" onMouseLeave={() => setSurvol(null)}>
           <svg
             ref={svgRef}
-            viewBox={`${vue.x} ${vue.y} ${vue.w} ${vue.h}`}
+            viewBox={versTexte(VUE_INITIALE)}
             className={cn("block h-auto w-full touch-none select-none", deplacement ? "cursor-grabbing" : "cursor-grab")}
             style={{ aspectRatio: `${LARGEUR_CARTE} / ${HAUTEUR_CARTE}` }}
             role="img"
             aria-label="Carte interactive des leads par département et par pays"
             onPointerDown={(e) => {
               cancelAnimationFrame(anim.current);
-              glisse.current = { x: e.clientX, y: e.clientY, vue: vueCourante.current, bouge: false };
+              glisse.current = { x: e.clientX, y: e.clientY, vue: { ...vueCourante.current }, bouge: false };
             }}
             onPointerMove={(e) => {
+              suivre(e);
               const g = glisse.current;
               if (!g) return;
               const dx = e.clientX - g.x;
@@ -244,7 +330,7 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
                 setSurvol(null);
               }
               const r = svgRef.current!.getBoundingClientRect();
-              appliquer({ ...g.vue, x: g.vue.x - (dx / r.width) * g.vue.w, y: g.vue.y - (dy / r.height) * g.vue.h });
+              poser({ ...g.vue, x: g.vue.x - (dx / r.width) * g.vue.w, y: g.vue.y - (dy / r.height) * g.vue.h });
             }}
             onPointerUp={() => {
               setDeplacement(false);
@@ -267,12 +353,6 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
               <pattern id="carte-grille" width="30" height="30" patternUnits="userSpaceOnUse">
                 <path d="M30 0H0V30" fill="none" stroke="var(--accent)" strokeOpacity="0.08" strokeWidth="0.6" />
               </pattern>
-              <filter id="carte-ombre" x="-10%" y="-10%" width="120%" height="125%">
-                <feDropShadow dx="0" dy="8" stdDeviation="8" floodColor="#0b2545" floodOpacity="0.25" />
-              </filter>
-              <filter id="carte-halo" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" />
-              </filter>
               <radialGradient id="carte-bulle" cx="35%" cy="30%" r="70%">
                 <stop offset="0" stopColor="#ffffff" stopOpacity="0.45" />
                 <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
@@ -281,45 +361,20 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
             <rect x={-700} y={-700} width={LARGEUR_CARTE + 1400} height={HAUTEUR_CARTE + 1400} fill="url(#carte-mer)" />
             <rect x={-700} y={-700} width={LARGEUR_CARTE + 1400} height={HAUTEUR_CARTE + 1400} fill="url(#carte-grille)" />
 
-            <g filter="url(#carte-ombre)">
-              {PAYS_VOISINS.map((p) => (
-                <path
-                  key={p.code}
-                  d={p.d}
-                  fill={parZone.get(p.code)?.mesure ? remplissage(p.code) : "color-mix(in srgb, var(--surface-sunken) 75%, var(--surface))"}
-                  stroke="var(--surface)"
-                  strokeWidth={1.2 * trait}
-                  onPointerMove={(e) => !glisse.current?.bouge && positionner(e, p.code)}
-                  onClick={() => cliquer(p.code)}
-                />
-              ))}
-              {DEPARTEMENTS.map((d, i) => (
-                <path
-                  key={d.code}
-                  d={d.d}
-                  fill={remplissage(d.code)}
-                  stroke="var(--surface)"
-                  strokeWidth={0.9 * trait}
-                  className="transition-[fill,opacity] duration-500 ease-out"
-                  style={{ opacity: pret ? (choisi && choisi !== d.code ? 0.5 : 1) : 0, transitionDelay: pret && !choisi ? `${(i % 24) * 12}ms` : "0ms" }}
-                  onPointerMove={(e) => !glisse.current?.bouge && positionner(e, d.code)}
-                  onClick={() => cliquer(d.code)}
-                />
-              ))}
-            </g>
+            <FondCarte remplissages={remplissages} choisi={choisi} pret={pret} onSurvol={onSurvol} onClic={onClic} />
 
-            {/* Contours survolé et choisi, au premier plan */}
+            {/* Contours choisi et survolé */}
             {zChoisi ? (
               <g pointerEvents="none">
-                <path d={zChoisi.d} fill="none" stroke="var(--cta)" strokeWidth={8 * trait} strokeOpacity={0.45} filter="url(#carte-halo)" />
-                <path d={zChoisi.d} fill="none" stroke="var(--cta)" strokeWidth={2.4 * trait} strokeLinejoin="round" />
+                <path d={zChoisi.d} fill="none" stroke="var(--cta)" strokeOpacity={0.3} strokeWidth={9} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+                <path d={zChoisi.d} fill="none" stroke="var(--cta)" strokeWidth={2.4} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
               </g>
             ) : null}
             {zSurvol && zSurvol.code !== choisi ? (
-              <path d={zSurvol.d} fill="var(--text)" fillOpacity={0.06} stroke="var(--text)" strokeWidth={1.6 * trait} strokeLinejoin="round" pointerEvents="none" />
+              <path d={zSurvol.d} fill="var(--text)" fillOpacity={0.07} stroke="var(--text)" strokeWidth={1.6} vectorEffect="non-scaling-stroke" strokeLinejoin="round" pointerEvents="none" />
             ) : null}
 
-            {/* Bulles et alertes */}
+            {/* Bulles et alertes (taille recalculée à la fin du mouvement) */}
             {DEPARTEMENTS.map((d) => {
               const v = parZone.get(d.code);
               if (!v) return null;
@@ -327,11 +382,11 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
               const rBulle = (6 + Math.sqrt(v.mesure / max) * 20) / Math.sqrt(zoom);
               const rChaud = (3 + Math.sqrt(v.chauds) * 2.5) * trait * 1.5;
               return (
-                <g key={`b-${d.code}`} pointerEvents="none" className="transition-opacity duration-500" style={{ opacity: pret ? 1 : 0 }}>
+                <g key={`b-${d.code}`} pointerEvents="none" style={{ opacity: pret ? 1 : 0, transition: "opacity 500ms" }}>
                   {bulle ? (
                     <>
                       <circle cx={d.cx} cy={d.cy + 2 * trait} r={rBulle} fill="#0b2545" opacity={0.18} />
-                      <circle cx={d.cx} cy={d.cy} r={rBulle} fill={TEINTE[mesure]} stroke="var(--surface)" strokeWidth={1.5 * trait} />
+                      <circle cx={d.cx} cy={d.cy} r={rBulle} fill={TEINTE[mesure]} stroke="var(--surface)" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
                       <circle cx={d.cx} cy={d.cy} r={rBulle} fill="url(#carte-bulle)" />
                       <text x={d.cx} y={d.cy} dy="0.35em" textAnchor="middle" fontSize={Math.max(7 * trait, rBulle * 0.8)} fontWeight={700} fill="#fff">
                         {v.mesure}
@@ -344,7 +399,7 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
                         <animate attributeName="r" values={`${rChaud};${rChaud * 2.8};${rChaud}`} dur="2.2s" repeatCount="indefinite" />
                         <animate attributeName="opacity" values="0.4;0;0.4" dur="2.2s" repeatCount="indefinite" />
                       </circle>
-                      <circle cx={d.cx} cy={d.cy} r={rChaud} fill="var(--danger)" stroke="var(--surface)" strokeWidth={1.2 * trait} />
+                      <circle cx={d.cx} cy={d.cy} r={rChaud} fill="var(--danger)" stroke="var(--surface)" strokeWidth={1.2} vectorEffect="non-scaling-stroke" />
                     </g>
                   ) : null}
                 </g>
@@ -354,22 +409,10 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
             {/* Noms des départements, visibles en zoomant */}
             {zoom >= 2
               ? DEPARTEMENTS.filter((d) => d.cx > vue.x && d.cx < vue.x + vue.w && d.cy > vue.y && d.cy < vue.y + vue.h).map((d) => {
-                  const decale = rendu === "bulles" && parZone.get(d.code)?.mesure ? (6 + Math.sqrt((parZone.get(d.code)!.mesure) / max) * 20) / Math.sqrt(zoom) + 9 * trait : 0;
+                  const m = parZone.get(d.code)?.mesure ?? 0;
+                  const decale = rendu === "bulles" && m ? (6 + Math.sqrt(m / max) * 20) / Math.sqrt(zoom) + 9 * trait : 0;
                   return (
-                    <text
-                      key={`l-${d.code}`}
-                      x={d.cx}
-                      y={d.cy + decale}
-                      dy="0.35em"
-                      textAnchor="middle"
-                      fontSize={10 * trait}
-                      fontWeight={600}
-                      fill="var(--text)"
-                      stroke="var(--surface)"
-                      strokeWidth={3 * trait}
-                      paintOrder="stroke"
-                      pointerEvents="none"
-                    >
+                    <text key={`l-${d.code}`} x={d.cx} y={d.cy + decale} dy="0.35em" textAnchor="middle" fontSize={10 * trait} fontWeight={600} fill="var(--text)" stroke="var(--surface)" strokeWidth={3 * trait} paintOrder="stroke" pointerEvents="none">
                       {d.nom}
                     </text>
                   );
@@ -404,7 +447,7 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
             ) : null}
           </div>
 
-          {/* Commandes de zoom */}
+          {/* Zoom */}
           <div className="absolute right-3 top-3 flex flex-col overflow-hidden rounded-md border border-line bg-surface shadow-card">
             <button type="button" aria-label="Zoomer" onClick={() => zoomer(1.5)} className="flex size-10 items-center justify-center text-text-2 transition-colors hover:bg-sunken hover:text-text">
               <Plus className="size-4" />
@@ -430,21 +473,23 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
             </span>
           </div>
 
-          {/* Infobulle */}
-          {survol && survol.x > 0 && !deplacement ? (
-            <div
-              className="pointer-events-none absolute z-10 w-60 rounded-lg border border-line bg-surface p-3 shadow-card"
-              style={{ left: Math.max(8, Math.min(survol.x + 16, largeurCadre - 248)), top: survol.y + 16 }}
-            >
-              <p className="mb-2 flex items-baseline justify-between gap-2">
-                <span className="truncate text-sm font-semibold text-text">{nomZone(survol.code)}</span>
-                <span className="text-xs text-text-3">{survol.code}</span>
-              </p>
-              <TroisChiffres info={parZone.get(survol.code)} />
-              {parZone.get(survol.code)?.chauds ? <p className="mt-2 text-xs font-semibold text-danger">{parZone.get(survol.code)!.chauds} chaud(s) en attente</p> : null}
-              <p className="mt-2 text-xs text-text-3">Cliquez pour zoomer et voir les leads</p>
-            </div>
-          ) : null}
+          {/* Infobulle (suit le curseur) */}
+          <div
+            ref={bulleRef}
+            className={cn("pointer-events-none absolute left-0 top-0 z-10 w-60 rounded-lg border border-line bg-surface p-3 shadow-card transition-opacity duration-150", survol && !deplacement ? "opacity-100" : "opacity-0")}
+          >
+            {survol ? (
+              <>
+                <p className="mb-2 flex items-baseline justify-between gap-2">
+                  <span className="truncate text-sm font-semibold text-text">{nomZone(survol)}</span>
+                  <span className="text-xs text-text-3">{survol}</span>
+                </p>
+                <TroisChiffres info={parZone.get(survol)} />
+                {parZone.get(survol)?.chauds ? <p className="mt-2 text-xs font-semibold text-danger">{parZone.get(survol)!.chauds} chaud(s) en attente</p> : null}
+                <p className="mt-2 text-xs text-text-3">Cliquez pour zoomer et voir les leads</p>
+              </>
+            ) : null}
+          </div>
         </div>
         <p className="px-6 pb-5 text-xs text-text-3">Molette ou double-clic pour zoomer, glisser pour se déplacer, clic sur un département pour le détail.</p>
       </Panel>
@@ -502,8 +547,8 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
                     <li key={code}>
                       <button
                         type="button"
-                        onClick={() => cliquer(code)}
-                        onMouseEnter={() => setSurvol({ code, x: -1, y: -1 })}
+                        onClick={() => onClic(code)}
+                        onMouseEnter={() => setSurvol(code)}
                         onMouseLeave={() => setSurvol(null)}
                         className="group w-full rounded-md px-2 py-2 text-left transition-colors hover:bg-sunken"
                       >
