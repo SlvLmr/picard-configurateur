@@ -55,10 +55,10 @@ export function Combobox({
   const choisi = options.find((o) => o.value === value) ?? null;
 
   const filtrees = useMemo(() => {
-    const n = q.trim().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+    const n = q.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     if (!n) return options;
     return options.filter((o) =>
-      `${o.label} ${o.detail ?? ""}`.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").includes(n),
+      `${o.label} ${o.detail ?? ""}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(n),
     );
   }, [options, q]);
 
