@@ -9,11 +9,11 @@ import { Fragment, useEffect, useRef, useState } from "react";
  */
 /** Une planche par module : position sur le grand plan et titre. */
 const SCENES = [
-  { module: "Configurateur", titre: "Chaque porte sur mesure", x: 0, y: 0 },
-  { module: "Leads", titre: "Les leads au bon installateur", x: 560, y: -80 },
-  { module: "Médiathèque", titre: "Brochures et notices en un clic", x: 1100, y: 60 },
-  { module: "Ventes", titre: "Développez vos ventes", x: 260, y: 420 },
-  { module: "Calendrier", titre: "Salons, formations et visites", x: 860, y: 460 },
+  { module: "Configurateur", titre: "Configurez et commandez vos portes", x: 0, y: 0 },
+  { module: "Leads", titre: "Gérez les demandes de devis", x: 560, y: -80 },
+  { module: "Médiathèque", titre: "Brochures et notices à portée de main", x: 1100, y: 60 },
+  { module: "Ventes", titre: "Développez vos ventes localement", x: 260, y: 420 },
+  { module: "Calendrier", titre: "Infos, calendrier et animations", x: 860, y: 460 },
 ] as const;
 
 const DUREE = 3800;
@@ -130,7 +130,7 @@ export function Esquisses() {
             <p className="kicker text-sm font-semibold text-cta">
               {String(i + 1).padStart(2, "0")} <span className="text-white/40">sur 05</span>, {scene.module}
             </p>
-            <h2 className="mt-3 whitespace-nowrap font-display text-xl font-semibold text-white xl:text-2xl 2xl:text-3xl">
+            <h2 className="mt-3 whitespace-nowrap font-display text-xl font-semibold text-white min-[1440px]:text-2xl min-[1920px]:text-3xl">
               {scene.titre.split(" ").map((mot, k) => (
                 <Fragment key={k}>
                 {k > 0 ? " " : null}
