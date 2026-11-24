@@ -799,3 +799,18 @@ select { background-position: right 12px center; }
     animation: none;
   }
 }
+
+/* Accueil client : la porte s'ouvre au survol du raccourci Configurateur */
+.porte-vantail {
+  transform-box: fill-box;
+  transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.6, 0, 0.3, 1);
+}
+.group:hover .porte-vantail {
+  transform: scaleX(0.55) skewY(-7deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .porte-vantail {
+    transition: none;
+  }
+}

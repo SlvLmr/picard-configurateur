@@ -35,6 +35,7 @@ import { formatDate, formatNumber } from "@/lib/format";
 import { LEADS } from "@/lib/mock/leads";
 import { type RoleId } from "@/lib/roles";
 import { useSession } from "@/lib/session";
+import { AccueilClient, type DonneesClient } from "@/components/accueil/accueil-client";
 
 type Reel = { leads: LeadReel[]; stats: StatsLeads | null; peutAttribuer: boolean } | null;
 type Vue = "repartition" | "commercial" | "client" | "sav" | "direction";
@@ -63,6 +64,7 @@ export function AccueilParRole({
   journee,
   signaux,
   palier,
+  client,
 }: {
   profil: ProfilReel | null;
   recap: Recap;
@@ -72,12 +74,16 @@ export function AccueilParRole({
   journee: JourneeCommercial | null;
   signaux: Signal[];
   palier: number;
+  client: DonneesClient | null;
 }) {
   const { persona } = useSession();
   // L'administrateur prévisualise les autres rôles ; les autres voient leur propre accueil.
   const role: RoleId = profil && profil.role !== "admin" ? profil.role : persona.role;
   const vue = vueDuRole(role === "admin" ? "codir" : role);
   const r = recap;
+  if (vue === "client" && client) {
+    return <AccueilClient profil={profil} donnees={client} recap={recap} annonces={annonces} agenda={agenda} palier={palier} />;
+  }
 
   const briques: Record<Vue, Brique[]> = {
     repartition: [
