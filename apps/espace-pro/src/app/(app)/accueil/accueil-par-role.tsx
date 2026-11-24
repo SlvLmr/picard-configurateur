@@ -30,6 +30,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Picto } from "@/components/ui/picto";
 import { formatDate, formatDuree, formatNumber } from "@/lib/format";
+import type { JourneeCommercial } from "@/lib/data/crm";
 import type { LeadReel, StatsLeads } from "@/lib/data/types";
 import { ACTIONS_EN_RETARD, MARCHES, OBJECTIF_ATC, SIGNAUX, VISITES_DU_JOUR } from "@/lib/mock/commercial";
 import { LEADS, LEADS_CLIENT, PROS_EN_RETARD, STATS_LEADS } from "@/lib/mock/leads";
@@ -43,10 +44,10 @@ const aujourdhui = () => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
-export function AccueilParRole({ reel }: { reel: Reel }) {
+export function AccueilParRole({ reel, journee }: { reel: Reel; journee: JourneeCommercial | null }) {
   const { persona } = useSession();
   if (persona.role === "repartiteur") return <AccueilRepartiteur reel={reel} />;
-  if (persona.role === "atc") return <AccueilCommercial />;
+  if (persona.role === "atc") return <AccueilCommercial journee={journee} />;
   if (isClient(persona.role)) return <AccueilClient />;
   return <AccueilDirection />;
 }
@@ -180,7 +181,8 @@ function AccueilClient() {
 }
 
 /* ─────────────────────────── Commercial ─────────────────────────── */
-function AccueilCommercial() {
+function AccueilCommercial({ journee }: { journee: JourneeCommercial | null }) {
+  if (journee) return <AccueilCommercialReel j={journee} />;
   const o = OBJECTIF_ATC;
   const pct = Math.round((o.realiseKEur / o.objectifKEur) * 100);
   return (
@@ -239,6 +241,99 @@ function AccueilCommercial() {
               </li>
             ))}
           </ul>
+        </Panel>
+      </div>
+    </>
+  );
+}
+
+/** Accueil du commercial branché sur le CRM : visites du jour, actions en retard, objectif annuel. */
+function AccueilCommercialReel({ j }: { j: JourneeCommercial }) {
+  const heure = (iso: string | null) =>
+    iso ? new Intl.DateTimeFormat("fr-FR", { hour: "numeric", minute: "2-digit", timeZone: "Europe/Paris" }).format(new Date(iso)).replace(":", " h ") : "";
+  const o = j.objectif;
+  const pct = o && o.budget ? Math.round((o.realise / o.budget) * 100) : null;
+  const keur = (n: number) => `${formatNumber(Math.round(n / 1000))} k€`;
+  return (
+    <>
+      <PageHeader
+        title={aujourdhui()}
+        meta={<Badge variant="success">Données en direct</Badge>}
+        description={`${j.visitesDuJour.length} visite${j.visitesDuJour.length > 1 ? "s" : ""} aujourd’hui et ${j.actionsEnRetard.length} action${j.actionsEnRetard.length > 1 ? "s" : ""} en retard.`}
+        actions={
+          <ButtonLink href="/crm/tournee" variant="primary" size="lg">
+            <Route aria-hidden />
+            Préparer ma tournée
+          </ButtonLink>
+        }
+      />
+      {o && pct !== null ? (
+        <Panel>
+          <PanelHeader title={`Objectif ${o.annee}`} description={o.dernierMois ? `Réalisé arrêté à fin ${new Intl.DateTimeFormat("fr-FR", { month: "long" }).format(new Date(o.annee, o.dernierMois - 1, 1))}` : undefined} />
+          <PanelBody className="grid items-center gap-8 md:grid-cols-[auto_minmax(0,1fr)]">
+            <Jauge value={o.realise} max={o.budget} label="Chiffre d’affaires par rapport au budget" valueLabel={`${pct} %`} sousTitre={`${keur(o.realise)} sur ${keur(o.budget)}`} tone={pct >= 100 ? "success" : pct < 85 ? "warning" : "accent"} size={240} />
+            <Cote
+              label="Réalisé par rapport à l’année précédente"
+              value={Math.min(o.realise, Math.max(o.realiseN1, 1))}
+              max={Math.max(o.realiseN1, 1)}
+              tone={o.realise >= o.realiseN1 ? "success" : "accent"}
+              valueLabel={o.realiseN1 ? `${Math.round((o.realise / o.realiseN1) * 100)} % de N-1` : "N-1 indisponible"}
+              startLabel="Comparaison avec l’année précédente"
+              endLabel={`N-1 : ${keur(o.realiseN1)}`}
+            />
+          </PanelBody>
+        </Panel>
+      ) : null}
+      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
+        <Panel>
+          <PanelHeader
+            title="Ma journée"
+            actions={
+              <Link href="/crm/tournee" className="text-sm font-medium text-accent hover:underline">
+                Toute la semaine
+              </Link>
+            }
+          />
+          {j.visitesDuJour.length === 0 ? (
+            <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucune visite prévue aujourd’hui. Planifiez-en depuis la fiche d’un client.</p>
+          ) : (
+            <ol>
+              {j.visitesDuJour.map((v) => (
+                <li key={v.id} className="border-t border-line">
+                  <Link href={`/crm/${v.compteId}`} className="grid grid-cols-[auto_1fr] gap-4 px-6 py-4 transition-colors hover:bg-sunken">
+                    <span className="tabular inline-flex h-8 items-center rounded-md bg-sunken px-3 text-sm font-semibold text-text">{heure(v.datePrevue)}</span>
+                    <span>
+                      <span className="block font-semibold text-text">{v.compteNom}</span>
+                      <span className="mt-0.5 block text-sm text-text-2">{v.objet}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Panel>
+        <Panel className="self-start">
+          <PanelHeader title="Actions en retard" />
+          {j.actionsEnRetard.length === 0 ? (
+            <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucune action en retard.</p>
+          ) : (
+            <ul>
+              {j.actionsEnRetard.slice(0, 6).map((a) => (
+                <li key={a.id} className="border-t border-line">
+                  <Link href={`/crm/${a.compteId}`} className="flex gap-3 px-6 py-4 transition-colors hover:bg-sunken">
+                    <Picto icon={CalendarClock} tone="danger" size="sm" />
+                    <span>
+                      <span className="block font-semibold text-text">{a.titre}</span>
+                      <span className="mt-0.5 block text-sm text-text-2">
+                        {a.compteNom}
+                        {a.echeance ? `, échéance ${new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(a.echeance))}` : ""}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </Panel>
       </div>
     </>
