@@ -767,3 +767,19 @@ select { background-position: right 12px center; }
     transform: none;
   }
 }
+
+/* Bulles de la rubrique News : apparition douce */
+.bulle-entree {
+  animation: bulle-entree 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+@keyframes bulle-entree {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bulle-entree {
+    animation: none;
+  }
+}

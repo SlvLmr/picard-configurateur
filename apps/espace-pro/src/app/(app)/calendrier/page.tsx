@@ -7,8 +7,9 @@ export const metadata: Metadata = { title: "Calendrier" };
 
 export default async function Page() {
   const maintenant = new Date();
-  const debut = new Date(maintenant.getFullYear(), maintenant.getMonth() - 2, 1);
-  const fin = new Date(maintenant.getFullYear(), maintenant.getMonth() + 7, 0);
+  // Deux années pleines : la frise se parcourt de janvier de l'an dernier à décembre de l'an prochain
+  const debut = new Date(maintenant.getFullYear() - 1, 0, 1);
+  const fin = new Date(maintenant.getFullYear() + 1, 11, 31);
   const [profil, elements] = await Promise.all([profilCourant(), agenda(debut, fin).catch(() => [])]);
   return <PageCalendrier elements={elements} admin={profil?.role === "admin"} />;
 }
