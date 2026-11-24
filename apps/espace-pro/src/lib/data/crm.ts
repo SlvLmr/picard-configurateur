@@ -147,3 +147,192 @@ export async function ficheCompte(id: string): Promise<FicheCompte | null> {
     points: listePoints,
   };
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Activités commerciales : visites, comptes rendus, actions, plans
+   ════════════════════════════════════════════════════════════════════ */
+
+export type TypeActivite = "visite" | "appel" | "email" | "formation" | "demo" | "salon";
+export type StatutActivite = "planifiee" | "realisee" | "annulee";
+export type TypePlan = "passage_niveau" | "developpement_ca" | "recrutement_iap" | "fidelisation" | "autre";
+export type StatutPlan = "en_cours" | "atteint" | "abandonne";
+
+export type ActiviteCrm = {
+  id: string;
+  compteId: string;
+  compteNom: string | null;
+  type: TypeActivite;
+  datePrevue: string | null;
+  dateRealisee: string | null;
+  objet: string;
+  compteRendu: string | null;
+  prochainesEtapes: string | null;
+  statut: StatutActivite;
+};
+
+export type ActionCrm = {
+  id: string;
+  compteId: string;
+  compteNom: string | null;
+  titre: string;
+  echeance: string | null;
+  statut: "a_faire" | "fait";
+  planId: string | null;
+};
+
+export type PlanCrm = { id: string; objectif: string; type: TypePlan; echeance: string | null; statut: StatutPlan };
+
+const COLONNES_ACTIVITE =
+  "id, compte_id, type, date_prevue, date_realisee, objet, compte_rendu, prochaines_etapes, statut, compte:ep_comptes!ep_activites_compte_id_fkey (raison_sociale)";
+const COLONNES_ACTION = "id, compte_id, titre, echeance, statut, plan_id, compte:ep_comptes!ep_actions_compte_id_fkey (raison_sociale)";
+
+type LigneActiviteCrm = {
+  id: string;
+  compte_id: string;
+  type: TypeActivite;
+  date_prevue: string | null;
+  date_realisee: string | null;
+  objet: string;
+  compte_rendu: string | null;
+  prochaines_etapes: string | null;
+  statut: StatutActivite;
+  compte: { raison_sociale: string } | null;
+};
+type LigneActionCrm = {
+  id: string;
+  compte_id: string;
+  titre: string;
+  echeance: string | null;
+  statut: "a_faire" | "fait";
+  plan_id: string | null;
+  compte: { raison_sociale: string } | null;
+};
+
+const versActivite = (a: LigneActiviteCrm): ActiviteCrm => ({
+  id: a.id,
+  compteId: a.compte_id,
+  compteNom: a.compte?.raison_sociale ?? null,
+  type: a.type,
+  datePrevue: a.date_prevue,
+  dateRealisee: a.date_realisee,
+  objet: a.objet,
+  compteRendu: a.compte_rendu,
+  prochainesEtapes: a.prochaines_etapes,
+  statut: a.statut,
+});
+const versAction = (a: LigneActionCrm): ActionCrm => ({
+  id: a.id,
+  compteId: a.compte_id,
+  compteNom: a.compte?.raison_sociale ?? null,
+  titre: a.titre,
+  echeance: a.echeance,
+  statut: a.statut,
+  planId: a.plan_id,
+});
+
+/** Date au format AAAA-MM-JJ, à l'heure de Paris. */
+export const jourParis = (d: Date = new Date()) =>
+  new Intl.DateTimeFormat("fr-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+
+export type ActivitesCompte = { activites: ActiviteCrm[]; actions: ActionCrm[]; plans: PlanCrm[]; peutEcrire: boolean };
+
+/** Activités, actions et plans d'un compte (vides si l'utilisateur n'y a pas accès). */
+export async function activitesCompte(compteId: string): Promise<ActivitesCompte> {
+  const supabase = supabaseServeur();
+  const [{ data: activites }, { data: actions }, { data: plans }, { data: peutEcrire }] = await Promise.all([
+    supabase.from("ep_activites").select(COLONNES_ACTIVITE).eq("compte_id", compteId).neq("statut", "annulee").limit(60),
+    supabase.from("ep_actions").select(COLONNES_ACTION).eq("compte_id", compteId).order("echeance", { ascending: true, nullsFirst: false }).limit(60),
+    supabase.from("ep_plans_action").select("id, objectif, type, echeance, statut").eq("compte_id", compteId).order("cree_le", { ascending: false }),
+    supabase.rpc("ep_crm_peut_ecrire", { p_compte: compteId }),
+  ]);
+  const liste = ((activites ?? []) as unknown as LigneActiviteCrm[]).map(versActivite);
+  // Planifiées d'abord (la plus proche en tête), puis réalisées (la plus récente en tête)
+  liste.sort((a, b) => {
+    if (a.statut !== b.statut) return a.statut === "planifiee" ? -1 : 1;
+    return a.statut === "planifiee"
+      ? (a.datePrevue ?? "").localeCompare(b.datePrevue ?? "")
+      : (b.dateRealisee ?? "").localeCompare(a.dateRealisee ?? "");
+  });
+  return {
+    activites: liste,
+    actions: ((actions ?? []) as unknown as LigneActionCrm[]).map(versAction),
+    plans: (plans ?? []) as PlanCrm[],
+    peutEcrire: Boolean(peutEcrire),
+  };
+}
+
+export type CompteARevoir = { id: string; raisonSociale: string; niveau: NiveauIAP | null; ville: string | null; derniereVisite: string | null };
+
+export type Tournee = {
+  semaine: { jour: string; activites: ActiviteCrm[] }[];
+  aujourdhui: ActiviteCrm[];
+  actionsEnRetard: ActionCrm[];
+  comptesARevoir: CompteARevoir[];
+};
+
+/** Semaine en cours (lundi à dimanche, heure de Paris) du portefeuille visible. */
+export async function tournee(): Promise<Tournee> {
+  const supabase = supabaseServeur();
+  const auj = jourParis();
+  const base = new Date(`${auj}T12:00:00Z`);
+  const decalage = (base.getUTCDay() + 6) % 7; // 0 = lundi
+  const jours = Array.from({ length: 7 }, (_, i) => jourParis(new Date(base.getTime() + (i - decalage) * 86400000)));
+  const debut = new Date(base.getTime() - (decalage + 1) * 86400000).toISOString();
+  const fin = new Date(base.getTime() + (8 - decalage) * 86400000).toISOString();
+  const il90 = new Date(Date.now() - 90 * 86400000).toISOString();
+
+  const [{ data: planifiees }, { data: retard }, { data: comptes }, { data: realisees }] = await Promise.all([
+    supabase.from("ep_activites").select(COLONNES_ACTIVITE).eq("statut", "planifiee").gte("date_prevue", debut).lte("date_prevue", fin).order("date_prevue"),
+    supabase.from("ep_actions").select(COLONNES_ACTION).eq("statut", "a_faire").lt("echeance", auj).order("echeance").limit(30),
+    supabase.from("ep_comptes").select("id, raison_sociale, niveau_iap, ville").eq("actif", true),
+    supabase.from("ep_activites").select("compte_id, date_realisee").eq("statut", "realisee").not("date_realisee", "is", null),
+  ]);
+
+  const activites = ((planifiees ?? []) as unknown as LigneActiviteCrm[]).map(versActivite);
+  const parJour = (j: string) => activites.filter((a) => a.datePrevue && jourParis(new Date(a.datePrevue)) === j);
+
+  const derniere = new Map<string, string>();
+  for (const r of (realisees ?? []) as { compte_id: string; date_realisee: string }[]) {
+    const prec = derniere.get(r.compte_id);
+    if (!prec || r.date_realisee > prec) derniere.set(r.compte_id, r.date_realisee);
+  }
+  const ordreNiveau = { Elite: 1, Premium: 2, Officiel: 3 } as const;
+  const comptesARevoir = ((comptes ?? []) as { id: string; raison_sociale: string; niveau_iap: NiveauIAP | null; ville: string | null }[])
+    .filter((c) => !derniere.get(c.id) || derniere.get(c.id)! < il90)
+    .map((c) => ({ id: c.id, raisonSociale: c.raison_sociale, niveau: c.niveau_iap, ville: c.ville, derniereVisite: derniere.get(c.id) ?? null }))
+    .sort((a, b) => (ordreNiveau[a.niveau ?? "Officiel"] ?? 4) - (ordreNiveau[b.niveau ?? "Officiel"] ?? 4) || a.raisonSociale.localeCompare(b.raisonSociale));
+
+  return {
+    semaine: jours.map((jour) => ({ jour, activites: parJour(jour) })),
+    aujourdhui: parJour(auj),
+    actionsEnRetard: ((retard ?? []) as unknown as LigneActionCrm[]).map(versAction),
+    comptesARevoir,
+  };
+}
+
+export type ObjectifCommercial = { annee: number; budget: number; realise: number; realiseN1: number; dernierMois: number | null };
+
+export type JourneeCommercial = {
+  visitesDuJour: ActiviteCrm[];
+  actionsEnRetard: ActionCrm[];
+  objectif: ObjectifCommercial | null;
+};
+
+/**
+ * Journée de l'utilisateur connecté, pour l'accueil du commercial.
+ * Commercial : son portefeuille et son objectif annuel.
+ * Vue complète (admin, CODIR, chefs) : tout le réseau et l'objectif société.
+ * Autres rôles : listes vides et objectif null.
+ */
+export async function journeeCommercial(): Promise<JourneeCommercial> {
+  const supabase = supabaseServeur();
+  const [t, { data: obj }] = await Promise.all([tournee(), supabase.rpc("ep_crm_objectif", { p_annee: Number(jourParis().slice(0, 4)) })]);
+  const o = obj as { annee: number; budget: number; realise: number; realise_n1: number; dernier_mois: number | null } | null;
+  return {
+    visitesDuJour: t.aujourdhui,
+    actionsEnRetard: t.actionsEnRetard,
+    objectif: o
+      ? { annee: o.annee, budget: Number(o.budget), realise: Number(o.realise), realiseN1: Number(o.realise_n1), dernierMois: o.dernier_mois }
+      : null,
+  };
+}
