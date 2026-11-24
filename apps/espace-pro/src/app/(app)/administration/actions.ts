@@ -67,12 +67,19 @@ export async function enregistrerCommercial(id: string | null, c: {
 
 export async function enregistrerCompte(id: string | null, c: {
   raisonSociale: string; type: string; niveau: string | null; numero: string; cp: string; ville: string; commercialId: string | null; actif: boolean;
+  emailLeads?: string; telephoneLeads?: string; remiseLeads?: string;
 }): Promise<Resultat> {
-  const { error } = await supabaseServeur().rpc("ep_admin_enregistrer_compte", {
+  const supabase = supabaseServeur();
+  const { data, error } = await supabase.rpc("ep_admin_enregistrer_compte", {
     p_id: id, p_raison_sociale: c.raisonSociale, p_type: c.type, p_niveau: c.type === "IAP" ? c.niveau : null,
     p_numero: c.numero, p_cp: c.cp, p_ville: c.ville, p_commercial: c.commercialId, p_actif: c.actif,
   });
   if (error) return { ok: false, message: error.message };
+  const remise = c.remiseLeads?.trim() ? Number(c.remiseLeads.replace(",", ".")) : null;
+  const { error: e2 } = await supabase.rpc("ep_admin_contacts_leads", {
+    p_compte: (data as string) ?? id, p_email: c.emailLeads ?? "", p_telephone: c.telephoneLeads ?? "", p_remise_pct: remise,
+  });
+  if (e2) return { ok: false, message: e2.message };
   revalidatePath("/administration/clients");
   return { ok: true, message: id ? "Client enregistré" : "Client ajouté" };
 }

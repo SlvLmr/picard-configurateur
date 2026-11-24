@@ -31,6 +31,25 @@ export function GestionParametres({ parametres }: { parametres: Parametre[] }) {
                       <label htmlFor={`p-${p.cle}`} className="font-semibold text-text">{p.libelle}</label>
                       {p.aide ? <p className="mt-0.5 text-sm text-text-2">{p.aide}</p> : null}
                     </div>
+                    {p.unite === "oui/non" ? (
+                      <label className="inline-flex cursor-pointer items-center gap-3">
+                        <span className="text-sm text-text-2">{Number(valeurs[p.cle]) >= 1 ? "Activé" : "Désactivé"}</span>
+                        <input
+                          id={`p-${p.cle}`}
+                          type="checkbox"
+                          role="switch"
+                          checked={Number(valeurs[p.cle]) >= 1}
+                          disabled={pending}
+                          onChange={(e) => {
+                            const v = e.target.checked ? 1 : 0;
+                            setValeurs({ ...valeurs, [p.cle]: String(v) });
+                            start(async () => toast((await majParametre(p.cle, v)).message));
+                          }}
+                          className="peer sr-only"
+                        />
+                        <span aria-hidden className="relative h-6 w-10 rounded-full bg-line-strong transition-colors after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-success peer-checked:after:translate-x-4 peer-focus-visible:ring-2 peer-focus-visible:ring-accent" />
+                      </label>
+                    ) : (
                     <div className="flex items-center gap-2">
                       <Input id={`p-${p.cle}`} type="number" min={0} value={valeurs[p.cle]} onChange={(e) => setValeurs({ ...valeurs, [p.cle]: e.target.value })} className="w-24 text-right tabular" />
                       <span className="w-12 text-sm text-text-3">{p.unite}</span>
@@ -43,6 +62,7 @@ export function GestionParametres({ parametres }: { parametres: Parametre[] }) {
                         Enregistrer
                       </Button>
                     </div>
+                    )}
                   </li>
                 );
               })}

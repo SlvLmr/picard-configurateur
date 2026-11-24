@@ -1,70 +1,97 @@
-import { CircleCheck, Hourglass, Inbox, Timer } from "lucide-react";
+"use client";
+
+import { Flame, Hourglass, Inbox, Smile } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { KpiBand } from "@/components/ui/kpi";
 import { PageHeader } from "@/components/ui/page-header";
+import { Segmented } from "@/components/ui/segmented";
+import type { Entonnoir, LeadGestion, Notification, StatsLeadManager as Stats } from "@/lib/data/types";
 import { formatDuree } from "@/lib/format";
-import type { Entonnoir, LeadGestion, StatsLeads } from "@/lib/data/types";
 import { PanneauEntonnoir } from "./entonnoir";
+import { Envois } from "./envois";
+import { BoutonNouveauLead } from "./formulaire-lead";
 import { GestionLeads } from "./gestion-leads";
+import { StatsLeadManager } from "./stats-lead-manager";
+import { TableauLeads } from "./tableau-leads";
 
-export const COULEURS_STATUT = {
-  a_valider: "var(--line-strong)",
-  attribue: "var(--accent-soft)",
-  accepte: "var(--bleu-300)",
-  contacte: "var(--bleu-400)",
-  devis: "var(--accent)",
-  signe: "var(--success)",
-  perdu: "var(--danger)",
-} as const;
+type Vue = "tableau" | "liste" | "stats" | "envois";
 
-export const LIBELLES_STATUT = {
-  a_valider: "À valider",
-  attribue: "En attente du pro",
-  accepte: "Acceptés",
-  contacte: "Contactés",
-  devis: "Devis envoyés",
-  signe: "Signés",
-  perdu: "Perdus",
-} as const;
-
-/** Page Leads des équipes internes : indicateurs, entonnoir et poste de gestion. */
+/** Page Leads des équipes internes : poste du Lead Manager, statistiques et journal des envois. */
 export function LeadsReels({
   leads,
   stats,
   entonnoir,
   peutAttribuer,
+  notifications,
+  envoiConfigure,
 }: {
   leads: LeadGestion[];
-  stats: StatsLeads | null;
+  stats: Stats | null;
   entonnoir: Entonnoir;
   peutAttribuer: boolean;
+  notifications: Notification[];
+  envoiConfigure: boolean;
 }) {
+  const [vue, setVue] = useState<Vue>("tableau");
   const demo = leads.some((l) => l.demo);
+  const aValider = leads.filter((l) => l.statut === "a_valider");
+  const chauds = aValider.filter((l) => l.temperature === "chaud").length;
   return (
     <>
       <PageHeader
         title={peutAttribuer ? "Gestion des leads" : "Leads du réseau"}
         meta={demo ? <Badge variant="warning">Données de démonstration</Badge> : null}
-        description="Chaque lead est pré-attribué dans son département : IAP Elite, puis Premium, puis Officiel, en servant d’abord le moins sollicité. Ouvrez un lead pour le détail, les notes et l’attribution par zone."
+        description={
+          peutAttribuer
+            ? "Qualifiez chaque demande, orientez-la vers le bon installateur et suivez-la jusqu’à la pose. L’installateur a 24 h pour accepter, sinon le lead vous revient."
+            : "Tous les leads du réseau, leur avancement et la satisfaction des clients. Consultation seule."
+        }
+        actions={peutAttribuer ? <BoutonNouveauLead /> : null}
       />
-      {stats ? (
-        <KpiBand
-          items={[
-            { label: "À valider", value: stats.a_valider, icon: Inbox, tone: stats.a_valider ? "cta" : "neutral", note: `${stats.sans_pro} sans pro à proximité` },
-            { label: "En attente du pro", value: stats.en_attente_pro, icon: Hourglass, tone: "accent", note: "Attribués, pas encore acceptés" },
-            {
-              label: "Délai moyen de prise en charge",
-              value: stats.delai_moyen_min ? formatDuree(stats.delai_moyen_min) : "–",
-              icon: Timer,
-              note: `${stats.acceptes_24h_pct ?? 0} % acceptés en moins de 24 h`,
-            },
-            { label: "Taux de transformation", value: stats.transformation_pct ?? "–", unit: "%", icon: CircleCheck, tone: "success", note: `${stats.statut_renseigne_pct ?? 0} % des statuts renseignés` },
+      <KpiBand
+        items={[
+          { label: "À traiter", value: aValider.length, icon: Inbox, tone: aValider.length ? "cta" : "neutral", note: stats ? `${stats.a_qualifier} pas encore qualifiés` : undefined },
+          { label: "Leads chauds en attente", value: chauds, icon: Flame, tone: chauds ? "danger" : "neutral", note: "À orienter en priorité" },
+          {
+            label: "Délai d’acceptation",
+            value: stats?.delai_acceptation_min ? formatDuree(stats.delai_acceptation_min) : "–",
+            icon: Hourglass,
+            tone: stats?.en_retard ? "warning" : "accent",
+            note: stats?.en_retard ? `${stats.en_retard} lead${stats.en_retard > 1 ? "s" : ""} en retard` : "Moyenne sur 30 jours",
+          },
+          {
+            label: "NPS clients",
+            value: stats?.nps_client.score === null || stats?.nps_client.score === undefined ? "–" : stats.nps_client.score,
+            icon: Smile,
+            tone: "success",
+            note: stats ? `${stats.nps_client.reponses} réponse${stats.nps_client.reponses > 1 ? "s" : ""}` : undefined,
+          },
+        ]}
+      />
+      <div className="mt-8 overflow-x-auto">
+        <Segmented
+          label="Vue"
+          value={vue}
+          onChange={setVue}
+          options={[
+            { value: "tableau", label: "Tableau" },
+            { value: "liste", label: "Liste", count: leads.length },
+            { value: "stats", label: "Statistiques" },
+            { value: "envois", label: "E-mails et SMS", count: stats?.notifications_en_attente || undefined },
           ]}
         />
-      ) : null}
-      <div className="mt-8 flex flex-col gap-8">
-        <GestionLeads leads={leads} peutGerer={peutAttribuer} />
-        <PanneauEntonnoir initial={entonnoir} />
+      </div>
+      <div className="mt-6 flex flex-col gap-8">
+        {vue === "tableau" ? <TableauLeads leads={leads} peutGerer={peutAttribuer} /> : null}
+        {vue === "liste" ? <GestionLeads leads={leads} peutGerer={peutAttribuer} /> : null}
+        {vue === "stats" ? (
+          <>
+            {stats ? <StatsLeadManager s={stats} jours={30} /> : null}
+            <PanneauEntonnoir initial={entonnoir} />
+          </>
+        ) : null}
+        {vue === "envois" ? <Envois notifications={notifications} configure={envoiConfigure} /> : null}
       </div>
     </>
   );

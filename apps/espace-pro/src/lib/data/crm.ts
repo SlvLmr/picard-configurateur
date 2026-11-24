@@ -103,7 +103,7 @@ export async function ficheCompte(id: string): Promise<FicheCompte | null> {
   const [{ data: leads }, { data: evenements }, { data: points }] = await Promise.all([
     supabase
       .from("ep_leads")
-      .select("id, reference, recu_le, projet, source, statut, contact_nom")
+      .select("id, reference, recu_le, projet, source, statut")
       .eq("compte_id", id)
       .order("recu_le", { ascending: false })
       .limit(50),
@@ -116,6 +116,8 @@ export async function ficheCompte(id: string): Promise<FicheCompte | null> {
     supabase.from("ep_points").select("id, points, motif, cree_le").eq("compte_id", id).order("cree_le", { ascending: false }).limit(40),
   ]);
 
+  const { data: coords } = await supabase.rpc("ep_leads_coordonnees", { p_ids: (leads ?? []).map((l) => l.id) });
+  const noms = new Map(((coords ?? []) as { id: string; contact_nom: string | null }[]).map((x) => [x.id, x.contact_nom]));
   const listeLeads: LeadCompte[] = (leads ?? []).map((l) => ({
     id: l.id,
     reference: l.reference,
@@ -123,7 +125,7 @@ export async function ficheCompte(id: string): Promise<FicheCompte | null> {
     projet: l.projet,
     source: l.source,
     statut: l.statut as LeadStatutDb,
-    contact: l.contact_nom,
+    contact: noms.get(l.id) ?? "Client",
   }));
   const listePoints: PointsCompte[] = (points ?? []).map((p) => ({ id: p.id, points: p.points, motif: p.motif, creeLe: p.cree_le }));
 
@@ -131,8 +133,8 @@ export async function ficheCompte(id: string): Promise<FicheCompte | null> {
     compte: versCompte(c as LigneCompte, {
       compte_id: id,
       leads: listeLeads.length,
-      signes: listeLeads.filter((l) => l.statut === "signe").length,
-      en_cours: listeLeads.filter((l) => ["attribue", "accepte", "contacte", "devis"].includes(l.statut)).length,
+      signes: listeLeads.filter((l) => l.statut === "signe" || l.statut === "pose").length,
+      en_cours: listeLeads.filter((l) => ["attribue", "accepte", "contacte", "rdv", "devis"].includes(l.statut)).length,
       points: listePoints.reduce((s, p) => s + p.points, 0),
       dernier_lead: listeLeads[0]?.recuLe ?? null,
     }),

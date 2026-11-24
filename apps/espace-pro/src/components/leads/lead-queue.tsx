@@ -16,7 +16,7 @@ type Filtre = "tous" | "sans_pro" | "gros";
 
 /**
  * File de validation du répartiteur.
- * Chaque lead arrive avec une pré-attribution (Elite → Premium → Officiel → client → ATC).
+ * Chaque lead arrive avec une pré-attribution (Elite puis Premium, puis Officiel, puis client, puis ATC).
  * Le répartiteur valide ou choisit une alternative.
  */
 export function LeadQueue({ leads, compact = false, readOnly = false }: { leads: Lead[]; compact?: boolean; readOnly?: boolean }) {

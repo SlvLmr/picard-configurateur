@@ -5,8 +5,10 @@ export const LIBELLE_STATUT: Record<LeadStatutDb, string> = {
   attribue: "En attente",
   accepte: "Accepté",
   contacte: "Contacté",
+  rdv: "Rendez-vous",
   devis: "Devis envoyé",
   signe: "Signé",
+  pose: "Posé",
   perdu: "Perdu",
 };
 
@@ -15,8 +17,10 @@ export const VARIANTE_STATUT: Record<LeadStatutDb, "neutral" | "accent" | "succe
   attribue: "warning",
   accepte: "accent",
   contacte: "accent",
+  rdv: "accent",
   devis: "accent",
   signe: "success",
+  pose: "success",
   perdu: "danger",
 };
 

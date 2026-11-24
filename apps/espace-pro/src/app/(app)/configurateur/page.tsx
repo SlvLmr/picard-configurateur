@@ -44,16 +44,18 @@ export default async function Page({ searchParams }: { searchParams: { lead?: st
   if (idLead) {
     const { data } = await supabase
       .from("ep_leads")
-      .select("id, reference, contact_nom, ville, projet, configuration_ma_porte")
+      .select("id, reference, ville, projet, configuration_ma_porte")
       .eq("id", idLead)
       .maybeSingle();
+    const { data: coords } = data ? await supabase.rpc("ep_leads_coordonnees", { p_ids: [data.id] }) : { data: null };
+    const contact = ((coords ?? []) as { contact_nom: string | null }[])[0]?.contact_nom ?? "Client";
     if (data) {
-      lead = { id: data.id, reference: data.reference, contact: data.contact_nom, ville: data.ville, projet: data.projet };
+      lead = { id: data.id, reference: data.reference, contact, ville: data.ville, projet: data.projet };
       if (!reprise) {
         initiale = {
           ...depuisMaPorte(data.configuration_ma_porte as Record<string, unknown> | null),
-          reference: `${data.contact_nom}${data.ville ? `, ${data.ville}` : ""}`,
-          clientFinal: data.contact_nom,
+          reference: `${contact}${data.ville ? `, ${data.ville}` : ""}`,
+          clientFinal: contact,
         };
       }
     }

@@ -12,10 +12,12 @@ import { SOURCES_LEAD } from "./statuts";
 const ETAPES: { cle: keyof DonneesEntonnoir; label: string; couleur: string }[] = [
   { cle: "recus", label: "Reçus", couleur: "var(--bleu-300)" },
   { cle: "attribues", label: "Attribués", couleur: "var(--bleu-400)" },
-  { cle: "acceptes", label: "Acceptés", couleur: "var(--bleu-500)" },
-  { cle: "contactes", label: "Contactés", couleur: "var(--bleu-600)" },
+  { cle: "acceptes", label: "Acceptés", couleur: "var(--bleu-400)" },
+  { cle: "contactes", label: "Contactés", couleur: "var(--bleu-500)" },
+  { cle: "rdv", label: "Rendez-vous", couleur: "var(--bleu-600)" },
   { cle: "devis", label: "Devis envoyés", couleur: "var(--bleu-700)" },
   { cle: "signes", label: "Signés", couleur: "var(--success)" },
+  { cle: "poses", label: "Posés", couleur: "var(--success)" },
 ];
 
 const pct = (a: number, b: number) => (b ? Math.round((a / b) * 100) : 0);

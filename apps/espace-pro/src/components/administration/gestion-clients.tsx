@@ -14,7 +14,7 @@ import { useToast } from "@/components/ui/toast";
 import type { CommercialAdmin, CompteAdmin } from "@/lib/data/administration";
 import { PanneauEdition } from "./panneau-edition";
 
-type Form = { raisonSociale: string; type: CompteAdmin["type"]; niveau: CompteAdmin["niveau"]; numero: string; cp: string; ville: string; commercialId: string | null; actif: boolean };
+type Form = { raisonSociale: string; type: CompteAdmin["type"]; niveau: CompteAdmin["niveau"]; numero: string; cp: string; ville: string; commercialId: string | null; actif: boolean; emailLeads: string; telephoneLeads: string; remiseLeads: string };
 type Filtre = "tous" | "Elite" | "Premium" | "Officiel" | "autres" | "inactifs";
 const PAGE = 50;
 const cap = (s: string) => s.charAt(0) + s.slice(1).toLowerCase();
@@ -41,7 +41,7 @@ export function GestionClients({ comptes, commerciaux }: { comptes: CompteAdmin[
   const compte = (f: Filtre) => comptes.filter((c) => (f === "inactifs" ? !c.actif : c.actif && (f === "tous" || (f === "autres" ? !c.niveau : c.niveau === f)))).length;
 
   const ouvrir = (c?: CompteAdmin) =>
-    setEdition(c ? { id: c.id, f: { raisonSociale: c.raisonSociale, type: c.type, niveau: c.niveau, numero: c.numero ?? "", cp: c.cp ?? "", ville: c.ville ?? "", commercialId: c.commercialId, actif: c.actif } } : { id: null, f: { raisonSociale: "", type: "IAP", niveau: "Officiel", numero: "", cp: "", ville: "", commercialId: null, actif: true } });
+    setEdition(c ? { id: c.id, f: { raisonSociale: c.raisonSociale, type: c.type, niveau: c.niveau, numero: c.numero ?? "", cp: c.cp ?? "", ville: c.ville ?? "", commercialId: c.commercialId, actif: c.actif, emailLeads: c.emailLeads ?? "", telephoneLeads: c.telephoneLeads ?? "", remiseLeads: c.remiseLeads === null ? "" : String(c.remiseLeads) } } : { id: null, f: { raisonSociale: "", type: "IAP", niveau: "Officiel", numero: "", cp: "", ville: "", commercialId: null, actif: true, emailLeads: "", telephoneLeads: "", remiseLeads: "" } });
   const set = (patch: Partial<Form>) => edition && setEdition({ ...edition, f: { ...edition.f, ...patch } });
 
   return (
@@ -73,7 +73,7 @@ export function GestionClients({ comptes, commerciaux }: { comptes: CompteAdmin[
               <Search aria-hidden className="size-4 shrink-0 text-text-3" />
               <input value={q} onChange={(e) => { setQ(e.target.value); setNb(PAGE); }} placeholder="Raison sociale, ville, code postal, numéro" aria-label="Rechercher un client" className="min-w-0 flex-1 bg-transparent text-sm text-text placeholder:text-text-3 focus:outline-none" />
             </div>
-            <Combobox label="Commercial" className="sm:w-72" value={commercial} onChange={setCommercial} options={[{ value: "tous", label: "Tous les commerciaux" }, ...optionsCommerciaux]} />
+            <Combobox label="Commercial" className="sm:w-80" value={commercial} onChange={setCommercial} options={[{ value: "tous", label: "Tous les commerciaux" }, ...optionsCommerciaux]} />
           </div>
         </div>
         {liste.length === 0 ? (
@@ -143,6 +143,16 @@ export function GestionClients({ comptes, commerciaux }: { comptes: CompteAdmin[
             <Field label="Ville" htmlFor="k-ville" className="sm:col-span-2"><Input id="k-ville" value={edition.f.ville} onChange={(e) => set({ ville: e.target.value })} /></Field>
             <Field label="Commercial responsable" htmlFor="k-com" className="sm:col-span-2">
               <Combobox id="k-com" placeholder="Choisir un commercial" value={edition.f.commercialId} onChange={(v) => set({ commercialId: v })} options={optionsCommerciaux} />
+            </Field>
+            <p className="border-t border-line pt-4 text-sm font-semibold text-text sm:col-span-2">Leads</p>
+            <Field label="E-mail pour les leads" htmlFor="k-email-leads" hint="Sinon, les gérants inscrits">
+              <Input id="k-email-leads" type="email" value={edition.f.emailLeads} onChange={(e) => set({ emailLeads: e.target.value })} />
+            </Field>
+            <Field label="Portable pour les SMS" htmlFor="k-tel-leads">
+              <Input id="k-tel-leads" type="tel" value={edition.f.telephoneLeads} onChange={(e) => set({ telephoneLeads: e.target.value })} />
+            </Field>
+            <Field label="Remise sur les leads (%)" htmlFor="k-remise" hint="Vide : remise de son niveau IAP" className="sm:col-span-2">
+              <Input id="k-remise" inputMode="decimal" value={edition.f.remiseLeads} onChange={(e) => set({ remiseLeads: e.target.value })} className="w-24" />
             </Field>
             <label className="flex items-center gap-3 text-sm font-medium text-text sm:col-span-2">
               <input type="checkbox" checked={edition.f.actif} onChange={(e) => set({ actif: e.target.checked })} className="size-4 accent-[var(--accent)]" />

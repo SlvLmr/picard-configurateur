@@ -85,7 +85,7 @@ export type Persona = {
 };
 
 export const PERSONAS: Persona[] = [
-  { id: "claire", role: "repartiteur", prenom: "Claire", nom: "Durand", fonction: "Répartitrice leads" },
+  { id: "claire", role: "repartiteur", prenom: "Claire", nom: "Durand", fonction: "Lead Manager" },
   { id: "julien", role: "atc", prenom: "Julien", nom: "Moreau", fonction: "ATC serruriers, Grand Ouest" },
   { id: "philippe", role: "codir", prenom: "Philippe", nom: "Renaud", fonction: "Directeur commercial" },
   { id: "marc", role: "client_gerant", prenom: "Marc", nom: "Lambert", fonction: "Gérant", societe: "Serrurerie Lambert", niveau: "Elite" },
@@ -97,7 +97,7 @@ export const ROLE_LABEL: Record<RoleId, string> = {
   chef_service: "Chef de service",
   chef_marche: "Chef de marché",
   atc: "Commercial",
-  repartiteur: "Répartiteur",
+  repartiteur: "Lead Manager",
   client_gerant: "Client",
   client_equipe: "Client (équipe)",
   sav: "SAV",

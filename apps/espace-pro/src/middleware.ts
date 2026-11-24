@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   const chemin = request.nextUrl.pathname;
-  const publique = PAGES_PUBLIQUES.includes(chemin);
+  const publique = PAGES_PUBLIQUES.includes(chemin) || chemin.startsWith("/enquete/");
   const surConnexion = chemin === PAGE_CONNEXION;
 
   if (!user && !publique) {

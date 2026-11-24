@@ -1,10 +1,11 @@
 "use client";
 
-import { Check, CircleCheck, Handshake, Inbox, Phone, Ruler, Send, X } from "lucide-react";
+import { Check, ChevronRight, CircleCheck, Hourglass, Inbox, Lock, Smile, Timer, X } from "lucide-react";
+import Link from "next/link";
 import { useState, useTransition } from "react";
-import { accepterLead, changerStatutLead, refuserLead } from "@/app/(app)/leads/actions";
+import { accepterLead, refuserLead } from "@/app/(app)/leads/actions";
 import { Badge } from "@/components/ui/badge";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import { Cote } from "@/components/ui/cote";
 import { KpiBand } from "@/components/ui/kpi";
@@ -13,44 +14,44 @@ import { Panel, PanelHeader } from "@/components/ui/panel";
 import { Segmented } from "@/components/ui/segmented";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
-import type { LeadPro } from "@/lib/data/leads";
+import type { LeadPro, LigneReleve } from "@/lib/data/leads";
+import type { StatsPro } from "@/lib/data/types";
 import { formatDuree } from "@/lib/format";
 import { ilYa } from "@/lib/temps";
+import { BoutonNouveauLead } from "./formulaire-lead";
 import { SourcePicto } from "./source-picto";
+import { MOTIFS_REFUS, STATUTS_LEAD } from "./statuts";
 
-const ETAPES = [
-  { statut: "contacte", label: "Contacté" },
-  { statut: "devis", label: "Devis envoyé" },
-  { statut: "signe", label: "Signé" },
-] as const;
+type Onglet = "ouverts" | "archives";
 
-const MOTIFS = ["Hors de ma zone d’intervention", "Planning complet", "Projet hors de mon activité", "Autre"];
-
-const LIBELLE: Record<LeadPro["statut"], string> = {
-  a_valider: "À valider",
-  attribue: "À accepter",
-  accepte: "Accepté",
-  contacte: "Contacté",
-  devis: "Devis envoyé",
-  signe: "Signé",
-  perdu: "Perdu",
-};
-
-type Vue = "en_cours" | "termines";
+const dateCourte = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(iso));
+const moisLong = (iso: string) => new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(new Date(iso));
 
 /** Leads d'un installateur (actions) ou du portefeuille d'un commercial (lecture). */
-export function LeadsPro({ leads, lectureSeule }: { leads: LeadPro[]; lectureSeule: boolean }) {
+export function LeadsPro({
+  leads,
+  lectureSeule,
+  stats,
+  releve,
+  peutCreer,
+}: {
+  leads: LeadPro[];
+  lectureSeule: boolean;
+  stats: StatsPro | null;
+  releve: LigneReleve[];
+  peutCreer: boolean;
+}) {
   const toast = useToast();
   const [pending, start] = useTransition();
   const [enCours, setEnCours] = useState<string | null>(null);
   const [refus, setRefus] = useState<{ id: string; motif: string } | null>(null);
-  const [vue, setVue] = useState<Vue>("en_cours");
+  const [onglet, setOnglet] = useState<Onglet>("ouverts");
 
   const aAccepter = leads.filter((l) => l.statut === "attribue");
-  const suivis = leads.filter((l) => ["accepte", "contacte", "devis"].includes(l.statut));
-  const termines = leads.filter((l) => l.statut === "signe" || l.statut === "perdu");
-  const signes = termines.filter((l) => l.statut === "signe").length;
-  const transfo = suivis.length + termines.length ? Math.round((signes / (suivis.length + termines.length)) * 100) : 0;
+  const ouverts = leads.filter((l) => ["accepte", "contacte", "rdv", "devis", "signe"].includes(l.statut));
+  const archives = leads.filter((l) => l.statut === "pose" || l.statut === "perdu");
+  const liste = onglet === "ouverts" ? ouverts : archives;
+  const tauxAcceptation = stats && stats.recus ? Math.round((stats.acceptes / stats.recus) * 100) : null;
 
   const agir = (id: string, f: () => Promise<{ ok: boolean; message: string }>) => {
     setEnCours(id);
@@ -68,43 +69,60 @@ export function LeadsPro({ leads, lectureSeule }: { leads: LeadPro[]; lectureSeu
         title={lectureSeule ? "Leads de mes clients" : "Mes leads"}
         description={
           lectureSeule
-            ? "La réactivité de votre portefeuille. Un lead en attente est un bon sujet de visite."
-            : "Acceptez vos leads dans les délais pour garder votre priorité, puis renseignez leur avancement : chaque statut rapporte des points."
+            ? "La réactivité de votre portefeuille. Un lead en attente est un bon sujet d’appel ou de visite."
+            : "Acceptez vos leads dans les 24 h, puis faites-les avancer jusqu’à la pose. Votre réactivité compte pour les prochains leads."
         }
+        actions={peutCreer ? <BoutonNouveauLead pourInstallateur /> : null}
       />
       <KpiBand
-        items={[
-          { label: "À accepter", value: aAccepter.length, icon: Inbox, tone: aAccepter.length ? "cta" : "neutral" },
-          { label: "En cours de suivi", value: suivis.length, icon: Phone, tone: "accent" },
-          { label: "Signés", value: signes, icon: Handshake, tone: "success" },
-          { label: "Taux de transformation", value: transfo, unit: "%", icon: CircleCheck, tone: "accent" },
-        ]}
+        items={
+          lectureSeule
+            ? [
+                { label: "En attente d’acceptation", value: aAccepter.length, icon: Inbox, tone: aAccepter.length ? "cta" : "neutral" },
+                { label: "En cours", value: ouverts.length, icon: Hourglass, tone: "accent" },
+                { label: "Posés", value: archives.filter((l) => l.statut === "pose").length, icon: CircleCheck, tone: "success" },
+                { label: "Perdus", value: archives.filter((l) => l.statut === "perdu").length, icon: X, tone: "neutral" },
+              ]
+            : [
+                { label: "À accepter", value: aAccepter.length, icon: Inbox, tone: aAccepter.length ? "cta" : "neutral" },
+                { label: "Temps de réponse moyen", value: stats?.temps_reponse_min ? formatDuree(stats.temps_reponse_min) : "–", icon: Timer, tone: "accent" },
+                { label: "Taux d’acceptation", value: tauxAcceptation ?? "–", unit: tauxAcceptation === null ? undefined : "%", icon: Check, tone: "accent", note: "Sur les 12 derniers mois" },
+                { label: "Projets terminés", value: stats?.termines ?? 0, icon: CircleCheck, tone: "success", note: stats?.nps !== null && stats?.nps !== undefined ? `Satisfaction client : ${stats.nps}` : undefined },
+              ]
+        }
       />
 
+      {/* À accepter */}
       <Panel className="mt-8">
-        <PanelHeader title="À accepter" description={aAccepter.length ? "Au-delà du délai, le lead est proposé à un autre professionnel" : undefined} />
+        <PanelHeader title="À accepter" description={aAccepter.length ? "Au-delà du délai, le lead retourne au Lead Manager" : undefined} />
         {aAccepter.length === 0 ? (
-          <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucun lead en attente d’acceptation. Vous serez prévenu dès qu’un nouveau lead vous est attribué.</p>
+          <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucun lead en attente. Vous recevez un e-mail et un SMS dès qu’un lead vous est attribué.</p>
         ) : (
           <ul>
             {aAccepter.map((l) => {
               const ecoule = l.attribueLe ? (Date.now() - new Date(l.attribueLe).getTime()) / 60000 : 0;
               const reste = Math.max(0, l.delaiMin - ecoule);
               return (
-                <li key={l.id} className={cn("border-t border-line px-6 py-5", enCours === l.id && "opacity-60")}>
+                <li key={l.id} className={cn("relative border-t border-line px-6 py-5", enCours === l.id && "opacity-60")}>
+                  <span aria-hidden className="absolute inset-y-4 left-0 w-1 rounded-r-full bg-danger" />
                   <div className="flex gap-3">
                     <SourcePicto source={l.source} />
                     <div className="min-w-0 flex-1">
-                      <p className="text-base font-semibold text-text">{l.projet}</p>
+                      <Link href={`/leads/${l.id}`} className="text-base font-semibold text-text hover:underline">
+                        {l.projet}
+                      </Link>
                       <p className="mt-0.5 text-sm text-text-2">
-                        {l.ville} ({l.departement}){lectureSeule && l.compte ? `, attribué à ${l.compte}` : ""}
+                        {l.ville ?? ""} {l.cp}
+                        {lectureSeule && l.compte ? `, attribué à ${l.compte}` : ""}
                       </p>
+                      {l.message ? <p className="mt-2 line-clamp-2 text-sm text-text-2">« {l.message} »</p> : null}
                     </div>
                     <Badge>{l.reference}</Badge>
                   </div>
-                  {l.configurationMaPorte ? (
-                    <p className="mt-3 rounded-md bg-accent-soft px-3 py-2 text-sm text-accent-strong">
-                      Le client a déjà configuré sa porte dans Ma Porte : {Object.values(l.configurationMaPorte).join(", ")}.
+                  {!lectureSeule ? (
+                    <p className="mt-3 flex items-center gap-2 text-xs text-text-3">
+                      <Lock aria-hidden className="size-4" />
+                      Coordonnées du client visibles après acceptation
                     </p>
                   ) : null}
                   <Cote
@@ -115,21 +133,19 @@ export function LeadsPro({ leads, lectureSeule }: { leads: LeadPro[]; lectureSeu
                     tone={reste < l.delaiMin * 0.3 ? "warning" : "accent"}
                     valueLabel={reste > 0 ? `Encore ${formatDuree(reste)}` : "Délai dépassé"}
                     startLabel="Attribué"
-                    endLabel="Réattribution"
+                    endLabel="Retour au Lead Manager"
                   />
                   {!lectureSeule ? (
                     refus?.id === l.id ? (
                       <div className="mt-4 flex flex-wrap items-center gap-2">
-                        <label htmlFor={`motif-${l.id}`} className="text-sm font-medium text-text">
-                          Motif du refus
-                        </label>
                         <Combobox
                           id={`motif-${l.id}`}
                           size="sm"
-                          className="w-full sm:w-64"
+                          label="Motif du refus"
+                          className="w-full sm:w-80"
                           value={refus.motif}
                           onChange={(v) => setRefus({ id: l.id, motif: v })}
-                          options={MOTIFS.map((m) => ({ value: m, label: m }))}
+                          options={MOTIFS_REFUS.map((m) => ({ value: m, label: m }))}
                         />
                         <Button size="sm" variant="danger" disabled={pending} onClick={() => agir(l.id, () => refuserLead(l.id, refus.motif))}>
                           Confirmer le refus
@@ -144,11 +160,10 @@ export function LeadsPro({ leads, lectureSeule }: { leads: LeadPro[]; lectureSeu
                           <Check aria-hidden />
                           Accepter
                         </Button>
-                        <Button size="sm" variant="ghost" disabled={pending} onClick={() => setRefus({ id: l.id, motif: MOTIFS[0] })}>
+                        <Button size="sm" variant="ghost" disabled={pending} onClick={() => setRefus({ id: l.id, motif: MOTIFS_REFUS[0] })}>
                           <X aria-hidden />
                           Refuser
                         </Button>
-                        <span className="ml-auto text-xs text-text-3">+20 points à l’acceptation</span>
                       </div>
                     )
                   ) : null}
@@ -159,75 +174,86 @@ export function LeadsPro({ leads, lectureSeule }: { leads: LeadPro[]; lectureSeu
         )}
       </Panel>
 
+      {/* Projets */}
       <Panel className="mt-8">
         <PanelHeader
-          title="Suivi"
+          title="Projets"
           actions={
             <Segmented
               size="sm"
-              label="Leads affichés"
-              value={vue}
-              onChange={setVue}
+              label="Projets affichés"
+              value={onglet}
+              onChange={setOnglet}
               options={[
-                { value: "en_cours", label: "En cours", count: suivis.length },
-                { value: "termines", label: "Terminés", count: termines.length },
+                { value: "ouverts", label: "En cours", count: ouverts.length },
+                { value: "archives", label: "Archivés", count: archives.length },
               ]}
             />
           }
         />
-        {(vue === "en_cours" ? suivis : termines).length === 0 ? (
-          <p className="border-t border-line px-6 py-8 text-sm text-text-2">{vue === "en_cours" ? "Aucun lead en cours de suivi." : "Aucun lead terminé pour l’instant."}</p>
+        {liste.length === 0 ? (
+          <p className="border-t border-line px-6 py-8 text-sm text-text-2">{onglet === "ouverts" ? "Aucun projet en cours." : "Aucun projet archivé pour l’instant."}</p>
         ) : (
           <ul>
-            {(vue === "en_cours" ? suivis : termines).map((l) => {
-              const rang = ETAPES.findIndex((e) => e.statut === l.statut);
-              return (
-                <li key={l.id} className={cn("grid gap-4 border-t border-line px-6 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center", enCours === l.id && "opacity-60")}>
-                  <div className="flex min-w-0 gap-3">
-                    <SourcePicto source={l.source} />
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-text">{l.contact}</span>
-                        <span className="text-text-3">{l.ville}</span>
-                        <Badge variant={l.statut === "signe" ? "success" : l.statut === "perdu" ? "danger" : "accent"}>{LIBELLE[l.statut]}</Badge>
-                      </div>
-                      <p className="mt-0.5 truncate text-sm text-text-2">{l.projet}</p>
-                      <p className="mt-0.5 text-xs text-text-3" suppressHydrationWarning>
-                        {l.reference}, reçu {ilYa(l.recuLe)}
-                        {l.telephone ? `, ${l.telephone}` : ""}
-                        {lectureSeule && l.compte ? `, ${l.compte}` : ""}
-                      </p>
-                    </div>
-                  </div>
-                  {!lectureSeule && vue === "en_cours" ? (
-                    <div className="flex flex-wrap items-center gap-2">
-                      {ETAPES.map((e, i) => (
-                        <Button
-                          key={e.statut}
-                          size="sm"
-                          variant={i === rang + 1 ? "primary" : "secondary"}
-                          disabled={pending || i <= rang}
-                          onClick={() => agir(l.id, () => changerStatutLead(l.id, e.statut))}
-                        >
-                          {i <= rang ? <Check aria-hidden /> : e.statut === "devis" ? <Send aria-hidden /> : null}
-                          {e.label}
-                        </Button>
-                      ))}
-                      <Button size="sm" variant="ghost" disabled={pending} onClick={() => agir(l.id, () => changerStatutLead(l.id, "perdu"))}>
-                        Perdu
-                      </Button>
-                      <ButtonLink size="sm" variant="ghost" href={`/configurateur?lead=${l.id}`}>
-                        <Ruler aria-hidden />
-                        Configurer
-                      </ButtonLink>
-                    </div>
-                  ) : null}
-                </li>
-              );
-            })}
+            <li className="hidden grid-cols-[96px_104px_minmax(0,1fr)_minmax(0,1fr)_88px_136px_16px] gap-4 border-t border-line px-6 py-2 text-xs text-text-3 lg:grid">
+              <span>Référence</span>
+              <span>Date</span>
+              <span>Projet</span>
+              <span>Client</span>
+              <span>Code postal</span>
+              <span>Statut</span>
+              <span />
+            </li>
+            {liste.map((l) => (
+              <li key={l.id} className="group relative grid gap-1 border-t border-line px-6 py-3 transition-colors hover:bg-sunken lg:grid-cols-[96px_104px_minmax(0,1fr)_minmax(0,1fr)_88px_136px_16px] lg:items-center lg:gap-4">
+                <span className="text-sm font-medium text-text">{l.reference}</span>
+                <span className="text-sm text-text-2">{dateCourte(l.recuLe)}</span>
+                <Link href={`/leads/${l.id}`} className="truncate text-sm font-semibold text-text after:absolute after:inset-0 focus-visible:outline-none">
+                  {l.projet}
+                </Link>
+                <span className="truncate text-sm text-text-2">
+                  {l.contact ?? "Client"}
+                  {lectureSeule && l.compte ? `, ${l.compte}` : ""}
+                </span>
+                <span className="text-sm text-text-2">{l.cp}</span>
+                <span className="flex flex-wrap items-center gap-2">
+                  <Badge variant={STATUTS_LEAD[l.statut].badge}>{STATUTS_LEAD[l.statut].label}</Badge>
+                  {l.creeParPro ? <span className="text-xs text-text-3">Créé par vous</span> : null}
+                </span>
+                <ChevronRight aria-hidden className="hidden size-4 text-text-3 transition-transform group-hover:translate-x-0.5 lg:block" />
+                <span className="text-xs text-text-3 lg:hidden" suppressHydrationWarning>
+                  Reçu {ilYa(l.recuLe)}
+                </span>
+              </li>
+            ))}
           </ul>
         )}
       </Panel>
+
+      {/* Relevé (gérant uniquement) */}
+      {releve.length ? (
+        <Panel className="mt-8">
+          <PanelHeader title="Relevé des leads" description="Facturé en fin de mois. Un lead est remboursé quand la commande Picard correspondante est validée." />
+          <ul>
+            {releve.map((r) => (
+              <li key={r.mois} className="grid grid-cols-2 gap-2 border-t border-line px-6 py-3 text-sm sm:grid-cols-[minmax(0,1fr)_repeat(4,auto)] sm:gap-8">
+                <span className="font-semibold capitalize text-text">{moisLong(r.mois)}</span>
+                <span className="text-text-2">{r.leads} lead{r.leads > 1 ? "s" : ""}</span>
+                <span className="text-text-2">{r.offerts} offert{r.offerts > 1 ? "s" : ""}</span>
+                <span className="text-text-2">{r.rembourses} remboursé{r.rembourses > 1 ? "s" : ""}</span>
+                <span className="tabular text-right font-semibold text-text">{r.montant.toFixed(2)} €</span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ) : null}
+
+      {!lectureSeule && stats?.nps !== null && stats?.nps !== undefined ? (
+        <p className="mt-6 flex items-center gap-2 text-sm text-text-3">
+          <Smile aria-hidden className="size-4" />
+          Vos clients sont interrogés après la pose : leur note de recommandation compte pour l’attribution des leads.
+        </p>
+      ) : null}
     </>
   );
 }

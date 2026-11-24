@@ -85,18 +85,25 @@ export async function commerciauxAdmin(): Promise<CommercialAdmin[]> {
 export type CompteAdmin = {
   id: string; raisonSociale: string; type: "IAP" | "Serrurier" | "Fenêtrier" | "Autre"; niveau: "Elite" | "Premium" | "Officiel" | null;
   numero: string | null; cp: string | null; ville: string | null; departement: string | null; commercialId: string | null; actif: boolean;
+  emailLeads: string | null; telephoneLeads: string | null; remiseLeads: number | null;
 };
 
 export async function comptesAdmin(): Promise<CompteAdmin[]> {
-  const { data } = await supabaseServeur()
-    .from("ep_comptes")
-    .select("id, raison_sociale, type, niveau_iap, numero_client, cp, ville, departement, commercial_id, actif")
-    .order("raison_sociale")
-    .limit(2000);
-  type L = { id: string; raison_sociale: string; type: CompteAdmin["type"]; niveau_iap: CompteAdmin["niveau"]; numero_client: string | null; cp: string | null; ville: string | null; departement: string | null; commercial_id: string | null; actif: boolean };
+  const supabase = supabaseServeur();
+  const [{ data }, { data: tarifs }] = await Promise.all([
+    supabase
+      .from("ep_comptes")
+      .select("id, raison_sociale, type, niveau_iap, numero_client, cp, ville, departement, commercial_id, actif, email_leads, telephone_leads")
+      .order("raison_sociale")
+      .limit(2000),
+    supabase.from("ep_lead_tarifs_comptes").select("compte_id, remise_pct"),
+  ]);
+  const remises = new Map(((tarifs ?? []) as { compte_id: string; remise_pct: number }[]).map((t) => [t.compte_id, Number(t.remise_pct)]));
+  type L = { id: string; raison_sociale: string; type: CompteAdmin["type"]; niveau_iap: CompteAdmin["niveau"]; numero_client: string | null; cp: string | null; ville: string | null; departement: string | null; commercial_id: string | null; actif: boolean; email_leads: string | null; telephone_leads: string | null };
   return ((data ?? []) as L[]).map((c) => ({
     id: c.id, raisonSociale: c.raison_sociale, type: c.type, niveau: c.niveau_iap, numero: c.numero_client, cp: c.cp,
     ville: c.ville, departement: c.departement, commercialId: c.commercial_id, actif: c.actif,
+    emailLeads: c.email_leads, telephoneLeads: c.telephone_leads, remiseLeads: remises.get(c.id) ?? null,
   }));
 }
 

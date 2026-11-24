@@ -14,7 +14,7 @@ import { cn } from "@/lib/cn";
 import type { Attribution, LeadGestion } from "@/lib/data/types";
 import { ilYa } from "@/lib/temps";
 import { SourcePicto } from "./source-picto";
-import { SOURCES_LEAD, STATUTS_LEAD } from "./statuts";
+import { SOURCES_LEAD, STATUTS_LEAD, TEMPERATURES } from "./statuts";
 
 type Onglet = "a_valider" | "attente" | "en_cours" | "termines" | "tous";
 type Tri = "recents" | "anciens" | "departement";
@@ -22,8 +22,8 @@ type Tri = "recents" | "anciens" | "departement";
 const DANS_ONGLET: Record<Onglet, (l: LeadGestion) => boolean> = {
   a_valider: (l) => l.statut === "a_valider",
   attente: (l) => l.statut === "attribue",
-  en_cours: (l) => ["accepte", "contacte", "devis"].includes(l.statut),
-  termines: (l) => l.statut === "signe" || l.statut === "perdu",
+  en_cours: (l) => ["accepte", "contacte", "rdv", "devis"].includes(l.statut),
+  termines: (l) => ["signe", "pose", "perdu"].includes(l.statut),
   tous: () => true,
 };
 
@@ -48,7 +48,7 @@ function Destinataire({ a, prefixe }: { a: Attribution | null; prefixe?: string 
   );
 }
 
-/** Poste de travail du répartiteur : tous les leads, filtres, actions unitaires et groupées. */
+/** Poste de travail du Lead Manager : tous les leads, filtres, actions unitaires et groupées. */
 export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutGerer: boolean }) {
   const toast = useToast();
   const [pending, start] = useTransition();
@@ -58,6 +58,7 @@ export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutG
   const [dep, setDep] = useState("tous");
   const [periode, setPeriode] = useState("365");
   const [gros, setGros] = useState(false);
+  const [temp, setTemp] = useState("toutes");
   const [tri, setTri] = useState<Tri>("recents");
   const [filtresOuverts, setFiltresOuverts] = useState(false);
   const [selection, setSelection] = useState<string[]>([]);
@@ -78,9 +79,10 @@ export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutG
         (source === "toutes" || l.source === source) &&
         (dep === "tous" || l.departement === dep) &&
         (!gros || l.grosProjet) &&
+        (temp === "toutes" || (temp === "non" ? !l.temperature : l.temperature === temp)) &&
         new Date(l.recuLe).getTime() >= depuis,
     );
-  }, [leads, q, source, dep, periode, gros]);
+  }, [leads, q, source, dep, periode, gros, temp]);
 
   const compte = (o: Onglet) => filtresHorsOnglet.filter(DANS_ONGLET[o]).length;
 
@@ -94,7 +96,7 @@ export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutG
 
   const selectionnables = visibles.filter((l) => l.statut === "a_valider" && l.suggestion);
   const toutSelectionne = selectionnables.length > 0 && selectionnables.every((l) => selection.includes(l.id));
-  const filtresActifs = [source !== "toutes", dep !== "tous", periode !== "365", gros].filter(Boolean).length;
+  const filtresActifs = [source !== "toutes", dep !== "tous", periode !== "365", gros, temp !== "toutes"].filter(Boolean).length;
 
   const basculer = (id: string) => setSelection((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
 
@@ -124,7 +126,7 @@ export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutG
           onChange={changerOnglet}
           options={[
             { value: "a_valider", label: "À valider", count: compte("a_valider") },
-            { value: "attente", label: "En attente du pro", count: compte("attente") },
+            { value: "attente", label: "En attente de l’installateur", count: compte("attente") },
             { value: "en_cours", label: "En cours", count: compte("en_cours") },
             { value: "termines", label: "Terminés", count: compte("termines") },
             { value: "tous", label: "Tous", count: compte("tous") },
@@ -165,6 +167,19 @@ export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutG
             value={source}
             onChange={setSource}
             options={[{ value: "toutes", label: "Toutes les sources" }, ...SOURCES_LEAD.map((s) => ({ value: s, label: s }))]}
+          />
+          <Combobox
+            label="Température"
+            className="md:w-60"
+            value={temp}
+            onChange={setTemp}
+            options={[
+              { value: "toutes", label: "Toutes les températures" },
+              { value: "chaud", label: "Chauds" },
+              { value: "tiede", label: "Tièdes" },
+              { value: "froid", label: "Froids" },
+              { value: "non", label: "Non qualifiés" },
+            ]}
           />
           <Combobox
             label="Département"
@@ -274,6 +289,12 @@ export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutG
 
                 <div className="flex flex-wrap items-center gap-2 pl-12 md:pl-0">
                   <Badge variant={STATUTS_LEAD[l.statut].badge}>{STATUTS_LEAD[l.statut].label}</Badge>
+                  {l.temperature ? (
+                    <Badge variant={TEMPERATURES[l.temperature].badge}>{TEMPERATURES[l.temperature].label}</Badge>
+                  ) : l.statut === "a_valider" ? (
+                    <Badge>À qualifier</Badge>
+                  ) : null}
+                  {l.creeParPro ? <Badge>Créé par l’installateur</Badge> : null}
                   {depasse ? <Badge variant="danger">Délai dépassé</Badge> : null}
                   {l.grosProjet ? <Badge variant="warning">Gros projet</Badge> : null}
                 </div>
