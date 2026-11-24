@@ -4,7 +4,9 @@ import { Check } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 import { attribuerLead } from "@/app/(app)/leads/actions";
 import { Badge, NiveauBadge } from "@/components/ui/badge";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import { Segmented } from "@/components/ui/segmented";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
@@ -75,7 +77,9 @@ export function LeadQueueReel({ leads, peutAttribuer, compact = false }: { leads
                   <SourcePicto source={l.source} />
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-text">{l.contact}</span>
+                      <Link href={`/leads/${l.id}`} className="font-semibold text-text hover:text-accent hover:underline">
+                        {l.contact}
+                      </Link>
                       <span className="text-text-3">
                         {l.ville} ({l.departement})
                       </span>
@@ -91,23 +95,27 @@ export function LeadQueueReel({ leads, peutAttribuer, compact = false }: { leads
                 <div className="min-w-0">
                   {peutAttribuer && l.candidats.length ? (
                     <>
-                      <label htmlFor={`dest-${l.id}`} className="sr-only">
-                        Destinataire du lead {l.reference}
-                      </label>
-                      <select
-                        id={`dest-${l.id}`}
+                      <Combobox
+                        size="sm"
+                        className="max-w-64"
+                        label={`Destinataire du lead ${l.reference}`}
                         value={choix[l.id] ?? "suggestion"}
-                        onChange={(e) => setChoix((c) => ({ ...c, [l.id]: e.target.value }))}
-                        className="h-8 w-full max-w-64 cursor-pointer appearance-none truncate rounded-md border border-transparent bg-transparent pr-8 text-sm font-semibold text-text hover:border-line-strong focus:border-accent"
-                        style={{ backgroundImage: "var(--chevron)", backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
-                      >
-                        <option value="suggestion">{s ? `${s.nom} (suggéré)` : "Choisir un professionnel"}</option>
-                        {l.candidats.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.nom} {c.niveau ? `(${c.niveau})` : ""}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(v) => setChoix((c) => ({ ...c, [l.id]: v }))}
+                        options={[
+                          {
+                            value: "suggestion",
+                            label: s ? s.nom : "Choisir un professionnel",
+                            detail: s ? "Suggestion automatique" : undefined,
+                            prefixe: s?.type === "compte" ? <NiveauBadge type={s.niveau ?? "Client"} /> : s?.type === "commercial" ? <NiveauBadge type="ATC" /> : undefined,
+                          },
+                          ...l.candidats.map((c) => ({
+                            value: c.id,
+                            label: c.nom,
+                            detail: c.ville ?? undefined,
+                            prefixe: <NiveauBadge type={c.niveau ?? "Client"} />,
+                          })),
+                        ]}
+                      />
                     </>
                   ) : (
                     <p className="text-sm font-semibold text-text">{s?.nom ?? "À choisir"}</p>

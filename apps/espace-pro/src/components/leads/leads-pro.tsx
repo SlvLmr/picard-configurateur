@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { accepterLead, changerStatutLead, refuserLead } from "@/app/(app)/leads/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import { Cote } from "@/components/ui/cote";
 import { KpiBand } from "@/components/ui/kpi";
 import { PageHeader } from "@/components/ui/page-header";
@@ -122,17 +123,14 @@ export function LeadsPro({ leads, lectureSeule }: { leads: LeadPro[]; lectureSeu
                         <label htmlFor={`motif-${l.id}`} className="text-sm font-medium text-text">
                           Motif du refus
                         </label>
-                        <select
+                        <Combobox
                           id={`motif-${l.id}`}
+                          size="sm"
+                          className="w-full sm:w-64"
                           value={refus.motif}
-                          onChange={(e) => setRefus({ id: l.id, motif: e.target.value })}
-                          className="h-8 cursor-pointer appearance-none rounded-md border border-line-strong bg-surface pl-3 pr-8 text-sm text-text"
-                          style={{ backgroundImage: "var(--chevron)", backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
-                        >
-                          {MOTIFS.map((m) => (
-                            <option key={m}>{m}</option>
-                          ))}
-                        </select>
+                          onChange={(v) => setRefus({ id: l.id, motif: v })}
+                          options={MOTIFS.map((m) => ({ value: m, label: m }))}
+                        />
                         <Button size="sm" variant="danger" disabled={pending} onClick={() => agir(l.id, () => refuserLead(l.id, refus.motif))}>
                           Confirmer le refus
                         </Button>

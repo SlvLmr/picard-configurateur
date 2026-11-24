@@ -1,6 +1,6 @@
 import "server-only";
 import { supabaseServeur } from "@/lib/supabase/server";
-import type { Candidat, LeadReel, StatsLeads } from "./types";
+import type { Candidat, Entonnoir, FicheLead, LeadGestion, LeadReel, StatsLeads } from "./types";
 
 type LigneLead = {
   id: string;
@@ -152,4 +152,110 @@ function intervalleEnMinutes(v: string) {
   const jours = /(\d+)\s*day/.exec(v);
   const hms = /(\d+):(\d+):(\d+)/.exec(v);
   return (jours ? Number(jours[1]) * 1440 : 0) + (hms ? Number(hms[1]) * 60 + Number(hms[2]) : 0) || 1440;
+}
+
+/* ─────────────────────── Gestion des leads (lead manager) ─────────────────────── */
+
+const COLONNES_GESTION = `id, reference, recu_le, attribue_le, accepte_le, delai_acceptation, source, contact_nom, telephone, email, cp, ville, departement,
+  projet, gros_projet, demo, statut, configuration_ma_porte, suggestion_commercial_id, commercial_id,
+  suggestion_compte:ep_comptes!ep_leads_suggestion_compte_id_fkey (raison_sociale, niveau_iap),
+  compte:ep_comptes!ep_leads_compte_id_fkey (raison_sociale, niveau_iap)`;
+
+type LigneGestion = {
+  id: string; reference: string; recu_le: string; attribue_le: string | null; accepte_le: string | null; delai_acceptation: string;
+  source: string; contact_nom: string; telephone: string | null; email: string | null; cp: string; ville: string | null; departement: string | null;
+  projet: string; gros_projet: boolean; demo: boolean; statut: LeadReel["statut"]; configuration_ma_porte: Record<string, unknown> | null;
+  suggestion_commercial_id: string | null; commercial_id: string | null;
+  suggestion_compte: { raison_sociale: string; niveau_iap: Candidat["niveau"] } | null;
+  compte: { raison_sociale: string; niveau_iap: Candidat["niveau"] } | null;
+};
+
+async function nomsCommerciaux() {
+  const { data } = await supabaseServeur().rpc("ep_crm_commerciaux");
+  return new Map(((data ?? []) as { id: string; prenom: string; nom: string }[]).map((c) => [c.id, `${c.prenom} ${capitaliser(c.nom)}`]));
+}
+
+function versLeadGestion(l: LigneGestion, noms: Map<string, string>): LeadGestion {
+  const nomCommercial = (id: string | null) => (id ? noms.get(id) ?? "Commercial du secteur" : null);
+  return {
+    id: l.id,
+    reference: l.reference,
+    recuLe: l.recu_le,
+    attribueLe: l.attribue_le,
+    accepteLe: l.accepte_le,
+    delaiMin: intervalleEnMinutes(l.delai_acceptation),
+    source: l.source,
+    contact: l.contact_nom,
+    telephone: l.telephone,
+    email: l.email,
+    cp: l.cp,
+    ville: l.ville,
+    departement: l.departement,
+    projet: l.projet,
+    grosProjet: l.gros_projet,
+    demo: l.demo,
+    statut: l.statut,
+    configurationMaPorte: l.configuration_ma_porte,
+    suggestion: l.suggestion_compte
+      ? { type: "compte", nom: l.suggestion_compte.raison_sociale, niveau: l.suggestion_compte.niveau_iap }
+      : l.suggestion_commercial_id
+        ? { type: "commercial", nom: nomCommercial(l.suggestion_commercial_id) ?? "Commercial du secteur", niveau: null }
+        : null,
+    attribueA: l.compte
+      ? { type: "compte", nom: l.compte.raison_sociale, niveau: l.compte.niveau_iap }
+      : l.commercial_id && l.statut !== "a_valider"
+        ? { type: "commercial", nom: nomCommercial(l.commercial_id) ?? "Commercial du secteur", niveau: null }
+        : null,
+    commercialNom: nomCommercial(l.commercial_id),
+  };
+}
+
+/** Tous les leads du périmètre de l'utilisateur sur une période (500 au plus, les plus récents d'abord). */
+export async function leadsGestion(jours = 365): Promise<LeadGestion[]> {
+  const supabase = supabaseServeur();
+  const depuis = new Date(Date.now() - jours * 86400000).toISOString();
+  const [{ data, error }, noms] = await Promise.all([
+    supabase.from("ep_leads").select(COLONNES_GESTION).gte("recu_le", depuis).order("recu_le", { ascending: false }).limit(500),
+    nomsCommerciaux(),
+  ]);
+  if (error) throw new Error(`Lecture des leads impossible : ${error.message}`);
+  return ((data ?? []) as unknown as LigneGestion[]).map((l) => versLeadGestion(l, noms));
+}
+
+/** Entonnoir de conversion, calculé avec les droits de l'utilisateur. */
+export async function entonnoirLeads(jours = 30, source: string | null = null): Promise<Entonnoir> {
+  const { data } = await supabaseServeur().rpc("ep_leads_entonnoir", { p_jours: jours, ...(source ? { p_source: source } : {}) });
+  return { recus: 0, attribues: 0, acceptes: 0, contactes: 0, devis: 0, signes: 0, perdus: 0, ...((data ?? {}) as Partial<Entonnoir>) };
+}
+
+/** Fiche complète d'un lead : détail, chronologie, notes et candidats de la zone. */
+export async function ficheLead(id: string, avecCandidats: boolean): Promise<FicheLead | null> {
+  const supabase = supabaseServeur();
+  const [{ data: lead }, noms, { data: evts }, { data: notes }, cand] = await Promise.all([
+    supabase.from("ep_leads").select(COLONNES_GESTION).eq("id", id).maybeSingle(),
+    nomsCommerciaux(),
+    supabase
+      .from("ep_lead_evenements")
+      .select("id, type, statut, details, cree_le, compte:ep_comptes!ep_lead_evenements_compte_id_fkey (raison_sociale)")
+      .eq("lead_id", id)
+      .order("cree_le", { ascending: false }),
+    supabase.from("ep_lead_notes").select("id, auteur_nom, contenu, cree_le").eq("lead_id", id).order("cree_le", { ascending: false }),
+    avecCandidats ? supabase.rpc("ep_candidats_lead", { p_lead: id }) : Promise.resolve({ data: [] as unknown[] }),
+  ]);
+  if (!lead) return null;
+  type Evt = { id: number; type: string; statut: LeadReel["statut"] | null; details: Record<string, unknown> | null; cree_le: string; compte: { raison_sociale: string } | null };
+  type Cand = { type: "compte" | "commercial"; id: string; nom: string; niveau: Candidat["niveau"]; ville: string | null; departement: string | null; leads_30j: number; ecart: number; groupe: string; suggere: boolean };
+  return {
+    lead: versLeadGestion(lead as unknown as LigneGestion, noms),
+    evenements: ((evts ?? []) as unknown as Evt[]).map((e) => ({
+      id: e.id, type: e.type, statut: e.statut, compteNom: e.compte?.raison_sociale ?? null, details: e.details, creeLe: e.cree_le,
+    })),
+    notes: ((notes ?? []) as { id: number; auteur_nom: string | null; contenu: string; cree_le: string }[]).map((n) => ({
+      id: n.id, auteur: n.auteur_nom, contenu: n.contenu, creeLe: n.cree_le,
+    })),
+    candidats: ((cand.data ?? []) as Cand[]).map((c) => ({
+      type: c.type, id: c.id, nom: c.nom, niveau: c.niveau, ville: c.ville, departement: c.departement,
+      leads30j: c.leads_30j, ecart: c.ecart, groupe: c.groupe, suggere: c.suggere,
+    })),
+  };
 }
