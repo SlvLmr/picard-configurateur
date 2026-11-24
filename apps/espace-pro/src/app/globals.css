@@ -783,3 +783,19 @@ select { background-position: right 12px center; }
     animation: none;
   }
 }
+
+/* Ruban du calendrier : les cartes se posent l'une après l'autre */
+.ruban-carte {
+  animation: ruban-carte 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+@keyframes ruban-carte {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ruban-carte {
+    animation: none;
+  }
+}

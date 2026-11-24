@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, ChevronRight, Info, Lock, Megaphone, Pin, SendHorizontal, TriangleAlert } from "lucide-react";
+import { BadgeCheck, CheckCheck, ChevronRight, Info, Megaphone, Pin, SendHorizontal, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SymboleEspacePro } from "@/components/marque/logo-espace-pro";
@@ -9,11 +9,16 @@ import type { Annonce } from "@/lib/data/accueil";
 
 type Filtre = "toutes" | Annonce["ton"];
 
+/** Chaque type a sa nuance : couleur du libellé et teinte légère de la bulle */
 const STYLE = {
-  info: { icon: Info, couleur: "var(--accent)", label: "Information" },
-  operation: { icon: Megaphone, couleur: "var(--cta-deep, var(--cta))", label: "Opération" },
-  important: { icon: TriangleAlert, couleur: "var(--warning)", label: "Important" },
+  info: { icon: Info, couleur: "var(--accent)", fond: "color-mix(in srgb, var(--accent) 7%, var(--surface))", label: "Information" },
+  operation: { icon: Megaphone, couleur: "var(--cta-deep)", fond: "color-mix(in srgb, var(--cta) 12%, var(--surface))", label: "Opération" },
+  important: { icon: TriangleAlert, couleur: "var(--danger)", fond: "color-mix(in srgb, var(--danger) 7%, var(--surface))", label: "Important" },
 } as const;
+
+/** Motif de fond façon messagerie : petites portes, clés et serrures en filigrane */
+const MOTIF =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='none' stroke='%231f5aa6' stroke-opacity='0.09' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 40V14h16v26M26 28h2'/%3E%3Ccircle cx='86' cy='24' r='6'/%3E%3Cpath d='M92 24h14M102 24v5M98 24v4'/%3E%3Cpath d='M30 92a8 8 0 1 1 16 0v6H30z'/%3E%3Cpath d='M34 92v-4a4 4 0 0 1 8 0v4'/%3E%3Cpath d='M78 78h20v26H78zM88 88v6'/%3E%3Cpath d='M56 54l4 4 8-8'/%3E%3C/svg%3E\")";
 
 const jour = (iso: string) => iso.slice(0, 10);
 const dateLongue = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
@@ -97,7 +102,7 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100dvh-120px)] min-h-[560px] max-w-4xl flex-col overflow-hidden rounded-lg border border-line bg-surface shadow-card">
+    <div className="-mx-4 -my-8 flex h-[calc(100dvh-72px)] min-h-[560px] flex-col overflow-hidden border-x border-line bg-surface sm:-mx-8 sm:-my-12">
       {/* En-tête du canal */}
       <header className="flex flex-col gap-3 border-b border-line bg-nav-gradient px-4 py-3 text-white sm:px-6">
         <div className="flex items-center gap-3">
@@ -109,7 +114,7 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
               Picard Serrures
               <BadgeCheck aria-label="Canal officiel" className="size-4 text-cta" />
             </h1>
-            <p className="truncate text-xs text-nav-muted">Canal officiel du réseau, {annonces.length} annonce{annonces.length > 1 ? "s" : ""} en cours</p>
+            <p className="truncate text-xs text-nav-muted">Chaîne officielle du réseau, {annonces.length} annonce{annonces.length > 1 ? "s" : ""}</p>
           </div>
         </div>
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="group" aria-label="Filtrer les actualités">
@@ -154,18 +159,14 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
       <div
         ref={filRef}
         className="scroll-nav flex-1 overflow-y-auto px-3 py-6 sm:px-6"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--accent) 4%, var(--surface-sunken))",
-          backgroundImage: "radial-gradient(color-mix(in srgb, var(--accent) 14%, transparent) 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-        }}
+        style={{ backgroundColor: "color-mix(in srgb, var(--cta) 6%, var(--surface-sunken))", backgroundImage: MOTIF, backgroundSize: "120px 120px" }}
       >
         {liste.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <p className="rounded-full bg-surface px-4 py-2 text-sm text-text-2 shadow-card">Aucune annonce dans cette catégorie pour le moment.</p>
           </div>
         ) : (
-          <ol className="flex flex-col gap-6">
+          <ol className="mx-auto flex w-full max-w-4xl flex-col gap-6">
             {groupes.map((g) => (
               <li key={g.jour} className="flex flex-col gap-2">
                 <p className="sticky top-0 z-10 mx-auto rounded-full bg-surface/95 px-3 py-1 text-xs font-medium capitalize text-text-2 shadow-card backdrop-blur">{libelleJour(g.jour)}</p>
@@ -181,13 +182,13 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
                         </span>
                         <article
                           className={cn(
-                            "relative max-w-[min(560px,85%)] rounded-lg bg-surface px-4 pb-2 pt-3 shadow-card transition-shadow duration-500",
+                            "relative max-w-[min(640px,85%)] rounded-lg px-4 pb-2 pt-3 shadow-[0_1px_1px_rgba(11,37,69,0.12)] transition-shadow duration-500",
                             premier && "rounded-bl-sm",
-                            a.ton === "important" && "ring-1 ring-warning/40",
                             surbrillance === a.id && "ring-2 ring-cta",
                           )}
+                          style={{ background: s.fond }}
                         >
-                          {premier ? <span aria-hidden className="absolute -left-1 bottom-0 size-3 bg-surface [clip-path:polygon(100%_0,100%_100%,0_100%)]" /> : null}
+                          {premier ? <span aria-hidden className="absolute -left-1 bottom-0 size-3 [clip-path:polygon(100%_0,100%_100%,0_100%)]" style={{ background: s.fond }} /> : null}
                           <p className="flex flex-wrap items-center gap-2 text-xs font-semibold" style={{ color: s.couleur }}>
                             <Icone aria-hidden className="size-4" />
                             {s.label}
@@ -201,9 +202,10 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
                           <h2 className="mt-1 text-base font-semibold text-text">{a.titre}</h2>
                           <p className="mt-1 whitespace-pre-line text-sm leading-6 text-text">{a.contenu}</p>
                           <ApercuLien a={a} />
-                          <p className="mt-2 flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs text-text-3">
-                            {a.fin ? <span>Valable jusqu’au {dateLongue(a.fin)}</span> : null}
-                            {heure(a.debut) ? <span className="tabular">{heure(a.debut)}</span> : null}
+                          <p className="mt-2 flex flex-wrap items-center justify-end gap-x-2 gap-y-1 text-xs text-text-3">
+                            {a.fin ? <span className="mr-auto">Valable jusqu’au {dateLongue(a.fin)}</span> : null}
+                            <span className="tabular">{heure(a.debut) ?? new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(a.debut))}</span>
+                            <CheckCheck aria-label="Publié" className="size-4 text-accent" />
                           </p>
                         </article>
                       </li>
@@ -216,10 +218,10 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
         )}
       </div>
 
-      {/* Barre du bas */}
-      <footer className="border-t border-line bg-surface px-3 py-3 sm:px-4">
-        {admin ? (
-          <Link href="/administration/contenus" className="group flex items-center gap-2">
+      {/* Publication (administrateur) : les autres lisent, la chaîne est en lecture seule */}
+      {admin ? (
+        <footer className="border-t border-line bg-surface px-3 py-3 sm:px-4">
+          <Link href="/administration/contenus" className="group mx-auto flex max-w-4xl items-center gap-2">
             <span className="flex h-10 flex-1 items-center rounded-full border border-line-strong bg-sunken px-4 text-sm text-text-3 transition-colors group-hover:border-accent">
               Écrire une annonce au réseau…
             </span>
@@ -228,13 +230,8 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
             </span>
             <span className="sr-only">Publier une annonce</span>
           </Link>
-        ) : (
-          <p className="flex items-center justify-center gap-2 py-2 text-xs text-text-3">
-            <Lock aria-hidden className="size-3" />
-            Seul Picard Serrures publie dans ce canal
-          </p>
-        )}
-      </footer>
+        </footer>
+      ) : null}
     </div>
   );
 }
