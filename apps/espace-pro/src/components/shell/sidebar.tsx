@@ -12,7 +12,8 @@ import type { ProfilReel } from "@/lib/data/types";
 export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigate: () => void; profil: ProfilReel }) {
   const pathname = usePathname();
   const { persona, brand } = useSession();
-  const modules = ROLE_MODULES[persona.role];
+  // Le menu suit le rôle réel : l’administrateur voit tout, quel que soit l’aperçu choisi.
+  const modules = ROLE_MODULES[profil.role];
   const leadCount = persona.role === "repartiteur" ? STATS_LEADS.aValider : isClient(persona.role) ? LEADS_CLIENT.length : undefined;
 
   return (

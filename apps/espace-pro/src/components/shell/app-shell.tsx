@@ -55,7 +55,7 @@ export function AppShell({ children, profil }: { children: React.ReactNode; prof
           </main>
         </div>
       </div>
-      <CommandPalette open={search} onClose={() => setSearch(false)} />
+      <CommandPalette open={search} onClose={() => setSearch(false)} role={profil.role} />
     </ToastProvider>
   );
 }

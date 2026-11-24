@@ -4,29 +4,27 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
-import { MODULES, ROLE_MODULES } from "@/lib/roles";
-import { useSession } from "@/lib/session";
+import { MODULES, ROLE_MODULES, type RoleId } from "@/lib/roles";
 import { LEADS } from "@/lib/mock/leads";
 import { NAV_ICONS } from "./nav-icons";
 
 type Item = { id: string; label: string; hint: string; href: string };
 
-export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { persona } = useSession();
+export function CommandPalette({ open, onClose, role }: { open: boolean; onClose: () => void; role: RoleId }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const input = useRef<HTMLInputElement>(null);
 
   const items = useMemo<Item[]>(() => {
-    const mods = ROLE_MODULES[persona.role].map((id) => ({ id, label: MODULES[id].label, hint: "Module", href: MODULES[id].href }));
-    const leads = ROLE_MODULES[persona.role].includes("leads")
+    const mods = ROLE_MODULES[role].map((id) => ({ id, label: MODULES[id].label, hint: "Module", href: MODULES[id].href }));
+    const leads = ROLE_MODULES[role].includes("leads")
       ? LEADS.map((l) => ({ id: l.id, label: `${l.contact}, ${l.ville}`, hint: `Lead ${l.id}`, href: "/leads" }))
       : [];
     const all = [...mods, ...leads];
     const n = q.trim().toLowerCase();
     return n ? all.filter((i) => (i.label + " " + i.hint).toLowerCase().includes(n)) : all;
-  }, [persona.role, q]);
+  }, [role, q]);
 
   useEffect(() => {
     if (open) {
