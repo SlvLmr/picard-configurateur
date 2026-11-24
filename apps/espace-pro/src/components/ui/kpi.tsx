@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { Picto } from "./picto";
 import { Sparkline } from "./sparkline";
@@ -14,6 +15,8 @@ export type KpiItem = {
   delta?: { text: string; sens: "up" | "down" | "flat"; bon: boolean };
   note?: string;
   trend?: number[];
+  /** Rend la brique cliquable vers le détail */
+  href?: string;
 };
 
 function Delta({ d }: { d: NonNullable<KpiItem["delta"]> }) {
@@ -38,37 +41,49 @@ function Delta({ d }: { d: NonNullable<KpiItem["delta"]> }) {
 export function KpiBand({ items, className }: { items: KpiItem[]; className?: string }) {
   return (
     <dl className={cn("grid grid-cols-1 overflow-hidden rounded-lg border border-line bg-surface shadow-card sm:grid-cols-2 xl:grid-cols-4", className)}>
-      {items.map((k, i) => (
-        <div
-          key={k.label}
-          className={cn(
-            "relative flex flex-col gap-4 p-6",
-            i > 0 && "border-t border-line sm:border-t-0",
-            i % 2 === 1 && "sm:border-l",
-            i >= 2 && "sm:border-t xl:border-t-0",
-            i === 2 && "xl:border-l",
-            i === 3 && "xl:border-l",
-          )}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <Picto icon={k.icon} tone={k.tone ?? "accent"} />
-            {k.trend ? <Sparkline values={k.trend} tone={k.delta ? (k.delta.bon ? "success" : "danger") : "accent"} /> : null}
+      {items.map((k, i) => {
+        const contenu = (
+          <>
+            <div className="flex items-start justify-between gap-3">
+              <Picto icon={k.icon} tone={k.tone ?? "accent"} />
+              {k.trend ? <Sparkline values={k.trend} tone={k.delta ? (k.delta.bon ? "success" : "danger") : "accent"} /> : null}
+            </div>
+            <div>
+              <dt className="flex items-center gap-1 text-sm font-medium text-text-2">
+                {k.label}
+                {k.href ? <ChevronRight aria-hidden className="size-4 text-text-3 transition-transform group-hover:translate-x-0.5" /> : null}
+              </dt>
+              <dd className="mt-1 flex items-baseline gap-1">
+                <span className="font-display tabular text-2xl font-bold text-text">{k.value}</span>
+                {k.unit ? <span className="text-base font-semibold text-text-3">{k.unit}</span> : null}
+              </dd>
+            </div>
+            {k.delta || k.note ? (
+              <dd className="flex flex-wrap items-center gap-2 text-xs text-text-3">
+                {k.delta ? <Delta d={k.delta} /> : null}
+                {k.note}
+              </dd>
+            ) : null}
+          </>
+        );
+        const cadre = cn(
+          "relative flex min-w-0 flex-col gap-4 p-6",
+          i > 0 && "border-t border-line sm:border-t-0",
+          i % 2 === 1 && "sm:border-l",
+          i >= 2 && "sm:border-t xl:border-t-0",
+          i === 2 && "xl:border-l",
+          i === 3 && "xl:border-l",
+        );
+        return k.href ? (
+          <Link key={k.label} href={k.href} className={cn(cadre, "group transition-colors hover:bg-sunken focus-visible:z-10")}>
+            {contenu}
+          </Link>
+        ) : (
+          <div key={k.label} className={cadre}>
+            {contenu}
           </div>
-          <div>
-            <dt className="text-sm font-medium text-text-2">{k.label}</dt>
-            <dd className="mt-1 flex items-baseline gap-1">
-              <span className="font-display tabular text-2xl font-bold text-text">{k.value}</span>
-              {k.unit ? <span className="text-base font-semibold text-text-3">{k.unit}</span> : null}
-            </dd>
-          </div>
-          {k.delta || k.note ? (
-            <dd className="flex flex-wrap items-center gap-2 text-xs text-text-3">
-              {k.delta ? <Delta d={k.delta} /> : null}
-              {k.note}
-            </dd>
-          ) : null}
-        </div>
-      ))}
+        );
+      })}
     </dl>
   );
 }

@@ -19,7 +19,7 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-nav text-nav-text transition-transform duration-200 ease-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-nav-gradient text-nav-text transition-transform duration-200 ease-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
         open ? "translate-x-0" : "-translate-x-full",
       )}
     >
@@ -44,7 +44,7 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors",
-                    active ? "bg-nav-active text-white" : "text-nav-text hover:bg-nav-hover",
+                    active ? "bg-white/15 text-white shadow-sm" : "text-nav-text hover:bg-white/10",
                   )}
                 >
                   <Icon className={cn("size-4", active ? "text-white" : "text-nav-muted")} aria-hidden />
