@@ -60,3 +60,49 @@ export async function donneesAdministration(): Promise<DonneesAdministration> {
     comptes: (comptes.data ?? []).map((x) => ({ id: x.id, nom: x.raison_sociale, detail: [x.niveau_iap, x.ville].filter(Boolean).join(", ") })),
   };
 }
+
+export type CommercialAdmin = {
+  id: string; prenom: string; nom: string; equipe: string; fonction: string | null; email: string | null;
+  telephone: string | null; iapObjectif: number; actif: boolean; comptes: number; iap: number;
+};
+
+export async function commerciauxAdmin(): Promise<CommercialAdmin[]> {
+  const { data } = await supabaseServeur().rpc("ep_admin_commerciaux_detail");
+  type L = { id: string; prenom: string; nom: string; equipe: string; fonction: string | null; email: string | null; telephone: string | null; iap_objectif: number | null; actif: boolean; comptes: number; iap: number };
+  return ((data ?? []) as L[]).map((c) => ({
+    id: c.id, prenom: c.prenom, nom: c.nom, equipe: c.equipe, fonction: c.fonction, email: c.email, telephone: c.telephone,
+    iapObjectif: c.iap_objectif ?? 0, actif: c.actif, comptes: Number(c.comptes), iap: Number(c.iap),
+  }));
+}
+
+export type CompteAdmin = {
+  id: string; raisonSociale: string; type: "IAP" | "Serrurier" | "Fenêtrier" | "Autre"; niveau: "Elite" | "Premium" | "Officiel" | null;
+  numero: string | null; cp: string | null; ville: string | null; departement: string | null; commercialId: string | null; actif: boolean;
+};
+
+export async function comptesAdmin(): Promise<CompteAdmin[]> {
+  const { data } = await supabaseServeur()
+    .from("ep_comptes")
+    .select("id, raison_sociale, type, niveau_iap, numero_client, cp, ville, departement, commercial_id, actif")
+    .order("raison_sociale")
+    .limit(2000);
+  type L = { id: string; raison_sociale: string; type: CompteAdmin["type"]; niveau_iap: CompteAdmin["niveau"]; numero_client: string | null; cp: string | null; ville: string | null; departement: string | null; commercial_id: string | null; actif: boolean };
+  return ((data ?? []) as L[]).map((c) => ({
+    id: c.id, raisonSociale: c.raison_sociale, type: c.type, niveau: c.niveau_iap, numero: c.numero_client, cp: c.cp,
+    ville: c.ville, departement: c.departement, commercialId: c.commercial_id, actif: c.actif,
+  }));
+}
+
+export type Parametre = { cle: string; valeur: number; libelle: string; aide: string | null; unite: string | null; groupe: string };
+
+export async function parametres(): Promise<Parametre[]> {
+  const { data } = await supabaseServeur().from("ep_parametres").select("cle, valeur, libelle, aide, unite, groupe, ordre").order("groupe").order("ordre");
+  return ((data ?? []) as (Parametre & { ordre: number })[]).map((p) => ({ ...p, valeur: Number(p.valeur) }));
+}
+
+export type Droit = { module: string; role: RoleId; autorise: boolean; niveaux: ("Elite" | "Premium" | "Officiel")[] };
+
+export async function droits(): Promise<Droit[]> {
+  const { data } = await supabaseServeur().from("ep_droits").select("module, role, autorise, niveaux");
+  return (data ?? []) as Droit[];
+}

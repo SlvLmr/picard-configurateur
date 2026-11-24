@@ -4,27 +4,27 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
-import { MODULES, ROLE_MODULES, type RoleId } from "@/lib/roles";
+import { MODULES, type ModuleId } from "@/lib/roles";
 import { LEADS } from "@/lib/mock/leads";
 import { NAV_ICONS } from "./nav-icons";
 
 type Item = { id: string; label: string; hint: string; href: string };
 
-export function CommandPalette({ open, onClose, role }: { open: boolean; onClose: () => void; role: RoleId }) {
+export function CommandPalette({ open, onClose, modules }: { open: boolean; onClose: () => void; modules: ModuleId[] }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const input = useRef<HTMLInputElement>(null);
 
   const items = useMemo<Item[]>(() => {
-    const mods = ROLE_MODULES[role].map((id) => ({ id, label: MODULES[id].label, hint: "Module", href: MODULES[id].href }));
-    const leads = ROLE_MODULES[role].includes("leads")
+    const mods = modules.map((id) => ({ id, label: MODULES[id].label, hint: "Module", href: MODULES[id].href }));
+    const leads = modules.includes("leads")
       ? LEADS.map((l) => ({ id: l.id, label: `${l.contact}, ${l.ville}`, hint: `Lead ${l.id}`, href: "/leads" }))
       : [];
     const all = [...mods, ...leads];
     const n = q.trim().toLowerCase();
     return n ? all.filter((i) => (i.label + " " + i.hint).toLowerCase().includes(n)) : all;
-  }, [role, q]);
+  }, [modules, q]);
 
   useEffect(() => {
     if (open) {

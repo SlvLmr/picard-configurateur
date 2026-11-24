@@ -9,6 +9,8 @@ const PAGE_CONNEXION = "/connexion";
  * Rafraîchit aussi la session Supabase à chaque requête.
  */
 export async function middleware(request: NextRequest) {
+  // Le chemin demandé est transmis au rendu serveur pour le contrôle des droits par rubrique.
+  request.headers.set("x-chemin", request.nextUrl.pathname);
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_KEY, {

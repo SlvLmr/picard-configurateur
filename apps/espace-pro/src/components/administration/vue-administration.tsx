@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { annulerInvitation, definirProfil, inviter } from "@/app/(app)/administration/actions";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { KpiBand } from "@/components/ui/kpi";
 import { PageHeader } from "@/components/ui/page-header";
@@ -64,13 +64,8 @@ export function VueAdministration({
   return (
     <>
       <PageHeader
-        title="Administration"
+        title="Utilisateurs"
         description="Donnez un rôle à chaque utilisateur, rattachez les clients à leur entreprise et les commerciaux à leur fiche, et préparez les invitations."
-        actions={
-          <ButtonLink href="/administration/contenus" variant="secondary">
-            Annonces et événements
-          </ButtonLink>
-        }
       />
       <KpiBand
         items={[

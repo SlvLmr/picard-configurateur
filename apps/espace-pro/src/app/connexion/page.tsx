@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <main className="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <section className="relative hidden overflow-hidden bg-nav p-12 text-nav-text lg:flex lg:flex-col">
-        <span className="flex w-80 flex-col gap-4"><Image src="/logos/picard-serrures.svg" alt="Picard Serrures" width={151} height={48} priority className="h-12 w-auto self-start" /><SignatureEspacePro taille="lg" /></span>
+        <span className="flex w-80 flex-col items-center gap-4"><Image src="/logos/picard-serrures.svg" alt="Picard Serrures" width={151} height={48} priority className="h-12 w-auto" /><SignatureEspacePro taille="lg" /></span>
         <div className="mt-auto max-w-md">
           <p className="font-display text-2xl font-semibold text-white">Les leads, les clients et les outils du réseau, au même endroit.</p>
         </div>

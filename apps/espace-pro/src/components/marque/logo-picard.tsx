@@ -11,7 +11,7 @@ export function LogoMarque({ marque, className }: { marque: "picard" | "eliot"; 
   const [absent, setAbsent] = useState(false);
   const nom = marque === "picard" ? "Picard Serrures" : "Eliot";
   if (absent) {
-    return <span className={cn("block truncate text-sm font-semibold tracking-wide text-white", className)}>{nom}</span>;
+    return <span className={cn("block truncate text-center text-sm font-semibold tracking-wide text-white", className)}>{nom}</span>;
   }
   return (
     // eslint-disable-next-line @next/next/no-img-element

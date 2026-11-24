@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ToastProvider } from "@/components/ui/toast";
 import type { ProfilReel } from "@/lib/data/types";
 import { useSession } from "@/lib/session";
+import type { ModuleId } from "@/lib/roles";
 import { CommandPalette } from "./command-palette";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
@@ -22,7 +23,7 @@ const PERSONA_PAR_ROLE: Record<ProfilReel["role"], string> = {
   qualite: "philippe",
 };
 
-export function AppShell({ children, profil }: { children: React.ReactNode; profil: ProfilReel }) {
+export function AppShell({ children, profil, modules }: { children: React.ReactNode; profil: ProfilReel; modules: ModuleId[] }) {
   const { persona, setPersona } = useSession();
   const [menu, setMenu] = useState(false);
 
@@ -49,7 +50,7 @@ export function AppShell({ children, profil }: { children: React.ReactNode; prof
         Aller au contenu
       </a>
       <div className="lg:grid lg:grid-cols-[240px_1fr]">
-        <Sidebar open={menu} onNavigate={() => setMenu(false)} profil={profil} />
+        <Sidebar open={menu} onNavigate={() => setMenu(false)} profil={profil} modules={modules} />
         {menu ? <div className="fixed inset-0 z-30 bg-[#071a33]/40 lg:hidden" onClick={() => setMenu(false)} aria-hidden /> : null}
         <div className="min-w-0">
           <Topbar onMenu={() => setMenu(true)} onSearch={() => setSearch(true)} profil={profil} />
@@ -58,7 +59,7 @@ export function AppShell({ children, profil }: { children: React.ReactNode; prof
           </main>
         </div>
       </div>
-      <CommandPalette open={search} onClose={() => setSearch(false)} role={profil.role} />
+      <CommandPalette open={search} onClose={() => setSearch(false)} modules={modules} />
     </ToastProvider>
   );
 }

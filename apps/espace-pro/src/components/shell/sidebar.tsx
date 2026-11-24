@@ -4,17 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import type { ProfilReel } from "@/lib/data/types";
-import { MODULES, ROLE_LABEL, ROLE_MODULES, SECTIONS_MENU, type ModuleId } from "@/lib/roles";
+import { MODULES, ROLE_LABEL, SECTIONS_MENU, type ModuleId } from "@/lib/roles";
 import { useSession } from "@/lib/session";
 import { SignatureEspacePro } from "@/components/marque/logo-espace-pro";
 import { LogoMarque } from "@/components/marque/logo-picard";
 import { NAV_ICONS } from "./nav-icons";
 
-export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigate: () => void; profil: ProfilReel }) {
+export function Sidebar({ open, onNavigate, profil, modules }: { open: boolean; onNavigate: () => void; profil: ProfilReel; modules: ModuleId[] }) {
   const pathname = usePathname();
   const { brand } = useSession();
   // Le menu suit le rôle réel : l’administrateur voit tout, quel que soit l’aperçu choisi.
-  const autorises = new Set(ROLE_MODULES[profil.role]);
+  const autorises = new Set(modules);
   const sections = SECTIONS_MENU.map((s) => ({ ...s, modules: s.modules.filter((m) => autorises.has(m)) })).filter((s) => s.modules.length);
 
   const Entree = ({ id }: { id: ModuleId }) => {
@@ -46,7 +46,7 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
         open ? "translate-x-0" : "-translate-x-full",
       )}
     >
-      <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className="mx-3 mb-2 mt-3 flex flex-col gap-3 rounded-md px-3 py-3">
+      <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className="mx-3 mb-2 mt-3 flex flex-col items-center gap-3 rounded-md px-3 py-3">
         <LogoMarque marque={brand} className="h-8" />
         <SignatureEspacePro />
       </Link>

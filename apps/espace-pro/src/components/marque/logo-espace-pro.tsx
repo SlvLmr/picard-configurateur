@@ -45,19 +45,27 @@ export function LogoEspacePro({ sousTitre, className, clair = true }: { sousTitr
 }
 
 /**
- * Signature de l'outil, placée sous le logo de la marque : « Espace Pro » en laiton,
- * prolongé d'un filet qui s'efface. Fine et discrète, elle complète le logo sans le concurrencer.
+ * Signature de l'outil, centrée sous le logo de la marque : « Espace Pro » en laiton,
+ * encadré de deux filets symétriques qui s'effacent vers l'extérieur.
  */
 export function SignatureEspacePro({ taille = "sm", className }: { taille?: "sm" | "lg"; className?: string }) {
+  const filet = (sens: "gauche" | "droite") => (
+    <span
+      aria-hidden
+      className="h-px flex-1"
+      style={{ background: `linear-gradient(${sens === "gauche" ? "270deg" : "90deg"}, var(--cta), transparent)`, opacity: 0.7 }}
+    />
+  );
   return (
-    <span className={cn("flex items-center", taille === "lg" ? "gap-4" : "gap-3", className)}>
+    <span className={cn("flex w-full items-center", taille === "lg" ? "gap-4" : "gap-3", className)}>
+      {filet("gauche")}
       <span
         className={cn("whitespace-nowrap font-semibold leading-none text-cta", taille === "lg" ? "text-sm" : "text-xs")}
-        style={{ letterSpacing: "0.2em", fontVariationSettings: '"wdth" 112' }}
+        style={{ letterSpacing: "0.2em", fontVariationSettings: '"wdth" 112', paddingLeft: "0.2em" }}
       >
         ESPACE PRO
       </span>
-      <span aria-hidden className="h-px flex-1" style={{ background: "linear-gradient(90deg, var(--cta), transparent)", opacity: 0.7 }} />
+      {filet("droite")}
     </span>
   );
 }

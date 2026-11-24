@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { supabaseConfigure } from "@/lib/supabase/config";
 import { supabaseServeur } from "@/lib/supabase/server";
+import { ROLE_MODULES, type ModuleId } from "@/lib/roles";
 import type { ProfilReel } from "./types";
 
 /** Profil Espace Pro de l'utilisateur connecté, ou null (non connecté, ou sans profil). */
@@ -31,3 +32,10 @@ export const profilCourant = cache(async (): Promise<ProfilReel | null> => {
 export const ROLES_INTERNES = ["admin", "codir", "chef_service", "chef_marche", "repartiteur"] as const;
 export const estInterne = (p: ProfilReel | null) => !!p && (ROLES_INTERNES as readonly string[]).includes(p.role);
 export const peutAttribuer = (p: ProfilReel | null) => !!p && (p.role === "admin" || p.role === "repartiteur");
+
+/** Rubriques autorisées pour l'utilisateur connecté (paramétrables dans Administration, Rôles et droits). */
+export const modulesAutorises = cache(async (profil: ProfilReel): Promise<ModuleId[]> => {
+  const { data, error } = await supabaseServeur().rpc("ep_modules_autorises");
+  if (error || !Array.isArray(data)) return ROLE_MODULES[profil.role];
+  return data as ModuleId[];
+});

@@ -39,7 +39,6 @@ import { useSession } from "@/lib/session";
 type Reel = { leads: LeadReel[]; stats: StatsLeads | null; peutAttribuer: boolean } | null;
 type Vue = "repartition" | "commercial" | "client" | "sav" | "direction";
 
-const PALIER_POINTS = 6500;
 
 const vueDuRole = (r: RoleId): Vue =>
   r === "repartiteur" ? "repartition"
@@ -63,6 +62,7 @@ export function AccueilParRole({
   reel,
   journee,
   signaux,
+  palier,
 }: {
   profil: ProfilReel | null;
   recap: Recap;
@@ -71,6 +71,7 @@ export function AccueilParRole({
   reel: Reel;
   journee: JourneeCommercial | null;
   signaux: Signal[];
+  palier: number;
 }) {
   const { persona } = useSession();
   // L'administrateur prévisualise les autres rôles ; les autres voient leur propre accueil.
@@ -167,14 +168,14 @@ export function AccueilParRole({
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Calendrier elements={agenda} lienComplet="/calendrier" />
-        <BlocRole vue={vue} reel={reel} journee={journee} signaux={signaux} points={r.points} />
+        <BlocRole vue={vue} reel={reel} journee={journee} signaux={signaux} points={r.points} palier={palier} />
       </div>
     </div>
   );
 }
 
 /** Le bloc propre à chaque métier, à côté du calendrier. */
-function BlocRole({ vue, reel, journee, signaux, points }: { vue: Vue; reel: Reel; journee: JourneeCommercial | null; signaux: Signal[]; points: number }) {
+function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; reel: Reel; journee: JourneeCommercial | null; signaux: Signal[]; points: number; palier: number }) {
   if (vue === "repartition") {
     return (
       <Panel className="self-start">
@@ -214,9 +215,9 @@ function BlocRole({ vue, reel, journee, signaux, points }: { vue: Vue; reel: Ree
   if (vue === "client") {
     return (
       <Panel className="self-start">
-        <PanelHeader title="Prochain palier" description={`Coffret outils de pose, à ${formatNumber(PALIER_POINTS)} points`} />
+        <PanelHeader title="Prochain palier" description={`Objectif : ${formatNumber(palier)} points`} />
         <PanelBody className="flex flex-col items-center gap-4">
-          <Jauge value={Math.min(points, PALIER_POINTS)} max={PALIER_POINTS} label="Progression vers le prochain palier" valueLabel={`${formatNumber(points)} pts`} sousTitre={points >= PALIER_POINTS ? "Palier atteint" : `Encore ${formatNumber(PALIER_POINTS - points)} points`} tone="cta" size={220} />
+          <Jauge value={Math.min(points, palier)} max={palier} label="Progression vers le prochain palier" valueLabel={`${formatNumber(points)} pts`} sousTitre={points >= palier ? "Palier atteint" : `Encore ${formatNumber(palier - points)} points`} tone="cta" size={220} />
           <ButtonLink href="/boutique" variant="secondary" className="w-full">
             <Coins aria-hidden />
             Dépenser mes points

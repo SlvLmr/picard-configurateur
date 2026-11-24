@@ -44,7 +44,7 @@ export function GestionContenus({ annonces, evenements }: { annonces: Annonce[];
 
   return (
     <>
-      <PageHeader title="Annonces et événements" description="Les annonces s’affichent en haut de l’accueil (trois au plus, épinglées d’abord). Les événements alimentent le calendrier. Chacun est visible par le public choisi." />
+      <PageHeader title="Actualités et calendrier" description="Les annonces s’affichent en haut de l’accueil (trois au plus, épinglées d’abord). Les événements alimentent le calendrier. Chacun est visible par le public choisi." />
       <div className="grid gap-8 xl:grid-cols-2">
         <Panel>
           <PanelHeader title="Publier une annonce" />
