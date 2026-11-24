@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { commander, type LignePanier } from "@/app/(app)/boutique/actions";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Cote } from "@/components/ui/cote";
 import { Field, Select } from "@/components/ui/field";
 import { Jauge } from "@/components/ui/jauge";
@@ -48,10 +48,10 @@ export function BoutiqueVue({ donnees, role }: { donnees: DonneesBoutique; role:
       </>
     );
 
-  return <Boutique donnees={donnees} mode={mode} apercu={apercu} />;
+  return <Boutique donnees={donnees} mode={mode} apercu={apercu} peutValider={role === "admin" || role === "chef_marche"} />;
 }
 
-function Boutique({ donnees, mode, apercu }: { donnees: DonneesBoutique; mode: Mode; apercu: boolean }) {
+function Boutique({ donnees, mode, apercu, peutValider }: { donnees: DonneesBoutique; mode: Mode; apercu: boolean; peutValider: boolean }) {
   const toast = useToast();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -129,6 +129,14 @@ function Boutique({ donnees, mode, apercu }: { donnees: DonneesBoutique; mode: M
         title="Boutique"
         meta={apercu ? <Badge variant="warning">Aperçu, données fictives</Badge> : null}
         description={description}
+        actions={
+          peutValider && mode === "interne" ? (
+            <ButtonLink href="/boutique/validations" variant={aValider.length ? "primary" : "secondary"}>
+              <CircleCheck aria-hidden />
+              {aValider.length ? `Valider les commandes (${aValider.length})` : "Validation des commandes"}
+            </ButtonLink>
+          ) : null
+        }
       />
 
       {mode === "client" ? <EnTeteClient solde={solde} palier={prochainPalier} /> : null}
@@ -489,6 +497,11 @@ function Historique({ commandes, mode, apercu }: { commandes: Commande[]; mode: 
                   <p className="mt-0.5 truncate text-sm text-text-2">
                     {c.lignes.map((l) => `${l.quantite} × ${l.nom}${l.variante ? ` (${l.variante})` : ""}`).join(", ")}
                   </p>
+                  {c.motif ? (
+                    <p className={cn("mt-1 text-xs", c.statut === "annulee" ? "text-danger" : "text-text-3")}>
+                      {c.statut === "annulee" ? "Refusée" : "Validée"} par le chef de marché : {c.motif}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="tabular text-sm text-text-2">
                   <span className="font-semibold text-text">{euros(c.totalEuros)}</span>
