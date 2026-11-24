@@ -114,6 +114,8 @@ export type CandidatZone = {
   ecart: number;
   groupe: string;
   suggere: boolean;
+  /** Famille du destinataire, pour les onglets d'attribution */
+  famille: "iap" | "atc" | "fenetrier" | "autre";
 };
 
 export type EvenementLead = {

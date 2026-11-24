@@ -113,7 +113,9 @@ export function FicheLead({ fiche, mode }: { fiche: DonneesFiche; mode: ModeFich
   const suggestion = q.echeance || q.budget || q.nature ? temperatureSuggeree(q.echeance, q.budget, q.nature) : null;
   const fil = notes.filter((n) => (pro ? !n.interne : true));
 
-  const options: OptionCombobox[] = candidats.map((c) => ({
+  const [famille, setFamille] = useState<"iap" | "atc" | "fenetrier" | "autre">(suggere?.famille ?? "iap");
+  const nbFamille = (f: string) => candidats.filter((c) => c.famille === f).length;
+  const options: OptionCombobox[] = candidats.filter((c) => c.famille === famille).map((c) => ({
     value: `${c.type}:${c.id}`,
     label: c.nom,
     groupe: c.groupe,
@@ -568,11 +570,32 @@ export function FicheLead({ fiche, mode }: { fiche: DonneesFiche; mode: ModeFich
 
                 {attribuable ? (
                   <>
+                    <div className="overflow-x-auto">
+                      <Segmented
+                        size="sm"
+                        label="Type de destinataire"
+                        value={famille}
+                        onChange={setFamille}
+                        options={[
+                          { value: "iap", label: "IAP", count: nbFamille("iap") },
+                          { value: "atc", label: "ATC", count: nbFamille("atc") },
+                          { value: "fenetrier", label: "Fenêtriers", count: nbFamille("fenetrier") },
+                          { value: "autre", label: "Autres", count: nbFamille("autre") },
+                        ]}
+                      />
+                    </div>
                     <Field label={lead.statut === "attribue" ? "Réattribuer à" : "Attribuer à"} htmlFor="destinataire">
-                      <Combobox id="destinataire" options={options} value={choix} onChange={setChoix} placeholder="Choisir un installateur ou un commercial" recherche />
+                      <Combobox
+                        id="destinataire"
+                        options={options}
+                        value={options.some((o) => o.value === choix) ? choix : null}
+                        onChange={setChoix}
+                        placeholder={famille === "atc" ? "Choisir un commercial" : options.length ? "Choisir un destinataire" : "Aucun candidat dans cette catégorie"}
+                        recherche
+                      />
                     </Field>
                     <div className="flex flex-wrap gap-2">
-                      <Button variant="primary" disabled={pending || !choix} onClick={attribuer}>
+                      <Button variant="primary" disabled={pending || !choix || !options.some((o) => o.value === choix)} onClick={attribuer}>
                         <Check aria-hidden />
                         {lead.statut === "attribue" ? "Réattribuer" : "Attribuer"}
                       </Button>

@@ -309,6 +309,9 @@ export async function ficheLead(id: string, interne: boolean): Promise<FicheLead
   type Enq = { cible: EnqueteLead["cible"]; envoyee_le: string; relances: number; repondue_le: string | null; note: number | null; commentaire: string | null };
   type Fact = { montant: number; prix: number; remise_pct: number; statut: FacturationLead["statut"]; motif: string | null; mois: string } | null;
   const f = fact as Fact;
+  const idsComptes = ((cand.data ?? []) as Cand[]).filter((c) => c.type === "compte").map((c) => c.id);
+  const { data: typesComptes } = idsComptes.length ? await supabase.from("ep_comptes").select("id, type").in("id", idsComptes) : { data: [] };
+  const typeDe = new Map(((typesComptes ?? []) as { id: string; type: string }[]).map((t) => [t.id, t.type]));
   return {
     lead: versLeadGestion(lead as unknown as LigneGestion, noms, coords.get(id)),
     evenements: ((evts ?? []) as unknown as Evt[]).map((e) => ({
@@ -320,6 +323,7 @@ export async function ficheLead(id: string, interne: boolean): Promise<FicheLead
     candidats: ((cand.data ?? []) as Cand[]).map((c) => ({
       type: c.type, id: c.id, nom: c.nom, niveau: c.niveau, ville: c.ville, departement: c.departement,
       leads30j: c.leads_30j, ecart: c.ecart, groupe: c.groupe, suggere: c.suggere,
+      famille: c.type === "commercial" ? "atc" : c.niveau || typeDe.get(c.id) === "IAP" ? "iap" : typeDe.get(c.id) === "Fenêtrier" ? "fenetrier" : "autre",
     })),
     enquetes: ((enq ?? []) as Enq[]).map((e) => ({
       cible: e.cible, envoyeeLe: e.envoyee_le, relances: e.relances, reponduLe: e.repondue_le, note: e.note, commentaire: e.commentaire,
