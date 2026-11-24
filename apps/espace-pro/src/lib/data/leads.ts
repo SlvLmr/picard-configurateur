@@ -17,7 +17,7 @@ type LigneLead = {
   statut: LeadReel["statut"];
   configuration_ma_porte: Record<string, unknown> | null;
   suggestion_compte: { id: string; raison_sociale: string; niveau_iap: Candidat["niveau"]; ville: string | null } | null;
-  suggestion_commercial: { id: string; prenom: string; nom: string } | null;
+  suggestion_commercial_id: string | null;
 };
 
 const ORDRE_NIVEAU = { Elite: 1, Premium: 2, Officiel: 3 } as const;
@@ -29,14 +29,18 @@ export async function leadsAValider(limite = 50): Promise<LeadReel[]> {
     .from("ep_leads")
     .select(
       `id, reference, recu_le, source, contact_nom, cp, ville, departement, projet, gros_projet, demo, statut, configuration_ma_porte,
-       suggestion_compte:ep_comptes!ep_leads_suggestion_compte_id_fkey (id, raison_sociale, niveau_iap, ville),
-       suggestion_commercial:commerciaux!ep_leads_suggestion_commercial_id_fkey (id, prenom, nom)`,
+       suggestion_commercial_id,
+       suggestion_compte:ep_comptes!ep_leads_suggestion_compte_id_fkey (id, raison_sociale, niveau_iap, ville)`,
     )
     .eq("statut", "a_valider")
     .order("recu_le", { ascending: true })
     .limit(limite);
   if (error) throw new Error(`Lecture des leads impossible : ${error.message}`);
   const lignes = (data ?? []) as unknown as LigneLead[];
+
+  // Noms des commerciaux : la table commerciaux n'est pas lisible directement par tous les rôles
+  const { data: comm } = await supabase.rpc("ep_crm_commerciaux");
+  const commerciaux = new Map(((comm ?? []) as { id: string; prenom: string; nom: string }[]).map((c) => [c.id, c]));
 
   // Candidats alternatifs : comptes actifs des mêmes départements
   const deps = Array.from(new Set(lignes.map((l) => l.departement).filter(Boolean))) as string[];
@@ -69,8 +73,14 @@ export async function leadsAValider(limite = 50): Promise<LeadReel[]> {
     configurationMaPorte: l.configuration_ma_porte,
     suggestion: l.suggestion_compte
       ? { type: "compte", id: l.suggestion_compte.id, nom: l.suggestion_compte.raison_sociale, niveau: l.suggestion_compte.niveau_iap, ville: l.suggestion_compte.ville }
-      : l.suggestion_commercial
-        ? { type: "commercial", id: l.suggestion_commercial.id, nom: `${l.suggestion_commercial.prenom} ${capitaliser(l.suggestion_commercial.nom)}` }
+      : l.suggestion_commercial_id
+        ? {
+            type: "commercial",
+            id: l.suggestion_commercial_id,
+            nom: commerciaux.has(l.suggestion_commercial_id)
+              ? `${commerciaux.get(l.suggestion_commercial_id)!.prenom} ${capitaliser(commerciaux.get(l.suggestion_commercial_id)!.nom)}`
+              : "Commercial du secteur",
+          }
         : null,
     candidats: (parDep.get(l.departement ?? "") ?? []).filter((c) => c.id !== l.suggestion_compte?.id).slice(0, 6),
   }));
