@@ -23,6 +23,10 @@ const CONTENU: Partial<Record<ModuleId, { description: string; points: string[] 
     description: "Les supports pour se faire connaître localement, personnalisés au nom de chaque professionnel.",
     points: ["Supports imprimés personnalisés", "Kits réseaux sociaux mensuels", "Fiche Google Business et avis", "Campagnes locales co-financées"],
   },
+  sav: {
+    description: "Les demandes de service après-vente : déclaration, analyse, décision, résolution et suivi qualité.",
+    points: ["Déclarer un problème avec photos et numéro de commande", "File de traitement du service SAV", "Avis du bureau d’études", "Non-conformités et actions correctives"],
+  },
   boutique: {
     description: "Goodies, tenues et PLV, payables en points, par carte ou les deux.",
     points: ["Paiement mixte points et carte", "Commandes des commerciaux sur enveloppe", "Validation au-delà d’un seuil"],

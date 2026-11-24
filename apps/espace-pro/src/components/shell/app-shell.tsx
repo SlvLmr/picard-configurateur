@@ -17,6 +17,9 @@ const PERSONA_PAR_ROLE: Record<ProfilReel["role"], string> = {
   chef_marche: "philippe",
   client_gerant: "marc",
   client_equipe: "marc",
+  sav: "philippe",
+  bureau_etudes: "philippe",
+  qualite: "philippe",
 };
 
 export function AppShell({ children, profil }: { children: React.ReactNode; profil: ProfilReel }) {

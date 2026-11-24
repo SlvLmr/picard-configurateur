@@ -12,7 +12,9 @@ export type ModuleId =
   | "configurateur"
   | "mediatheque"
   | "marketing"
-  | "boutique";
+  | "boutique"
+  | "sav"
+  | "administration";
 
 export type RoleId =
   | "admin"
@@ -22,7 +24,10 @@ export type RoleId =
   | "atc"
   | "repartiteur"
   | "client_gerant"
-  | "client_equipe";
+  | "client_equipe"
+  | "sav"
+  | "bureau_etudes"
+  | "qualite";
 
 export type NiveauIAP = "Elite" | "Premium" | "Officiel";
 export type TypeClient = "IAP" | "Serrurier" | "Fenêtrier";
@@ -36,17 +41,22 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   mediatheque: { label: "Médiathèque", href: "/mediatheque", phase: 1 },
   marketing: { label: "Marketing", href: "/marketing", phase: 4 },
   boutique: { label: "Boutique", href: "/boutique", phase: 3 },
+  sav: { label: "SAV", href: "/sav", phase: 2 },
+  administration: { label: "Administration", href: "/administration", phase: 1 },
 };
 
 export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
-  admin: ["accueil", "leads", "crm", "pilotage", "configurateur", "mediatheque", "marketing", "boutique"],
-  codir: ["accueil", "pilotage", "leads", "crm", "mediatheque", "boutique"],
-  chef_service: ["accueil", "pilotage", "crm", "leads", "mediatheque", "boutique"],
-  chef_marche: ["accueil", "pilotage", "crm", "leads", "mediatheque", "marketing", "boutique"],
-  atc: ["accueil", "crm", "leads", "configurateur", "mediatheque", "marketing", "boutique"],
+  admin: ["accueil", "leads", "crm", "pilotage", "configurateur", "sav", "mediatheque", "marketing", "boutique", "administration"],
+  codir: ["accueil", "pilotage", "leads", "crm", "sav", "mediatheque", "boutique"],
+  chef_service: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "boutique"],
+  chef_marche: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "marketing", "boutique"],
+  atc: ["accueil", "crm", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique"],
   repartiteur: ["accueil", "leads", "mediatheque"],
-  client_gerant: ["accueil", "leads", "configurateur", "mediatheque", "marketing", "boutique"],
-  client_equipe: ["accueil", "leads", "configurateur", "mediatheque"],
+  client_gerant: ["accueil", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique"],
+  client_equipe: ["accueil", "leads", "configurateur", "sav", "mediatheque"],
+  sav: ["accueil", "sav", "crm", "mediatheque"],
+  bureau_etudes: ["accueil", "sav", "configurateur", "mediatheque"],
+  qualite: ["accueil", "sav", "pilotage", "mediatheque"],
 };
 
 /** Personas de démonstration (en attendant l'authentification). */
@@ -76,6 +86,9 @@ export const ROLE_LABEL: Record<RoleId, string> = {
   repartiteur: "Répartiteur",
   client_gerant: "Client",
   client_equipe: "Client (équipe)",
+  sav: "SAV",
+  bureau_etudes: "Bureau d’études",
+  qualite: "Qualité",
 };
 
 export const isClient = (r: RoleId) => r === "client_gerant" || r === "client_equipe";
