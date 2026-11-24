@@ -17,16 +17,25 @@ const SCENES = [
 ] as const;
 
 const DUREE = 3800;
+const DUREE_FINALE = 6200;
 const DESSINS = [Porte, Lead, Brochure, Pilotage, Calendrier];
 
-/** Centre d'une planche sur le grand plan */
-const centre = (k: number) => [SCENES[k].x + 200, SCENES[k].y + 150] as const;
+/** Scène finale : tous les modules fusionnent dans le symbole Picard */
+const FINALE = SCENES.length;
+const FINALE_INFOS = { module: "Tout en un", titre: "Un seul outil pour tout gérer" };
+const NB = SCENES.length + 1;
+/** Centre du symbole sur le grand plan, et sa taille */
+const SYMBOLE = { x: 750, y: 340, taille: 240 };
+
+/** Centre d'une planche sur le grand plan (le symbole pour la scène finale) */
+const centre = (k: number) => (k === FINALE ? ([SYMBOLE.x, SYMBOLE.y] as const) : ([SCENES[k].x + 200, SCENES[k].y + 150] as const));
 
 export function Esquisses() {
   const [i, setI] = useState(0);
   const [prec, setPrec] = useState(0);
   const [reduit, setReduit] = useState(false);
   const [cycle, setCycle] = useState(0);
+  const [rapproche, setRapproche] = useState(false);
   const [taille, setTaille] = useState({ l: 1000, h: 700 });
   const zone = useRef<HTMLDivElement>(null);
 
@@ -40,17 +49,23 @@ export function Esquisses() {
   }, []);
 
   useEffect(() => {
-    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduit(m.matches);
-    if (m.matches) return;
-    const t = setInterval(() => {
-      setI((x) => {
-        setPrec(x);
-        return (x + 1) % SCENES.length;
-      });
-    }, DUREE);
-    return () => clearInterval(t);
-  }, [cycle]);
+    setReduit(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }, []);
+
+  // Enchaînement des scènes ; la finale dure plus longtemps et se termine par un zoom sur le symbole.
+  useEffect(() => {
+    setRapproche(false);
+    if (reduit) return;
+    const zoom = i === FINALE ? setTimeout(() => setRapproche(true), 2300) : undefined;
+    const suite = setTimeout(() => {
+      setPrec(i);
+      setI((i + 1) % NB);
+    }, i === FINALE ? DUREE_FINALE : DUREE);
+    return () => {
+      clearTimeout(suite);
+      if (zoom) clearTimeout(zoom);
+    };
+  }, [i, cycle, reduit]);
 
   const aller = (k: number) => {
     setPrec(i);
@@ -58,10 +73,16 @@ export function Esquisses() {
     setCycle((c) => c + 1);
   };
 
-  const scene = SCENES[i];
+  const finale = i === FINALE;
+  const scene = finale ? FINALE_INFOS : SCENES[i];
   const [cx, cy] = centre(i);
   const [px, py] = centre(prec);
-  const echelle = Math.min((taille.l * 0.66) / 400, (taille.h * 0.86) / 330);
+  // Finale : vue d'ensemble du plan, puis rapprochement sur le symbole
+  const echelle = !finale
+    ? Math.min((taille.l * 0.66) / 400, (taille.h * 0.86) / 330)
+    : rapproche || reduit
+      ? Math.min(taille.l, taille.h) * 0.5 / SYMBOLE.taille
+      : Math.min((taille.l * 0.92) / 1500, (taille.h * 0.92) / 860);
   const camera = `translate(${taille.l / 2 - echelle * cx}px, ${taille.h / 2 - echelle * cy}px) scale(${echelle})`;
   const trajet = `M${px} ${py}C${px + (cx - px) * 0.2} ${py - 160} ${cx - (cx - px) * 0.2} ${cy - 160} ${cx} ${cy}`;
 
@@ -87,6 +108,7 @@ export function Esquisses() {
           <rect x="-2000" y="-2000" width="5600" height="4800" fill="url(#quadrillage-fort)" />
           {/* Liaisons entre les modules */}
           {SCENES.slice(0, -1).map((_, k) => {
+            if (finale) return null;
             const [ax, ay] = centre(k);
             const [bx, by] = centre(k + 1);
             return <path key={k} d={`M${ax} ${ay}Q${(ax + bx) / 2} ${Math.min(ay, by) - 140} ${bx} ${by}`} className="liaison" fill="none" stroke="#ebbc4e" strokeOpacity="0.18" strokeWidth="1.2" strokeDasharray="4 8" />;
@@ -94,6 +116,21 @@ export function Esquisses() {
           {SCENES.map((s, k) => {
             const Dessin = DESSINS[k];
             const actif = k === i;
+            if (finale) {
+              const [ax, ay] = centre(k);
+              return (
+                <g key={`fusion-${k}-${cycle}`} transform={`translate(${s.x} ${s.y})`}>
+                  <g
+                    className={reduit ? "fige fusionnee" : "fige fusionne"}
+                    filter="url(#crayon)"
+                    style={{ "--dx": `${SYMBOLE.x - ax}px`, "--dy": `${SYMBOLE.y - ay}px`, animationDelay: `${0.15 + k * 0.07}s` } as React.CSSProperties}
+                  >
+                    <Cartouche numero={k + 1} nom={s.module} actif={false} />
+                    <Dessin />
+                  </g>
+                </g>
+              );
+            }
             return (
               <g key={actif ? `actif-${i}-${cycle}` : k} transform={`translate(${s.x} ${s.y})`} className={actif ? "planche-active" : "fige"} filter="url(#crayon)">
                 <Cartouche numero={k + 1} nom={s.module} actif={actif} />
@@ -101,8 +138,9 @@ export function Esquisses() {
               </g>
             );
           })}
+          {finale ? <Fusion cycle={cycle} reduit={reduit} /> : null}
           {/* Comète laiton qui file d'une planche à la suivante */}
-          {!reduit && prec !== i ? (
+          {!reduit && prec !== i && !finale ? (
             <g key={`comete-${i}-${cycle}`}>
               <path d={trajet} className="sillage" fill="none" stroke="#ebbc4e" strokeWidth="2" strokeLinecap="round" pathLength={1} />
               <circle r="5" fill="#ffd36b" className="comete">
@@ -128,7 +166,7 @@ export function Esquisses() {
         <div className="flex items-end justify-between gap-8">
           <div key={`t-${i}-${cycle}`} className="min-w-0">
             <p className="kicker text-sm font-semibold text-cta">
-              {String(i + 1).padStart(2, "0")} <span className="text-white/40">sur 05</span>, {scene.module}
+              {String(i + 1).padStart(2, "0")} <span className="text-white/40">sur {String(NB).padStart(2, "0")}</span>, {scene.module}
             </p>
             <h2 className="mt-3 whitespace-nowrap font-display text-xl font-semibold text-white min-[1440px]:text-2xl min-[1920px]:text-3xl">
               {scene.titre.split(" ").map((mot, k) => (
@@ -143,19 +181,71 @@ export function Esquisses() {
           </div>
         </div>
 
-        <nav aria-label="Modules de l’Espace Pro" className="mt-10 grid grid-cols-5 gap-3">
-          {SCENES.map((s, k) => (
-            <button key={s.module} type="button" onClick={() => aller(k)} aria-current={k === i ? "step" : undefined} className="group flex flex-col gap-2 text-left">
+        <nav aria-label="Modules de l’Espace Pro" className="mt-10 grid grid-cols-6 gap-3">
+          {[...SCENES.map((s) => s.module), FINALE_INFOS.module].map((nom, k) => (
+            <button key={nom} type="button" onClick={() => aller(k)} aria-current={k === i ? "step" : undefined} className="group flex flex-col gap-2 text-left">
               <span className="relative h-0.5 overflow-hidden rounded-full bg-white/15">
-                {k === i ? <span key={`${i}-${cycle}`} className={reduit ? "absolute inset-0 bg-cta" : "progression absolute inset-y-0 left-0 bg-cta"} /> : null}
+                {k === i ? (
+                  <span
+                    key={`${i}-${cycle}`}
+                    className={reduit ? "absolute inset-0 bg-cta" : "progression absolute inset-y-0 left-0 bg-cta"}
+                    style={{ animationDuration: `${k === FINALE ? DUREE_FINALE : DUREE}ms` }}
+                  />
+                ) : null}
                 {k < i ? <span className="absolute inset-0 bg-white/40" /> : null}
               </span>
-              <span className={`truncate text-xs font-semibold transition-colors ${k === i ? "text-white" : "text-white/40 group-hover:text-white/70"}`}>{s.module}</span>
+              <span className={`truncate text-xs font-semibold transition-colors ${k === i ? "text-white" : "text-white/40 group-hover:text-white/70"}`}>{nom}</span>
             </button>
           ))}
         </nav>
       </div>
     </div>
+  );
+}
+
+/**
+ * Finale : des traînées partent de chaque module vers le centre, puis les quatre carrés
+ * du symbole Picard arrivent des quatre coins, se tracent, se remplissent et s'illuminent.
+ */
+function Fusion({ cycle, reduit }: { cycle: number; reduit: boolean }) {
+  const { x, y, taille: t } = SYMBOLE;
+  const o = { x: x - t / 2, y: y - t / 2 };
+  // Proportions du symbole : deux grands carrés en diagonale, deux petits dans les autres coins
+  const carres = [
+    { x: 0, y: 0, c: 0.5, dx: -1, dy: -1 },
+    { x: 0.64, y: 0, c: 0.36, dx: 1, dy: -1 },
+    { x: 0, y: 0.64, c: 0.36, dx: -1, dy: 1 },
+    { x: 0.5, y: 0.5, c: 0.5, dx: 1, dy: 1 },
+  ];
+  return (
+    <g key={`symbole-${cycle}`} className={reduit ? "symbole-fixe" : undefined}>
+      <defs>
+        <radialGradient id="halo-symbole">
+          <stop offset="0" stopColor="#ffd36b" stopOpacity="0.45" />
+          <stop offset="1" stopColor="#ffd36b" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx={x} cy={y} r={t * 1.1} fill="url(#halo-symbole)" className="symbole-halo" />
+      {/* Traînées : chaque module rejoint le symbole */}
+      {SCENES.map((_, k) => {
+        const [ax, ay] = centre(k);
+        const d = `M${ax} ${ay}Q${(ax + x) / 2 + (ay - y) * 0.3} ${(ay + y) / 2 - (ax - x) * 0.3} ${x} ${y}`;
+        return <path key={k} d={d} pathLength={1} className="trainee" style={{ animationDelay: `${0.5 + k * 0.07}s` }} fill="none" stroke="#ebbc4e" strokeWidth={2.2} strokeLinecap="round" />;
+      })}
+      {carres.map((q, k) => {
+        const cx = o.x + q.x * t;
+        const cy = o.y + q.y * t;
+        const c = q.c * t;
+        return (
+          <g key={k} className="carre-symbole" style={{ "--ox": `${q.dx * 120}px`, "--oy": `${q.dy * 120}px`, animationDelay: `${1.3 + k * 0.12}s` } as React.CSSProperties}>
+            <rect x={cx} y={cy} width={c} height={c} className="carre-plein" style={{ animationDelay: `${2 + k * 0.1}s` }} fill="#ffffff" />
+            <path d={`M${cx} ${cy}h${c}v${c}h${-c}z`} pathLength={1} className="carre-trait" style={{ animationDelay: `${1.3 + k * 0.12}s` }} fill="none" stroke="#ebbc4e" strokeWidth={2.4} strokeLinejoin="round" />
+          </g>
+        );
+      })}
+      <rect x={o.x - 24} y={o.y - 24} width={t + 48} height={t + 48} className="cadre-symbole" pathLength={1} fill="none" stroke="#ebbc4e" strokeWidth={1.2} strokeDasharray="0.02 0.02" />
+      <circle cx={x} cy={y} r={t * 0.75} className="onde-symbole" fill="none" stroke="#ffd36b" strokeWidth={1.5} />
+    </g>
   );
 }
 
