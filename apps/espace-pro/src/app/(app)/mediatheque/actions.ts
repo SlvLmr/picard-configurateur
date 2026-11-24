@@ -28,6 +28,8 @@ export type NouvelleRessource = {
   marque: "picard" | "eliot" | "commune";
   acces: "tous" | "internes" | "elite" | "elite_premium";
   kit: string;
+  produitId: string | null;
+  gammeCode: string | null;
   fichierChemin: string;
   tailleOctets: number;
   format: string;
@@ -38,7 +40,7 @@ const ROLES_INTERNES = ["admin", "codir", "chef_service", "chef_marche", "atc", 
 /** Enregistre une ressource dont le fichier vient d'être déposé (réservé à l'administrateur, contrôlé par la base). */
 export async function creerRessource(n: NouvelleRessource): Promise<Resultat> {
   const supabase = supabaseServeur();
-  const { error } = await supabase.rpc("ep_creer_ressource", {
+  const { data: cree, error } = await supabase.rpc("ep_creer_ressource", {
     p_titre: n.titre,
     p_type: n.type,
     p_description: n.description,
@@ -56,6 +58,19 @@ export async function creerRessource(n: NouvelleRessource): Promise<Resultat> {
     await supabase.storage.from("ep-ressources").remove([n.fichierChemin]);
     return { ok: false, message: error.message };
   }
+  if (n.produitId || n.gammeCode) {
+    await supabase.rpc("ep_rattacher_ressource", { p_ressource: (cree as { id: string }).id, p_produit: n.produitId, p_gamme: n.gammeCode });
+  }
   revalidatePath("/mediatheque");
   return { ok: true, message: `« ${n.titre} » est publiée dans la médiathèque` };
+}
+
+/** Création ou modification d'un produit de la médiathèque (administrateur). */
+export async function enregistrerProduit(id: string | null, p: { gamme: string; nom: string; description: string; marque: string; actif: boolean }): Promise<Resultat> {
+  const { error } = await supabaseServeur().rpc("ep_admin_enregistrer_produit", {
+    p_id: id, p_gamme: p.gamme, p_nom: p.nom, p_description: p.description, p_marque: p.marque, p_actif: p.actif,
+  });
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/mediatheque");
+  return { ok: true, message: id ? "Produit enregistré" : `Produit « ${p.nom} » ajouté` };
 }

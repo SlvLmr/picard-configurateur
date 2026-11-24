@@ -8,6 +8,7 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { useToast } from "@/components/ui/toast";
 import { supabaseNavigateur } from "@/lib/supabase/client";
+import type { Gamme, ProduitMedia } from "@/lib/data/mediatheque";
 import { TYPES } from "./libelles";
 
 const slug = (s: string) =>
@@ -19,7 +20,7 @@ const slug = (s: string) =>
     .replace(/^-|-$/g, "");
 
 /** Publication d'une ressource (administrateur) : dépôt du fichier dans le stockage privé, puis enregistrement. */
-export function FormulaireAjout({ onDone }: { onDone: () => void }) {
+export function FormulaireAjout({ onDone, gammes, produits, cible }: { onDone: () => void; gammes: Gamme[]; produits: ProduitMedia[]; cible: string }) {
   const toast = useToast();
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -46,7 +47,16 @@ export function FormulaireAjout({ onDone }: { onDone: () => void }) {
       titre,
       description: String(form.get("description") ?? ""),
       type,
-      gamme: String(form.get("gamme") ?? ""),
+      ...(() => {
+        const v = String(form.get("rattachement") ?? "");
+        const produit = produits.find((p) => `p:${p.id}` === v);
+        const gamme = v.startsWith("g:") ? v.slice(2) : produit?.gammeCode ?? null;
+        return {
+          gamme: produit?.nom ?? gammes.find((g) => g.code === gamme)?.nom ?? "Toutes gammes",
+          produitId: produit?.id ?? null,
+          gammeCode: gamme,
+        };
+      })(),
       marque: String(form.get("marque")) as NouvelleRessource["marque"],
       acces: String(form.get("acces")) as NouvelleRessource["acces"],
       kit: String(form.get("kit") ?? ""),
@@ -85,8 +95,22 @@ export function FormulaireAjout({ onDone }: { onDone: () => void }) {
               className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-text placeholder:text-text-3 focus:border-accent focus:outline-none"
             />
           </Field>
-          <Field label="Gamme" htmlFor="ajout-gamme">
-            <Input id="ajout-gamme" name="gamme" placeholder="Altitude, Toutes gammes…" />
+          <Field label="Produit" htmlFor="ajout-rattachement">
+            <Select id="ajout-rattachement" name="rattachement" defaultValue={cible}>
+              <option value="">Document général, toutes gammes</option>
+              {gammes.map((g) => (
+                <optgroup key={g.code} label={g.nom}>
+                  <option value={`g:${g.code}`}>Toute la gamme</option>
+                  {produits
+                    .filter((p) => p.gammeCode === g.code)
+                    .map((p) => (
+                      <option key={p.id} value={`p:${p.id}`}>
+                        {p.nom}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </Select>
           </Field>
           <Field label="Marque" htmlFor="ajout-marque">
             <Select id="ajout-marque" name="marque" defaultValue="picard">

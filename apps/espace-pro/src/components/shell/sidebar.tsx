@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import type { CompteursMenu } from "@/lib/data/compteurs";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import type { ProfilReel } from "@/lib/data/types";
@@ -10,11 +12,38 @@ import { SignatureEspacePro } from "@/components/marque/logo-espace-pro";
 import { LogoMarque } from "@/components/marque/logo-picard";
 import { NAV_ICONS } from "./nav-icons";
 
-export function Sidebar({ open, onNavigate, profil, modules }: { open: boolean; onNavigate: () => void; profil: ProfilReel; modules: ModuleId[] }) {
+export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open: boolean; onNavigate: () => void; profil: ProfilReel; modules: ModuleId[]; compteurs: CompteursMenu }) {
   const pathname = usePathname();
   const { brand } = useSession();
   // Le menu suit le rôle réel : l’administrateur voit tout, quel que soit l’aperçu choisi.
   const autorises = new Set(modules);
+  // Nouveautés depuis la dernière visite de chaque rubrique (mémorisée dans le navigateur)
+  const [vus, setVus] = useState<Record<string, number>>({});
+  useEffect(() => {
+    const lire = (m: string) => {
+      try {
+        const v = window.localStorage.getItem(`ep-vu-${m}`);
+        return v ? Number(v) : Date.now() - 14 * 86400000;
+      } catch {
+        return Date.now();
+      }
+    };
+    const actuel = (Object.keys(compteurs.dates) as ModuleId[]).find((m) => pathname === MODULES[m].href || pathname.startsWith(MODULES[m].href + "/"));
+    if (actuel) {
+      try {
+        window.localStorage.setItem(`ep-vu-${actuel}`, String(Date.now()));
+      } catch {
+        /* navigation privée : pas de mémorisation */
+      }
+    }
+    setVus(Object.fromEntries(Object.keys(compteurs.dates).map((m) => [m, m === actuel ? Date.now() : lire(m)])));
+  }, [pathname, compteurs.dates]);
+  const pastille = (id: ModuleId) => {
+    const a = compteurs.actions[id] ?? 0;
+    const dates = compteurs.dates[id];
+    const n = dates && vus[id] !== undefined ? dates.filter((d) => new Date(d).getTime() > vus[id]).length : 0;
+    return a + n;
+  };
   const sections = SECTIONS_MENU.map((s) => ({ ...s, modules: s.modules.filter((m) => autorises.has(m)) })).filter((s) => s.modules.length);
 
   const Entree = ({ id }: { id: ModuleId }) => {
@@ -34,6 +63,11 @@ export function Sidebar({ open, onNavigate, profil, modules }: { open: boolean; 
         >
           <Icon className={cn("size-4 shrink-0", active ? "text-white" : "text-nav-muted")} aria-hidden />
           <span className="min-w-0 flex-1 truncate">{m.label}</span>
+          {pastille(id) > 0 ? (
+            <span className="tabular flex h-5 min-w-5 items-center justify-center rounded-full bg-cta px-1 text-xs font-bold text-cta-text shadow-cta" aria-label={`${pastille(id)} nouveauté${pastille(id) > 1 ? "s" : ""}`}>
+              {pastille(id) > 9 ? "9+" : pastille(id)}
+            </span>
+          ) : null}
         </Link>
       </li>
     );

@@ -10,6 +10,8 @@ export type Ressource = {
   description: string | null;
   type: TypeRessource;
   gamme: string | null;
+  produitId: string | null;
+  gammeCode: string | null;
   marque: MarqueRessource;
   fichierChemin: string | null;
   tailleOctets: number | null;
@@ -39,6 +41,8 @@ type Ligne = {
   description: string | null;
   type: TypeRessource;
   gamme: string | null;
+  produit_id: string | null;
+  gamme_code: string | null;
   marque: MarqueRessource;
   fichier_chemin: string | null;
   taille_octets: number | null;
@@ -60,7 +64,7 @@ export async function ressourcesVisibles(): Promise<{ ressources: Ressource[]; s
     supabase
       .from("ep_ressources")
       .select(
-        "id, titre, description, type, gamme, marque, fichier_chemin, taille_octets, format, version, roles_autorises, niveaux_autorises, kit, nouveau, demo, cree_le, mis_a_jour_le",
+        "id, titre, description, type, gamme, produit_id, gamme_code, marque, fichier_chemin, taille_octets, format, version, roles_autorises, niveaux_autorises, kit, nouveau, demo, cree_le, mis_a_jour_le",
       )
       .order("mis_a_jour_le", { ascending: false }),
     supabase.rpc("ep_stats_mediatheque", { p_jours: 30 }),
@@ -74,6 +78,8 @@ export async function ressourcesVisibles(): Promise<{ ressources: Ressource[]; s
     description: r.description,
     type: r.type,
     gamme: r.gamme,
+    produitId: r.produit_id,
+    gammeCode: r.gamme_code,
     marque: r.marque,
     fichierChemin: r.fichier_chemin,
     tailleOctets: r.taille_octets,
@@ -89,4 +95,22 @@ export async function ressourcesVisibles(): Promise<{ ressources: Ressource[]; s
     telechargements: s?.par_ressource?.[r.id] ?? 0,
   }));
   return { ressources, stats: s };
+}
+
+export type Gamme = { code: string; nom: string; description: string | null };
+export type ProduitMedia = { id: string; gammeCode: string; nom: string; description: string | null; marque: MarqueRessource; actif: boolean; demo: boolean };
+
+/** Gammes et produits de la médiathèque (les produits inactifs ne sont visibles que de l'administrateur). */
+export async function catalogueMedia(): Promise<{ gammes: Gamme[]; produits: ProduitMedia[] }> {
+  const supabase = supabaseServeur();
+  const [{ data: g }, { data: p }] = await Promise.all([
+    supabase.from("ep_gammes").select("code, nom, description").order("ordre"),
+    supabase.from("ep_media_produits").select("id, gamme_code, nom, description, marque, actif, demo").order("ordre"),
+  ]);
+  return {
+    gammes: (g ?? []) as Gamme[],
+    produits: ((p ?? []) as { id: string; gamme_code: string; nom: string; description: string | null; marque: MarqueRessource; actif: boolean; demo: boolean }[]).map((x) => ({
+      id: x.id, gammeCode: x.gamme_code, nom: x.nom, description: x.description, marque: x.marque, actif: x.actif, demo: x.demo,
+    })),
+  };
 }

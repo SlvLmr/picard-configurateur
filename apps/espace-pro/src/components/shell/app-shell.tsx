@@ -6,6 +6,7 @@ import type { ProfilReel } from "@/lib/data/types";
 import { useSession } from "@/lib/session";
 import type { ModuleId } from "@/lib/roles";
 import { CommandPalette } from "./command-palette";
+import type { CompteursMenu } from "@/lib/data/compteurs";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
@@ -23,7 +24,7 @@ const PERSONA_PAR_ROLE: Record<ProfilReel["role"], string> = {
   qualite: "philippe",
 };
 
-export function AppShell({ children, profil, modules }: { children: React.ReactNode; profil: ProfilReel; modules: ModuleId[] }) {
+export function AppShell({ children, profil, modules, compteurs }: { children: React.ReactNode; profil: ProfilReel; modules: ModuleId[]; compteurs: CompteursMenu }) {
   const { persona, setPersona } = useSession();
   const [menu, setMenu] = useState(false);
 
@@ -50,7 +51,7 @@ export function AppShell({ children, profil, modules }: { children: React.ReactN
         Aller au contenu
       </a>
       <div className="lg:grid lg:grid-cols-[240px_1fr]">
-        <Sidebar open={menu} onNavigate={() => setMenu(false)} profil={profil} modules={modules} />
+        <Sidebar open={menu} onNavigate={() => setMenu(false)} profil={profil} modules={modules} compteurs={compteurs} />
         {menu ? <div className="fixed inset-0 z-30 bg-[#071a33]/40 lg:hidden" onClick={() => setMenu(false)} aria-hidden /> : null}
         <div className="min-w-0">
           <Topbar onMenu={() => setMenu(true)} onSearch={() => setSearch(true)} profil={profil} />
