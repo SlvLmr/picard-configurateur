@@ -42,3 +42,76 @@ export async function signauxPilotage(annee?: number): Promise<Signal[]> {
   if (error) return [];
   return (data ?? []) as Signal[];
 }
+
+/* ═══════════ Pilotage commercial : société, zone, ATC, gamme ═══════════ */
+
+export type Dimension = "societe" | "zone" | "atc" | "gamme";
+
+/** Chiffres d'une ligne (société, zone, ATC ou gamme), en euros. */
+export type LigneCA = {
+  budget_annuel: number;
+  budget_cumul: number;
+  /** Budget à date : mois clos + mois en cours au prorata des jours ouvrés */
+  budget_prorata: number;
+  realise_cumul: number;
+  n1_cumul: number;
+  /** N-1 à la même date */
+  n1_prorata: number;
+  mois_budget: number;
+  mois_budget_prorata: number;
+  mois_realise: number;
+  mois_n1: number;
+};
+
+export type ZoneCA = LigneCA & { zone: string; atc: number; iap_objectif: number; iap_nouveaux: number };
+export type AtcCA = LigneCA & {
+  id: string;
+  prenom: string;
+  nom: string;
+  zone: string;
+  fonction: string | null;
+  couleur: string | null;
+  iap_objectif: number;
+  iap_nouveaux: number;
+  comptes: number;
+};
+export type GammeLigneCA = LigneCA & { gamme: string };
+export type Seuils = { vert: number; jaune: number; orange: number };
+
+export type TableauPilotage = {
+  annee: number;
+  dernier_mois: number;
+  mois: number;
+  jours: { ecoules: number; ouvres: number; ratio: number };
+  seuils: Seuils;
+  societe: LigneCA;
+  zones: ZoneCA[];
+  atc: AtcCA[];
+  gammes: GammeLigneCA[];
+};
+
+type Ventilation = { budget_prorata: number; realise_cumul: number; n1_prorata: number };
+export type DetailPilotage = {
+  dimension: Dimension;
+  cle: string | null;
+  annee: number;
+  dernier_mois: number;
+  mois: MoisCA[];
+  gammes: (Ventilation & { gamme: string; budget_annuel: number })[] | null;
+  atc: (Ventilation & { id: string; prenom: string; nom: string; couleur: string | null; zone: string })[] | null;
+  iap: { objectif: number; nouveaux: number };
+};
+
+/** Tableau de bord du pilotage commercial (réservé aux rôles de pilotage). */
+export async function tableauPilotage(mois?: number): Promise<TableauPilotage | null> {
+  const { data, error } = await supabaseServeur().rpc("ep_pilotage_tableau", mois ? { p_mois: mois } : {});
+  if (error || !data) return null;
+  return data as TableauPilotage;
+}
+
+/** Détail d'une zone, d'un ATC, d'une gamme ou de la société. */
+export async function detailPilotage(dimension: Dimension, cle: string | null): Promise<DetailPilotage | null> {
+  const { data, error } = await supabaseServeur().rpc("ep_pilotage_detail", { p_dimension: dimension, ...(cle ? { p_cle: cle } : {}) });
+  if (error || !data) return null;
+  return data as DetailPilotage;
+}
