@@ -26,3 +26,21 @@ export async function commander(lignes: LignePanier[], points: number | null, co
         : "Elle est validée.";
   return { ok: true, message: `Commande ${c.reference} passée. ${suite}` };
 }
+
+/** Valide ou refuse une commande en attente (administrateur, chef de marché) via ep_valider_commande. */
+export async function validerCommande(commandeId: string, valider: boolean, motif: string): Promise<ResultatCommande> {
+  const supabase = supabaseServeur();
+  const { data, error } = await supabase.rpc("ep_valider_commande", {
+    p_commande: commandeId,
+    p_valider: valider,
+    ...(motif.trim() ? { p_motif: motif.trim() } : {}),
+  });
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/boutique");
+  revalidatePath("/boutique/validations");
+  const c = data as { reference: string };
+  return {
+    ok: true,
+    message: valider ? `Commande ${c.reference} validée` : `Commande ${c.reference} refusée. Le stock et l’enveloppe sont libérés.`,
+  };
+}

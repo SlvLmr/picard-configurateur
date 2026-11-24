@@ -1,9 +1,11 @@
 "use client";
 
-import { Check, CircleAlert, DoorOpen, FileText, Info, Save, Truck, TriangleAlert } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Check, CircleAlert, DoorOpen, FileText, FolderOpen, Info, Save, Truck, TriangleAlert } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState, useTransition } from "react";
+import { traiterConfiguration, type EtapeConfiguration } from "@/app/(app)/configurateur/actions";
 import { Badge, NiveauBadge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
@@ -40,24 +42,38 @@ const ETAPES: { id: Etape | "recap"; label: string }[] = [
   { id: "recap", label: "Récapitulatif" },
 ];
 
-export type LeadSource = { reference: string; contact: string; ville: string | null; projet: string } | null;
+export type LeadSource = { id: string; reference: string; contact: string; ville: string | null; projet: string } | null;
+
+export type ConfigurationReprise = { id: string; reference: string; statut: "brouillon" | "devis" | "commande"; prixVente: number | null } | null;
+
+const LIBELLE_STATUT_CONFIG = {
+  brouillon: { label: "Brouillon", variant: "neutral" },
+  devis: { label: "Devis généré", variant: "accent" },
+  commande: { label: "Commandée", variant: "success" },
+} as const;
 
 export function Configurateur({
   initiale,
   niveau,
   lead,
   role,
+  reprise = null,
 }: {
   initiale: Configuration;
   niveau: NiveauIAP | null;
   lead: LeadSource;
   role: RoleId;
+  reprise?: ConfigurationReprise;
 }) {
   const toast = useToast();
+  const router = useRouter();
   const { persona } = useSession();
   const [c, setC] = useState<Configuration>(initiale);
   const [etape, setEtape] = useState(0);
-  const [prixVente, setPrixVente] = useState<string>("");
+  const [prixVente, setPrixVente] = useState<string>(reprise?.prixVente ? String(reprise.prixVente) : "");
+  const [enregistree, setEnregistree] = useState(reprise);
+  const [enCours, setEnCours] = useState<EtapeConfiguration | null>(null);
+  const [, startTransition] = useTransition();
 
   // L'administrateur prévisualise le tarif d'un client IAP via l'aperçu.
   const niveauApplique = niveau ?? (role === "admin" && isClient(persona.role) ? (persona.niveau ?? null) : null);
@@ -70,19 +86,57 @@ export function Configurateur({
   const courante = ETAPES[etape].id;
   const bloque = evaluation.bloquants.length > 0;
 
-  const action = (verbe: string) => {
-    if (bloque && verbe !== "Configuration enregistrée") {
+  const commandee = enregistree?.statut === "commande";
+
+  const action = (etapeAction: EtapeConfiguration) => {
+    if (bloque && etapeAction !== "enregistrer") {
       toast("Corrigez les points bloquants avant de continuer.");
       return;
     }
-    toast(verbe);
+    if (etapeAction === "devis" && vente <= 0) {
+      toast("Renseignez votre prix de vente avant de générer le devis.");
+      return;
+    }
+    setEnCours(etapeAction);
+    startTransition(async () => {
+      const r = await traiterConfiguration(etapeAction, {
+        id: enregistree?.id ?? null,
+        configuration: c,
+        prixAchat: chiffrage.prixAchat,
+        prixVente: vente > 0 ? vente : null,
+        leadId: lead?.id ?? null,
+      });
+      setEnCours(null);
+      toast(r.message);
+      if (!r.ok) return;
+      const statut = etapeAction === "commander" ? "commande" : etapeAction === "devis" ? "devis" : "brouillon";
+      setEnregistree({ id: r.id, reference: r.reference, statut, prixVente: vente > 0 ? vente : null });
+      if (etapeAction === "devis") router.push(`/configurateur/devis/${r.id}`);
+      else if (etapeAction === "commander") router.push("/configurateur/mes-configurations");
+      else router.replace(`/configurateur?reprendre=${r.id}`, { scroll: false });
+    });
   };
 
   return (
     <>
       <PageHeader
         title={`Porte blindée ${modele(c.modele).nom}`}
-        meta={lead ? <Badge variant="accent">Depuis le lead {lead.reference}</Badge> : null}
+        meta={
+          <>
+            {enregistree ? (
+              <Badge variant={LIBELLE_STATUT_CONFIG[enregistree.statut].variant}>
+                {enregistree.reference}, {LIBELLE_STATUT_CONFIG[enregistree.statut].label.toLowerCase()}
+              </Badge>
+            ) : null}
+            {lead ? <Badge variant="accent">Depuis le lead {lead.reference}</Badge> : null}
+          </>
+        }
+        actions={
+          <ButtonLink href="/configurateur/mes-configurations" variant="secondary">
+            <FolderOpen aria-hidden />
+            Mes configurations
+          </ButtonLink>
+        }
         description={
           lead
             ? `${lead.contact}${lead.ville ? `, ${lead.ville}` : ""}. Les choix du particulier dans Ma Porte sont repris : vérifiez-les et prenez les cotes sur place.`
@@ -183,22 +237,38 @@ export function Configurateur({
                   {evaluation.bloquants.length === 1 ? "1 point bloquant à corriger" : `${evaluation.bloquants.length} points bloquants à corriger`}
                 </p>
               ) : null}
-              <div className="flex flex-col gap-2">
-                <Button variant="primary" size="lg" className="w-full" disabled={bloque} onClick={() => action("Commande transmise à l’ADV pour validation")}>
-                  <Truck aria-hidden />
-                  Commander
-                </Button>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button onClick={() => action("Devis client généré à votre en-tête")} disabled={bloque}>
+              {commandee ? (
+                <div className="flex flex-col gap-2">
+                  <p className="flex items-center gap-2 rounded-md bg-success-soft px-3 py-2 text-sm text-success">
+                    <Check className="size-4 shrink-0" aria-hidden />
+                    Configuration commandée : elle n’est plus modifiable.
+                  </p>
+                  <ButtonLink href={`/configurateur/devis/${enregistree!.id}`} className="w-full">
                     <FileText aria-hidden />
-                    Devis client
-                  </Button>
-                  <Button onClick={() => action("Configuration enregistrée")}>
-                    <Save aria-hidden />
-                    Enregistrer
-                  </Button>
+                    Voir le devis
+                  </ButtonLink>
                 </div>
-              </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Button variant="primary" size="lg" className="w-full" disabled={bloque || enCours !== null} onClick={() => action("commander")}>
+                    <Truck aria-hidden />
+                    {enCours === "commander" ? "Commande en cours…" : "Commander"}
+                  </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button onClick={() => action("devis")} disabled={bloque || enCours !== null}>
+                      <FileText aria-hidden />
+                      Devis client
+                    </Button>
+                    <Button onClick={() => action("enregistrer")} disabled={enCours !== null}>
+                      <Save aria-hidden />
+                      Enregistrer
+                    </Button>
+                  </div>
+                  {enregistree?.statut === "devis" ? (
+                    <p className="text-xs text-text-3">Modifier la configuration la repasse en brouillon : régénérez ensuite le devis.</p>
+                  ) : null}
+                </div>
+              )}
             </PanelBody>
           </Panel>
         </aside>

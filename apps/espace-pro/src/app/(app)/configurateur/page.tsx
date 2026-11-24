@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Configurateur, type LeadSource } from "@/components/configurateur/configurateur";
+import { Configurateur, type ConfigurationReprise, type LeadSource } from "@/components/configurateur/configurateur";
 import { CONFIGURATION_INITIALE, depuisMaPorte } from "@/lib/configurateur/catalogue";
+import { depuisDonnees } from "@/lib/configurateur/persistance";
+import { configurationParId } from "@/lib/data/configurations";
 import { profilCourant } from "@/lib/data/session";
 import type { NiveauIAP } from "@/lib/roles";
 import { supabaseServeur } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Configurateur" };
 
-export default async function Page({ searchParams }: { searchParams: { lead?: string } }) {
+const UUID = /^[0-9a-f-]{36}$/i;
+
+export default async function Page({ searchParams }: { searchParams: { lead?: string; reprendre?: string } }) {
   const profil = await profilCourant();
   if (!profil) redirect("/connexion");
   const supabase = supabaseServeur();
@@ -20,25 +24,40 @@ export default async function Page({ searchParams }: { searchParams: { lead?: st
     niveau = (data?.niveau_iap as NiveauIAP | null) ?? null;
   }
 
-  // Pré-remplissage depuis un lead Ma Porte (lecture soumise aux droits de l'utilisateur)
-  let lead: LeadSource = null;
   let initiale = CONFIGURATION_INITIALE;
-  const idLead = typeof searchParams.lead === "string" ? searchParams.lead : null;
-  if (idLead && /^[0-9a-f-]{36}$/i.test(idLead)) {
-    const { data } = await supabase
-      .from("ep_leads")
-      .select("reference, contact_nom, ville, projet, configuration_ma_porte")
-      .eq("id", idLead)
-      .maybeSingle();
-    if (data) {
-      lead = { reference: data.reference, contact: data.contact_nom, ville: data.ville, projet: data.projet };
-      initiale = {
-        ...depuisMaPorte(data.configuration_ma_porte as Record<string, unknown> | null),
-        reference: `${data.contact_nom}${data.ville ? `, ${data.ville}` : ""}`,
-        clientFinal: data.contact_nom,
-      };
+  let reprise: ConfigurationReprise = null;
+  let idLead = typeof searchParams.lead === "string" && UUID.test(searchParams.lead) ? searchParams.lead : null;
+
+  // Reprise d'une configuration enregistrée (lecture soumise aux droits de l'utilisateur)
+  const idReprise = typeof searchParams.reprendre === "string" ? searchParams.reprendre : null;
+  if (idReprise) {
+    const enregistree = await configurationParId(idReprise);
+    if (enregistree) {
+      initiale = depuisDonnees(enregistree.donnees);
+      reprise = { id: enregistree.id, reference: enregistree.reference, statut: enregistree.statut, prixVente: enregistree.prixVente };
+      idLead = enregistree.leadId ?? idLead;
     }
   }
 
-  return <Configurateur initiale={initiale} niveau={niveau} lead={lead} role={profil.role} />;
+  // Pré-remplissage depuis un lead Ma Porte
+  let lead: LeadSource = null;
+  if (idLead) {
+    const { data } = await supabase
+      .from("ep_leads")
+      .select("id, reference, contact_nom, ville, projet, configuration_ma_porte")
+      .eq("id", idLead)
+      .maybeSingle();
+    if (data) {
+      lead = { id: data.id, reference: data.reference, contact: data.contact_nom, ville: data.ville, projet: data.projet };
+      if (!reprise) {
+        initiale = {
+          ...depuisMaPorte(data.configuration_ma_porte as Record<string, unknown> | null),
+          reference: `${data.contact_nom}${data.ville ? `, ${data.ville}` : ""}`,
+          clientFinal: data.contact_nom,
+        };
+      }
+    }
+  }
+
+  return <Configurateur key={reprise?.id ?? "nouvelle"} initiale={initiale} niveau={niveau} lead={lead} role={profil.role} reprise={reprise} />;
 }
