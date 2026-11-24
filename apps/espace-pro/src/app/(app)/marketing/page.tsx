@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { ModuleAVenir } from "@/components/module-a-venir";
+import { Marketing } from "@/components/marketing/marketing";
 
 export const metadata: Metadata = { title: "Marketing" };
 
 export default function Page() {
-  return <ModuleAVenir id="marketing" />;
+  return <Marketing />;
 }
