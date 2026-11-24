@@ -7,7 +7,7 @@ export function CadreAuth({ children }: { children: React.ReactNode }) {
   return (
     <main className="grid min-h-screen bg-bg lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
       <section className="relative isolate hidden h-screen flex-col overflow-hidden bg-nav-gradient lg:sticky lg:top-0 lg:flex">
-        <div className="relative px-12 pt-12 xl:px-16">
+        <div className="relative flex justify-center px-12 pt-12 xl:px-16">
           <LogoAnime />
         </div>
         <Esquisses />

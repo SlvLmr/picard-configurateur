@@ -11,7 +11,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 const SCENES = [
   { module: "Configurateur", titre: "Chaque porte sur mesure", x: 0, y: 0 },
   { module: "Leads", titre: "Les leads au bon installateur", x: 560, y: -80 },
-  { module: "Médiathèque", titre: "Brochures et notices à portée de main", x: 1100, y: 60 },
+  { module: "Médiathèque", titre: "Brochures et notices en un clic", x: 1100, y: 60 },
   { module: "Ventes", titre: "Développez vos ventes", x: 260, y: 420 },
   { module: "Calendrier", titre: "Salons, formations et visites", x: 860, y: 460 },
 ] as const;
@@ -126,11 +126,11 @@ export function Esquisses() {
       {/* Titre et modules */}
       <div className="relative px-12 pb-10 xl:px-16">
         <div className="flex items-end justify-between gap-8">
-          <div key={`t-${i}-${cycle}`} className="flex min-h-24 min-w-0 flex-col justify-end">
+          <div key={`t-${i}-${cycle}`} className="min-w-0">
             <p className="kicker text-sm font-semibold text-cta">
               {String(i + 1).padStart(2, "0")} <span className="text-white/40">sur 05</span>, {scene.module}
             </p>
-            <h2 className="mt-3 font-display text-2xl font-semibold text-white xl:text-3xl">
+            <h2 className="mt-3 whitespace-nowrap font-display text-xl font-semibold text-white xl:text-2xl 2xl:text-3xl">
               {scene.titre.split(" ").map((mot, k) => (
                 <Fragment key={k}>
                 {k > 0 ? " " : null}
