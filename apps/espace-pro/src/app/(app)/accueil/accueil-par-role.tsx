@@ -1,397 +1,257 @@
 "use client";
 
 import {
-  Award,
   CalendarClock,
-  CircleCheck,
+  ChartLine,
+  ClipboardCheck,
   Coins,
   FileText,
   Handshake,
   Hourglass,
   Inbox,
+  LifeBuoy,
+  MessageSquareWarning,
   Megaphone,
   Route,
-  ShoppingBag,
-  Target,
-  Timer,
   TriangleAlert,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
-import { LeadInbox } from "@/components/leads/lead-inbox";
+import { Annonces } from "@/components/accueil/annonces";
+import { Briques, type Brique } from "@/components/accueil/briques";
+import { Calendrier } from "@/components/accueil/calendrier";
 import { LeadQueue } from "@/components/leads/lead-queue";
 import { LeadQueueReel } from "@/components/leads/lead-queue-reel";
-import { Badge, NiveauBadge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { Cote } from "@/components/ui/cote";
 import { Jauge } from "@/components/ui/jauge";
-import { KpiBand } from "@/components/ui/kpi";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Picto } from "@/components/ui/picto";
-import { formatDate, formatDuree, formatNumber } from "@/lib/format";
+import type { Annonce, ElementAgenda, Recap } from "@/lib/data/accueil";
 import type { JourneeCommercial } from "@/lib/data/crm";
-import type { LeadReel, StatsLeads } from "@/lib/data/types";
-import { ACTIONS_EN_RETARD, MARCHES, OBJECTIF_ATC, SIGNAUX, VISITES_DU_JOUR } from "@/lib/mock/commercial";
-import { LEADS, LEADS_CLIENT, PROS_EN_RETARD, STATS_LEADS } from "@/lib/mock/leads";
-import { isClient } from "@/lib/roles";
+import type { Signal } from "@/lib/data/pilotage";
+import type { LeadReel, ProfilReel, StatsLeads } from "@/lib/data/types";
+import { formatDate, formatNumber } from "@/lib/format";
+import { LEADS } from "@/lib/mock/leads";
+import { type RoleId } from "@/lib/roles";
 import { useSession } from "@/lib/session";
 
-type Reel = { leads: LeadReel[]; stats: StatsLeads | null; peutAttribuer: boolean; prenom: string | null } | null;
+type Reel = { leads: LeadReel[]; stats: StatsLeads | null; peutAttribuer: boolean } | null;
+type Vue = "repartition" | "commercial" | "client" | "sav" | "direction";
+
+const PALIER_POINTS = 6500;
+
+const vueDuRole = (r: RoleId): Vue =>
+  r === "repartiteur" ? "repartition"
+  : r === "atc" ? "commercial"
+  : r === "client_gerant" || r === "client_equipe" ? "client"
+  : r === "sav" || r === "bureau_etudes" || r === "qualite" ? "sav"
+  : "direction";
 
 const aujourdhui = () => {
   const s = formatDate(new Date());
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
-export function AccueilParRole({ reel, journee }: { reel: Reel; journee: JourneeCommercial | null }) {
-  const { persona } = useSession();
-  if (persona.role === "repartiteur") return <AccueilRepartiteur reel={reel} />;
-  if (persona.role === "atc") return <AccueilCommercial journee={journee} />;
-  if (isClient(persona.role)) return <AccueilClient />;
-  return <AccueilDirection />;
-}
+const pluriel = (n: number, mot: string) => `${n} ${mot}${n > 1 ? "s" : ""}`;
 
-/* ─────────────────────────── Répartition ─────────────────────────── */
-function AccueilRepartiteur({ reel }: { reel: Reel }) {
-  const s = reel?.stats;
-  const aValider = s?.a_valider ?? STATS_LEADS.aValider;
-  const sansPro = s?.sans_pro ?? STATS_LEADS.sansProProche;
+export function AccueilParRole({
+  profil,
+  recap,
+  annonces,
+  agenda,
+  reel,
+  journee,
+  signaux,
+}: {
+  profil: ProfilReel | null;
+  recap: Recap;
+  annonces: Annonce[];
+  agenda: ElementAgenda[];
+  reel: Reel;
+  journee: JourneeCommercial | null;
+  signaux: Signal[];
+}) {
+  const { persona } = useSession();
+  // L'administrateur prévisualise les autres rôles ; les autres voient leur propre accueil.
+  const role: RoleId = profil && profil.role !== "admin" ? profil.role : persona.role;
+  const vue = vueDuRole(role === "admin" ? "codir" : role);
+  const r = recap;
+
+  const briques: Record<Vue, Brique[]> = {
+    repartition: [
+      { label: "Leads à valider", valeur: r.leads_a_valider, aide: "À attribuer à un professionnel", href: "/leads", icon: Inbox, ton: "cta", attention: r.leads_a_valider > 0 },
+      { label: "En attente du professionnel", valeur: r.leads_a_accepter, aide: "Attribués, pas encore acceptés", href: "/leads", icon: Hourglass, ton: "warning" },
+      { label: "En cours de suivi", valeur: r.leads_en_suivi, aide: "Acceptés, contactés ou en devis", href: "/leads", icon: Handshake, ton: "success" },
+      { label: "Transformation", valeur: reel?.stats?.transformation_pct ?? "–", unite: "%", aide: "Leads signés sur 30 jours", href: "/leads", icon: ChartLine },
+    ],
+    commercial: [
+      { label: "Visites aujourd’hui", valeur: r.visites_aujourdhui, aide: "Voir ma tournée", href: "/crm/tournee", icon: Route, ton: "accent" },
+      { label: "Actions en retard", valeur: r.actions_en_retard, aide: "Échéance dépassée", href: "/crm/tournee", icon: CalendarClock, ton: "danger", attention: r.actions_en_retard > 0 },
+      { label: "Leads en attente chez mes clients", valeur: r.leads_a_accepter, aide: "Un bon sujet de visite", href: "/leads", icon: Inbox, ton: "cta" },
+      { label: "SAV ouverts", valeur: r.sav_ouverts, aide: "Dans mon portefeuille", href: "/sav", icon: LifeBuoy, ton: "warning" },
+    ],
+    client: [
+      { label: "Leads à accepter", valeur: r.leads_a_accepter, aide: "Acceptez avant la fin du délai", href: "/leads", icon: Inbox, ton: "cta", attention: r.leads_a_accepter > 0 },
+      { label: "Leads en cours", valeur: r.leads_en_suivi, aide: "Renseignez leur avancement", href: "/leads", icon: Handshake, ton: "success" },
+      { label: "SAV : réponse attendue", valeur: r.sav_reponse_attendue, aide: `${pluriel(r.sav_ouverts, "demande")} en cours`, href: "/sav", icon: MessageSquareWarning, ton: "warning", attention: r.sav_reponse_attendue > 0 },
+      { label: "Mes points", valeur: formatNumber(r.points), aide: "À dépenser dans la Boutique", href: "/boutique", icon: Coins, ton: "cta" },
+    ],
+    sav: [
+      { label: "Nouvelles demandes", valeur: r.sav_nouveaux, aide: "À prendre en charge", href: "/sav", icon: LifeBuoy, ton: "cta", attention: r.sav_nouveaux > 0 },
+      { label: "Demandes ouvertes", valeur: r.sav_ouverts, aide: "Tous statuts en cours", href: "/sav", icon: ClipboardCheck, ton: "accent" },
+      { label: "En attente du client", valeur: r.sav_reponse_attendue, aide: "Informations demandées", href: "/sav", icon: MessageSquareWarning, ton: "warning" },
+      { label: "Documentation technique", valeur: "Docs", aide: "Notices, PV, fiches", href: "/mediatheque", icon: FileText, ton: "neutral" },
+    ],
+    direction: [
+      { label: "Leads à valider", valeur: r.leads_a_valider, aide: `${pluriel(r.leads_a_accepter, "lead")} en attente du pro`, href: "/leads", icon: Inbox, ton: "cta", attention: r.leads_a_valider > 0 },
+      { label: "SAV nouveaux", valeur: r.sav_nouveaux, aide: `${pluriel(r.sav_ouverts, "demande")} ouvertes`, href: "/sav", icon: LifeBuoy, ton: "warning" },
+      { label: "Commandes à valider", valeur: r.commandes_a_valider, aide: "Boutique, au-delà de 300 €", href: "/boutique/validations", icon: ClipboardCheck, ton: "accent", attention: r.commandes_a_valider > 0 },
+      { label: "Actions commerciales en retard", valeur: r.actions_en_retard, aide: "Sur l’ensemble du réseau", href: "/crm/tournee", icon: CalendarClock, ton: "danger" },
+    ],
+  };
+
+  const urgences = briques[vue].filter((b) => b.attention);
+  const resume = urgences.length
+    ? urgences.map((b) => `${b.valeur} ${b.label.toLowerCase()}`).join(", ") + "."
+    : "Rien d’urgent pour le moment. Bonne journée.";
+
+  const cta: Record<Vue, React.ReactNode> = {
+    repartition: <ButtonLink href="/leads" variant="primary" size="lg"><Inbox aria-hidden />Traiter les leads</ButtonLink>,
+    commercial: <ButtonLink href="/crm/tournee" variant="primary" size="lg"><Route aria-hidden />Préparer ma tournée</ButtonLink>,
+    client: <ButtonLink href="/leads" variant="primary" size="lg"><Inbox aria-hidden />Voir mes leads</ButtonLink>,
+    sav: <ButtonLink href="/sav" variant="primary" size="lg"><LifeBuoy aria-hidden />Ouvrir la file SAV</ButtonLink>,
+    direction: <ButtonLink href="/pilotage" variant="primary" size="lg"><ChartLine aria-hidden />Ouvrir le pilotage</ButtonLink>,
+  };
+
   return (
-    <>
+    <div className="flex flex-col gap-8">
       <PageHeader
-        title={aujourdhui()}
-        meta={reel ? <Badge variant="success">Données en direct</Badge> : null}
-        description={`${aValider} leads attendent votre validation${sansPro ? `, dont ${sansPro} sans professionnel à proximité` : ""}.`}
+        className="pb-0"
+        title={profil?.prenom ? `Bonjour ${profil.prenom}` : aujourdhui()}
+        meta={profil?.role === "admin" && persona.role !== "admin" ? <Badge variant="accent">Aperçu : {persona.fonction}</Badge> : null}
+        description={`${aujourdhui()}. ${resume}`}
         actions={
-          <ButtonLink href="/leads" variant="primary" size="lg">
-            <Inbox aria-hidden />
-            Traiter les leads
-          </ButtonLink>
+          <>
+            {profil?.role === "admin" ? (
+              <ButtonLink href="/administration/contenus" variant="secondary" size="lg">
+                <Megaphone aria-hidden />
+                Annonces et événements
+              </ButtonLink>
+            ) : null}
+            {cta[vue]}
+          </>
         }
       />
-      <KpiBand
-        items={[
-          { label: "À valider", value: aValider, icon: Inbox, tone: "cta", delta: { text: "+9 depuis 8 h", sens: "up", bon: false }, trend: [22, 25, 19, 28, 31, 27, aValider] },
-          {
-            label: "Délai moyen de prise en charge",
-            value: formatDuree(s?.delai_moyen_min ?? STATS_LEADS.delaiMoyenMin),
-            icon: Timer,
-            delta: { text: "−18 min", sens: "down", bon: true },
-            trend: [190, 176, 168, 160, 151, 142, s?.delai_moyen_min ?? 134],
-          },
-          { label: "Acceptés en moins de 24 h", value: s?.acceptes_24h_pct ?? STATS_LEADS.accepteesSous24h, unit: "%", icon: Hourglass, tone: "success", delta: { text: "+4 pts", sens: "up", bon: true }, trend: [81, 84, 83, 87, 88, 90, 92] },
-          { label: "Statuts renseignés par les pros", value: s?.statut_renseigne_pct ?? STATS_LEADS.statutRenseigne, unit: "%", icon: CircleCheck, note: "Objectif 95 %", trend: [70, 74, 79, 80, 84, 86, 88] },
-        ]}
-      />
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-        <Panel>
-          <PanelHeader
-            title="À valider en priorité"
-            description="Les plus anciens d’abord"
-            actions={
-              <Link href="/leads" className="text-sm font-medium text-accent hover:underline">
-                Toute la file
-              </Link>
-            }
-          />
-          {reel ? <LeadQueueReel leads={reel.leads} peutAttribuer={reel.peutAttribuer} compact /> : <LeadQueue leads={LEADS.slice(0, 3)} compact />}
-        </Panel>
-        <Panel className="self-start">
-          <PanelHeader title="Professionnels en retard" description="Délai d’acceptation dépassé" />
+
+      <Annonces annonces={annonces} />
+
+      <section aria-labelledby="priorites" className="flex flex-col gap-4">
+        <h2 id="priorites" className="font-display text-lg font-semibold text-text">
+          Vos priorités
+        </h2>
+        <Briques items={briques[vue]} />
+      </section>
+
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <Calendrier elements={agenda} />
+        <BlocRole vue={vue} reel={reel} journee={journee} signaux={signaux} points={r.points} />
+      </div>
+    </div>
+  );
+}
+
+/** Le bloc propre à chaque métier, à côté du calendrier. */
+function BlocRole({ vue, reel, journee, signaux, points }: { vue: Vue; reel: Reel; journee: JourneeCommercial | null; signaux: Signal[]; points: number }) {
+  if (vue === "repartition") {
+    return (
+      <Panel className="self-start">
+        <PanelHeader
+          title="À valider en priorité"
+          description="Les plus anciens d’abord"
+          actions={<Link href="/leads" className="text-sm font-medium text-accent hover:underline">Toute la file</Link>}
+        />
+        {reel ? <LeadQueueReel leads={reel.leads} peutAttribuer={reel.peutAttribuer} compact /> : <LeadQueue leads={LEADS.slice(0, 3)} compact />}
+      </Panel>
+    );
+  }
+
+  if (vue === "commercial") {
+    const visites = journee?.visitesDuJour ?? [];
+    const actions = journee?.actionsEnRetard ?? [];
+    const heure = (iso: string | null) => (iso ? new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" }).format(new Date(iso)) : "");
+    return (
+      <Panel className="self-start">
+        <PanelHeader title="Ma journée" actions={<Link href="/crm/tournee" className="text-sm font-medium text-accent hover:underline">Ma tournée</Link>} />
+        {visites.length === 0 && actions.length === 0 ? (
+          <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucune visite ni action en retard aujourd’hui.</p>
+        ) : (
           <ul>
-            {PROS_EN_RETARD.map((p) => (
-              <li key={p.nom} className="flex gap-3 border-t border-line px-6 py-4">
-                <Picto icon={TriangleAlert} tone="warning" size="sm" />
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-text">{p.nom}</span>
-                    <NiveauBadge type={p.type} />
-                  </div>
-                  <p className="mt-0.5 text-sm text-text-2">{p.detail}</p>
-                </div>
-              </li>
+            {visites.map((v) => (
+              <LigneLien key={v.id} href={`/crm/${v.compteId}`} picto={<span className="tabular inline-flex h-8 items-center rounded-md bg-sunken px-2 text-sm font-semibold text-text">{heure(v.datePrevue)}</span>} titre={v.compteNom ?? "Visite"} detail={v.objet} />
+            ))}
+            {actions.slice(0, 4).map((a) => (
+              <LigneLien key={a.id} href={`/crm/${a.compteId}`} picto={<Picto icon={CalendarClock} tone="danger" size="sm" />} titre={a.titre} detail={`${a.compteNom ?? ""}, en retard`} />
             ))}
           </ul>
-        </Panel>
-      </div>
-    </>
-  );
-}
+        )}
+      </Panel>
+    );
+  }
 
-/* ─────────────────────────── Client IAP ─────────────────────────── */
-function AccueilClient() {
-  const { persona } = useSession();
-  return (
-    <>
-      <PageHeader
-        title={persona.societe}
-        meta={persona.niveau ? <NiveauBadge type={persona.niveau} /> : null}
-        description={`${LEADS_CLIENT.length} leads attendent votre réponse. Acceptez-les dans les délais pour garder votre priorité sur votre secteur.`}
-        actions={
-          <ButtonLink href="/configurateur" variant="primary" size="lg">
-            Configurer une porte
+  if (vue === "client") {
+    return (
+      <Panel className="self-start">
+        <PanelHeader title="Prochain palier" description={`Coffret outils de pose, à ${formatNumber(PALIER_POINTS)} points`} />
+        <PanelBody className="flex flex-col items-center gap-4">
+          <Jauge value={Math.min(points, PALIER_POINTS)} max={PALIER_POINTS} label="Progression vers le prochain palier" valueLabel={`${formatNumber(points)} pts`} sousTitre={points >= PALIER_POINTS ? "Palier atteint" : `Encore ${formatNumber(PALIER_POINTS - points)} points`} tone="cta" size={220} />
+          <ButtonLink href="/boutique" variant="secondary" className="w-full">
+            <Coins aria-hidden />
+            Dépenser mes points
           </ButtonLink>
-        }
-      />
-      <KpiBand
-        items={[
-          { label: "Mes points", value: formatNumber(4820), icon: Coins, tone: "cta", delta: { text: "+350 ce mois", sens: "up", bon: true }, trend: [3600, 3820, 4010, 4150, 4380, 4470, 4820] },
-          { label: "Taux de transformation", value: 38, unit: "%", icon: Handshake, tone: "success", note: "Réseau : 31 %", trend: [29, 31, 33, 32, 35, 36, 38] },
-          { label: "Leads reçus cette année", value: 64, icon: Inbox, delta: { text: "+22 %", sens: "up", bon: true } },
-          { label: "Note de vos clients", value: "4,8", unit: "/ 5", icon: Award, note: "23 avis" },
-        ]}
-      />
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-        <Panel>
-          <PanelHeader title="Leads à accepter" />
-          <LeadInbox leads={LEADS_CLIENT} />
-        </Panel>
-        <div className="flex flex-col gap-8">
-          <Panel>
-            <PanelHeader title="Prochain palier" description="Coffret outils de pose, à 6 500 points" />
-            <PanelBody className="flex justify-center">
-              <Jauge value={4820} max={6500} label="Progression vers le prochain palier" valueLabel="4 820 pts" sousTitre="Encore 1 680 points" tone="cta" size={240} />
-            </PanelBody>
-          </Panel>
-          <Panel>
-            <PanelHeader title="Pour vous cette semaine" />
-            <ul>
-              {[
-                { icon: FileText, tone: "accent" as const, titre: "Notice de pose Altitude, version 3", detail: "Modifiée hier. Vous aviez la version 2.", href: "/mediatheque" },
-                { icon: Megaphone, tone: "cta" as const, titre: "Opération « Mois de la sécurité »", detail: "Supports prêts, campagne co-financée à 50 %.", href: "/marketing" },
-                { icon: ShoppingBag, tone: "success" as const, titre: "Veste softshell brodée", detail: "1 900 points. Vous en avez assez.", href: "/boutique" },
-              ].map((p) => (
-                <li key={p.titre} className="border-t border-line">
-                  <Link href={p.href} className="group flex gap-3 px-6 py-4 transition-colors hover:bg-sunken">
-                    <Picto icon={p.icon} tone={p.tone} size="sm" />
-                    <span className="min-w-0">
-                      <span className="block font-semibold text-text group-hover:text-accent">{p.titre}</span>
-                      <span className="mt-0.5 block text-sm text-text-2">{p.detail}</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ─────────────────────────── Commercial ─────────────────────────── */
-function AccueilCommercial({ journee }: { journee: JourneeCommercial | null }) {
-  if (journee) return <AccueilCommercialReel j={journee} />;
-  const o = OBJECTIF_ATC;
-  const pct = Math.round((o.realiseKEur / o.objectifKEur) * 100);
-  return (
-    <>
-      <PageHeader
-        title={aujourdhui()}
-        description={`${VISITES_DU_JOUR.length} visites aujourd’hui et ${ACTIONS_EN_RETARD.length} actions en retard.`}
-        actions={
-          <ButtonLink href="/crm" variant="primary" size="lg">
-            <Route aria-hidden />
-            Préparer ma tournée
-          </ButtonLink>
-        }
-      />
-      <Panel>
-        <PanelHeader title="Objectif annuel" description={`Il reste ${o.semainesRestantes} semaines`} />
-        <PanelBody className="grid items-center gap-8 md:grid-cols-[auto_minmax(0,1fr)]">
-          <Jauge value={o.realiseKEur} max={o.objectifKEur} target={o.objectifKEur * 0.9} label="Chiffre d’affaires par rapport à l’objectif" valueLabel={`${pct} %`} sousTitre={`${o.realiseKEur} k€ sur ${o.objectifKEur} k€`} size={240} />
-          <div className="flex flex-col gap-6">
-            <Cote label="Visites du trimestre" value={o.visites} max={o.visitesObjectif} valueLabel={`${o.visites} visites`} startLabel="Visites du trimestre" endLabel={`Objectif ${o.visitesObjectif}`} />
-            <Cote label="Nouveaux IAP" value={3} max={4} tone="success" valueLabel="3 nouveaux IAP" startLabel="Recrutement IAP" endLabel="Objectif 4" />
-          </div>
         </PanelBody>
       </Panel>
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-        <Panel>
-          <PanelHeader title="Ma journée" />
-          <ol>
-            {VISITES_DU_JOUR.map((v) => (
-              <li key={v.compte} className="grid grid-cols-[auto_1fr] gap-4 border-t border-line px-6 py-4">
-                <span className="tabular inline-flex h-8 items-center rounded-md bg-sunken px-3 text-sm font-semibold text-text">{v.heure}</span>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-text">{v.compte}</span>
-                    <NiveauBadge type={v.type} />
-                    <span className="text-sm text-text-3">{v.ville}</span>
-                  </div>
-                  <p className="mt-0.5 text-sm text-text-2">{v.objet}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </Panel>
-        <Panel className="self-start">
-          <PanelHeader title="Actions en retard" />
-          <ul>
-            {ACTIONS_EN_RETARD.map((a) => (
-              <li key={a.action} className="flex gap-3 border-t border-line px-6 py-4">
-                <Picto icon={CalendarClock} tone="danger" size="sm" />
-                <div>
-                  <p className="font-semibold text-text">{a.action}</p>
-                  <p className="mt-0.5 text-sm text-text-2">
-                    {a.compte}, <span className="font-medium text-danger">{a.retardJours} jours de retard</span>
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      </div>
-    </>
+    );
+  }
+
+  if (vue === "sav") {
+    return (
+      <Panel className="self-start">
+        <PanelHeader title="Raccourcis" />
+        <ul>
+          <LigneLien href="/sav" picto={<Picto icon={LifeBuoy} tone="cta" size="sm" />} titre="File de traitement" detail="Toutes les demandes en cours" />
+          <LigneLien href="/mediatheque" picto={<Picto icon={FileText} tone="accent" size="sm" />} titre="Notices et fiches techniques" detail="Dans la Médiathèque" />
+        </ul>
+      </Panel>
+    );
+  }
+
+  return (
+    <Panel className="self-start">
+      <PanelHeader title="Signaux à surveiller" actions={<Link href="/pilotage" className="text-sm font-medium text-accent hover:underline">Pilotage</Link>} />
+      {signaux.length === 0 ? (
+        <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucun signal particulier.</p>
+      ) : (
+        <ul>
+          {signaux.slice(0, 5).map((s) => (
+            <LigneLien key={s.titre + s.detail} href="/pilotage" picto={<Picto icon={TriangleAlert} tone={s.niveau} size="sm" />} titre={s.titre} detail={s.detail} />
+          ))}
+        </ul>
+      )}
+    </Panel>
   );
 }
 
-/** Accueil du commercial branché sur le CRM : visites du jour, actions en retard, objectif annuel. */
-function AccueilCommercialReel({ j }: { j: JourneeCommercial }) {
-  const heure = (iso: string | null) =>
-    iso ? new Intl.DateTimeFormat("fr-FR", { hour: "numeric", minute: "2-digit", timeZone: "Europe/Paris" }).format(new Date(iso)).replace(":", " h ") : "";
-  const o = j.objectif;
-  const pct = o && o.budget ? Math.round((o.realise / o.budget) * 100) : null;
-  const keur = (n: number) => `${formatNumber(Math.round(n / 1000))} k€`;
+function LigneLien({ href, picto, titre, detail }: { href: string; picto: React.ReactNode; titre: string; detail?: string | null }) {
   return (
-    <>
-      <PageHeader
-        title={aujourdhui()}
-        meta={<Badge variant="success">Données en direct</Badge>}
-        description={`${j.visitesDuJour.length} visite${j.visitesDuJour.length > 1 ? "s" : ""} aujourd’hui et ${j.actionsEnRetard.length} action${j.actionsEnRetard.length > 1 ? "s" : ""} en retard.`}
-        actions={
-          <ButtonLink href="/crm/tournee" variant="primary" size="lg">
-            <Route aria-hidden />
-            Préparer ma tournée
-          </ButtonLink>
-        }
-      />
-      {o && pct !== null ? (
-        <Panel>
-          <PanelHeader title={`Objectif ${o.annee}`} description={o.dernierMois ? `Réalisé arrêté à fin ${new Intl.DateTimeFormat("fr-FR", { month: "long" }).format(new Date(o.annee, o.dernierMois - 1, 1))}` : undefined} />
-          <PanelBody className="grid items-center gap-8 md:grid-cols-[auto_minmax(0,1fr)]">
-            <Jauge value={o.realise} max={o.budget} label="Chiffre d’affaires par rapport au budget" valueLabel={`${pct} %`} sousTitre={`${keur(o.realise)} sur ${keur(o.budget)}`} tone={pct >= 100 ? "success" : pct < 85 ? "warning" : "accent"} size={240} />
-            <Cote
-              label="Réalisé par rapport à l’année précédente"
-              value={Math.min(o.realise, Math.max(o.realiseN1, 1))}
-              max={Math.max(o.realiseN1, 1)}
-              tone={o.realise >= o.realiseN1 ? "success" : "accent"}
-              valueLabel={o.realiseN1 ? `${Math.round((o.realise / o.realiseN1) * 100)} % de N-1` : "N-1 indisponible"}
-              startLabel="Comparaison avec l’année précédente"
-              endLabel={`N-1 : ${keur(o.realiseN1)}`}
-            />
-          </PanelBody>
-        </Panel>
-      ) : null}
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-        <Panel>
-          <PanelHeader
-            title="Ma journée"
-            actions={
-              <Link href="/crm/tournee" className="text-sm font-medium text-accent hover:underline">
-                Toute la semaine
-              </Link>
-            }
-          />
-          {j.visitesDuJour.length === 0 ? (
-            <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucune visite prévue aujourd’hui. Planifiez-en depuis la fiche d’un client.</p>
-          ) : (
-            <ol>
-              {j.visitesDuJour.map((v) => (
-                <li key={v.id} className="border-t border-line">
-                  <Link href={`/crm/${v.compteId}`} className="grid grid-cols-[auto_1fr] gap-4 px-6 py-4 transition-colors hover:bg-sunken">
-                    <span className="tabular inline-flex h-8 items-center rounded-md bg-sunken px-3 text-sm font-semibold text-text">{heure(v.datePrevue)}</span>
-                    <span>
-                      <span className="block font-semibold text-text">{v.compteNom}</span>
-                      <span className="mt-0.5 block text-sm text-text-2">{v.objet}</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          )}
-        </Panel>
-        <Panel className="self-start">
-          <PanelHeader title="Actions en retard" />
-          {j.actionsEnRetard.length === 0 ? (
-            <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucune action en retard.</p>
-          ) : (
-            <ul>
-              {j.actionsEnRetard.slice(0, 6).map((a) => (
-                <li key={a.id} className="border-t border-line">
-                  <Link href={`/crm/${a.compteId}`} className="flex gap-3 px-6 py-4 transition-colors hover:bg-sunken">
-                    <Picto icon={CalendarClock} tone="danger" size="sm" />
-                    <span>
-                      <span className="block font-semibold text-text">{a.titre}</span>
-                      <span className="mt-0.5 block text-sm text-text-2">
-                        {a.compteNom}
-                        {a.echeance ? `, échéance ${new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(a.echeance))}` : ""}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
-      </div>
-    </>
-  );
-}
-
-/* ─────────────────────────── Direction ─────────────────────────── */
-function AccueilDirection() {
-  return (
-    <>
-      <PageHeader title="Semaine 48" description="Activité commerciale et santé du réseau." />
-      <KpiBand
-        items={[
-          { label: "Chiffre d’affaires cumulé", value: "4,82", unit: "M€", icon: Target, tone: "cta", note: "87 % de l’objectif annuel", trend: [3.1, 3.4, 3.7, 4.0, 4.3, 4.6, 4.82] },
-          { label: "Leads reçus ce mois", value: 612, icon: Inbox, delta: { text: "+14 %", sens: "up", bon: true }, trend: [480, 510, 530, 560, 540, 590, 612] },
-          { label: "Taux de transformation", value: 31, unit: "%", icon: Handshake, tone: "success", delta: { text: "+2 pts", sens: "up", bon: true }, trend: [26, 27, 29, 28, 30, 29, 31] },
-          { label: "Portefeuille visité", value: 78, unit: "%", icon: Users, tone: "warning", delta: { text: "−4 pts", sens: "down", bon: false }, trend: [84, 83, 82, 82, 80, 79, 78] },
-        ]}
-      />
-      <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Panel>
-          <PanelHeader title="Objectifs par marché" description="Chiffre d’affaires cumulé" />
-          <PanelBody className="grid items-start gap-8 lg:grid-cols-[auto_minmax(0,1fr)]">
-            <Jauge value={4.82} max={5.55} target={5.0} label="Objectif annuel global" valueLabel="87 %" sousTitre="4,82 M€ sur 5,55 M€" size={220} />
-            <div className="flex flex-col gap-5">
-              {MARCHES.map((m) => {
-                const pct = Math.round((m.realise / m.objectif) * 100);
-                return (
-                  <Cote
-                    key={m.nom}
-                    label={`Marché ${m.nom}`}
-                    value={Math.min(m.realise, m.objectif)}
-                    max={m.objectif}
-                    tone={pct >= 100 ? "success" : pct < 80 ? "danger" : "accent"}
-                    valueLabel={`${pct} %`}
-                    startLabel={<span className="text-sm font-medium text-text">{m.nom}</span>}
-                    endLabel={`${m.objectif.toLocaleString("fr-FR")} M€`}
-                  />
-                );
-              })}
-            </div>
-          </PanelBody>
-        </Panel>
-        <Panel className="self-start">
-          <PanelHeader title="Signaux à surveiller" />
-          <ul>
-            {SIGNAUX.map((s) => (
-              <li key={s.titre} className="flex gap-3 border-t border-line px-6 py-4">
-                <Picto icon={TriangleAlert} tone={s.niveau} size="sm" />
-                <div>
-                  <p className="font-semibold text-text">{s.titre}</p>
-                  <p className="mt-0.5 text-sm text-text-2">{s.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      </div>
-    </>
+    <li className="border-t border-line">
+      <Link href={href} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-sunken">
+        <span className="shrink-0">{picto}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-semibold text-text">{titre}</span>
+          {detail ? <span className="mt-0.5 block truncate text-sm text-text-2">{detail}</span> : null}
+        </span>
+      </Link>
+    </li>
   );
 }

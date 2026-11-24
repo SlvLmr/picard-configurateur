@@ -3,6 +3,7 @@
 import { LogOut, Menu, Moon, Search, Sun } from "lucide-react";
 import { seDeconnecter } from "@/app/connexion/actions";
 import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import { Segmented } from "@/components/ui/segmented";
 import type { ProfilReel } from "@/lib/data/types";
 import { PERSONAS, ROLE_LABEL } from "@/lib/roles";
@@ -32,23 +33,15 @@ export function Topbar({ onMenu, onSearch, profil }: { onMenu: () => void; onSea
         <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 sm:flex-none">
           {profil.role === "admin" ? (
           <>
-          <label className="sr-only" htmlFor="persona">
-            Aperçu en tant que
-          </label>
-          <select
+          <Combobox
             id="persona"
+            label="Aperçu en tant que"
+            size="md"
+            className="min-w-0 flex-1 sm:w-64 sm:flex-none"
             value={persona.id}
-            onChange={(e) => setPersona(e.target.value)}
-            title="Aperçu des écrans selon le profil (données de démonstration)"
-            className="h-10 min-w-0 flex-1 cursor-pointer appearance-none truncate rounded-md border border-line-strong bg-surface pl-3 pr-8 text-sm font-medium text-text sm:flex-none"
-            style={{ backgroundImage: "var(--chevron)", backgroundRepeat: "no-repeat" }}
-          >
-            {PERSONAS.map((p) => (
-              <option key={p.id} value={p.id}>
-                Aperçu : {p.prenom}, {p.societe ?? p.fonction}
-              </option>
-            ))}
-          </select>
+            onChange={setPersona}
+            options={PERSONAS.map((p) => ({ value: p.id, label: `Aperçu : ${p.prenom}`, detail: p.societe ?? p.fonction }))}
+          />
           </>
           ) : null}
           <div className="hidden xl:block">
