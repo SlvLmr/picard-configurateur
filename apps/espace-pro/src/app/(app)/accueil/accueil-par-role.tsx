@@ -144,7 +144,19 @@ export function AccueilParRole({
         }
       />
 
-      <Annonces annonces={annonces} />
+      {annonces.length ? (
+        <section aria-labelledby="actualites" className="flex flex-col gap-4">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 id="actualites" className="font-display text-lg font-semibold text-text">
+              Actualités
+            </h2>
+            <Link href="/news" className="text-sm font-medium text-accent hover:underline">
+              Toutes les news
+            </Link>
+          </div>
+          <Annonces annonces={annonces} />
+        </section>
+      ) : null}
 
       <section aria-labelledby="priorites" className="flex flex-col gap-4">
         <h2 id="priorites" className="font-display text-lg font-semibold text-text">
@@ -154,7 +166,7 @@ export function AccueilParRole({
       </section>
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Calendrier elements={agenda} />
+        <Calendrier elements={agenda} lienComplet="/calendrier" />
         <BlocRole vue={vue} reel={reel} journee={journee} signaux={signaux} points={r.points} />
       </div>
     </div>

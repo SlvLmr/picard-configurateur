@@ -34,7 +34,7 @@ function plage(e: ElementAgenda) {
 }
 
 /** Calendrier du mois et prochains rendez-vous. Choisir un jour filtre la liste. */
-export function Calendrier({ elements }: { elements: ElementAgenda[] }) {
+export function Calendrier({ elements, lienComplet }: { elements: ElementAgenda[]; lienComplet?: string }) {
   const aujourdhui = useMemo(() => new Date(), []);
   const [mois, setMois] = useState(() => new Date(aujourdhui.getFullYear(), aujourdhui.getMonth(), 1));
   const [jour, setJour] = useState<string | null>(null);
@@ -79,6 +79,11 @@ export function Calendrier({ elements }: { elements: ElementAgenda[] }) {
             <Button size="sm" variant="ghost" iconOnly aria-label="Mois suivant" onClick={() => { setMois(new Date(mois.getFullYear(), mois.getMonth() + 1, 1)); setJour(null); }}>
               <ChevronRight />
             </Button>
+            {lienComplet ? (
+              <Link href={lienComplet} className="ml-2 hidden text-sm font-medium text-accent hover:underline sm:inline">
+                Ouvrir
+              </Link>
+            ) : null}
           </div>
         }
       />

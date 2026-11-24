@@ -132,3 +132,18 @@ export async function tousEvenements(): Promise<ElementAgenda[]> {
     id: e.id, type: e.type, titre: e.titre, debut: e.debut, fin: e.fin, lieu: e.lieu, description: e.description, href: e.lien_url,
   }));
 }
+
+/** Toutes les annonces en cours visibles par l'utilisateur (page News). */
+export async function annoncesActives(): Promise<Annonce[]> {
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+  const { data } = await supabaseServeur()
+    .from("ep_annonces")
+    .select("*")
+    .eq("archivee", false)
+    .lte("debut", aujourdhui)
+    .or(`fin.is.null,fin.gte.${aujourdhui}`)
+    .order("epinglee", { ascending: false })
+    .order("debut", { ascending: false })
+    .limit(50);
+  return ((data ?? []) as LigneAnnonce[]).map(versAnnonce);
+}

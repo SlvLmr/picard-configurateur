@@ -14,6 +14,8 @@ export type ModuleId =
   | "marketing"
   | "boutique"
   | "sav"
+  | "news"
+  | "calendrier"
   | "administration";
 
 export type RoleId =
@@ -42,22 +44,32 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   marketing: { label: "Marketing", href: "/marketing", phase: 4 },
   boutique: { label: "Boutique", href: "/boutique", phase: 3 },
   sav: { label: "SAV", href: "/sav", phase: 2 },
+  news: { label: "News", href: "/news", phase: 1 },
+  calendrier: { label: "Calendrier", href: "/calendrier", phase: 1 },
   administration: { label: "Administration", href: "/administration", phase: 1 },
 };
 
 export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
-  admin: ["accueil", "leads", "crm", "pilotage", "configurateur", "sav", "mediatheque", "marketing", "boutique", "administration"],
-  codir: ["accueil", "pilotage", "leads", "crm", "sav", "mediatheque", "boutique"],
-  chef_service: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "boutique"],
-  chef_marche: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "marketing", "boutique"],
-  atc: ["accueil", "crm", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique"],
-  repartiteur: ["accueil", "leads", "mediatheque"],
-  client_gerant: ["accueil", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique"],
-  client_equipe: ["accueil", "leads", "configurateur", "sav", "mediatheque"],
-  sav: ["accueil", "sav", "crm", "mediatheque"],
-  bureau_etudes: ["accueil", "sav", "configurateur", "mediatheque"],
-  qualite: ["accueil", "sav", "pilotage", "mediatheque"],
+  admin: ["accueil", "leads", "crm", "pilotage", "configurateur", "sav", "mediatheque", "marketing", "boutique", "administration", "news", "calendrier"],
+  codir: ["accueil", "pilotage", "leads", "crm", "sav", "mediatheque", "boutique", "news", "calendrier"],
+  chef_service: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "boutique", "news", "calendrier"],
+  chef_marche: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier"],
+  atc: ["accueil", "crm", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier"],
+  repartiteur: ["accueil", "leads", "mediatheque", "news", "calendrier"],
+  client_gerant: ["accueil", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier"],
+  client_equipe: ["accueil", "leads", "configurateur", "sav", "mediatheque", "news", "calendrier"],
+  sav: ["accueil", "sav", "crm", "mediatheque", "news", "calendrier"],
+  bureau_etudes: ["accueil", "sav", "configurateur", "mediatheque", "news", "calendrier"],
+  qualite: ["accueil", "sav", "pilotage", "mediatheque", "news", "calendrier"],
 };
+
+/** Organisation du menu : l'accueil, puis quatre parties. Seuls les modules du rôle s'affichent. */
+export const SECTIONS_MENU: { titre: string; modules: ModuleId[] }[] = [
+  { titre: "Interne", modules: ["crm", "pilotage"] },
+  { titre: "Développement", modules: ["leads", "marketing", "boutique"] },
+  { titre: "Communication", modules: ["news", "calendrier", "mediatheque"] },
+  { titre: "Technique", modules: ["configurateur", "sav"] },
+];
 
 /** Personas de démonstration (en attendant l'authentification). */
 export type Persona = {
