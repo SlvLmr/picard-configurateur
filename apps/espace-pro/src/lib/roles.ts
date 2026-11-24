@@ -14,6 +14,7 @@ export type ModuleId =
   | "marketing"
   | "boutique"
   | "sav"
+  | "campagnes"
   | "news"
   | "calendrier"
   | "administration";
@@ -38,7 +39,8 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   accueil: { label: "Accueil", href: "/accueil", phase: 1 },
   leads: { label: "Leads", href: "/leads", phase: 1 },
   crm: { label: "CRM", href: "/crm", phase: 2 },
-  pilotage: { label: "Pilotage", href: "/pilotage", phase: 2 },
+  pilotage: { label: "Pilotage commercial", href: "/pilotage", phase: 2 },
+  campagnes: { label: "Pilotage campagne", href: "/campagnes", phase: 2 },
   configurateur: { label: "Configurateur", href: "/configurateur", phase: 2 },
   mediatheque: { label: "Médiathèque", href: "/mediatheque", phase: 1 },
   marketing: { label: "Marketing", href: "/marketing", phase: 4 },
@@ -50,11 +52,11 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
 };
 
 export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
-  admin: ["accueil", "leads", "crm", "pilotage", "configurateur", "sav", "mediatheque", "marketing", "boutique", "administration", "news", "calendrier"],
-  codir: ["accueil", "pilotage", "leads", "crm", "sav", "mediatheque", "boutique", "news", "calendrier"],
-  chef_service: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "boutique", "news", "calendrier"],
-  chef_marche: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier"],
-  atc: ["accueil", "crm", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier"],
+  admin: ["accueil", "leads", "crm", "pilotage", "configurateur", "sav", "mediatheque", "marketing", "boutique", "administration", "news", "calendrier", "campagnes"],
+  codir: ["accueil", "pilotage", "leads", "crm", "sav", "mediatheque", "boutique", "news", "calendrier", "campagnes"],
+  chef_service: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "boutique", "news", "calendrier", "campagnes"],
+  chef_marche: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier", "campagnes"],
+  atc: ["accueil", "crm", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier", "campagnes"],
   repartiteur: ["accueil", "leads", "mediatheque", "news", "calendrier"],
   client_gerant: ["accueil", "leads", "configurateur", "sav", "mediatheque", "marketing", "boutique", "news", "calendrier"],
   client_equipe: ["accueil", "leads", "configurateur", "sav", "mediatheque", "news", "calendrier"],
@@ -65,7 +67,7 @@ export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
 
 /** Organisation du menu : l'accueil, puis quatre parties. Seuls les modules du rôle s'affichent. */
 export const SECTIONS_MENU: { titre: string; modules: ModuleId[] }[] = [
-  { titre: "Interne", modules: ["crm", "pilotage"] },
+  { titre: "Interne", modules: ["crm", "pilotage", "campagnes"] },
   { titre: "Développement", modules: ["leads", "marketing", "boutique"] },
   { titre: "Communication", modules: ["news", "calendrier", "mediatheque"] },
   { titre: "Technique", modules: ["configurateur", "sav"] },
