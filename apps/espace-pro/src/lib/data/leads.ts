@@ -94,3 +94,62 @@ export async function statsLeads(jours = 30): Promise<StatsLeads | null> {
 }
 
 const capitaliser = (s: string) => s.charAt(0) + s.slice(1).toLowerCase();
+
+export type LeadPro = {
+  id: string;
+  reference: string;
+  recuLe: string;
+  attribueLe: string | null;
+  delaiMin: number;
+  source: string;
+  contact: string;
+  telephone: string | null;
+  email: string | null;
+  ville: string | null;
+  departement: string | null;
+  projet: string;
+  statut: LeadReel["statut"];
+  configurationMaPorte: Record<string, unknown> | null;
+  compte: string | null;
+};
+
+/** Leads visibles par un installateur (son compte) ou un commercial (son portefeuille). Hors file de validation. */
+export async function leadsProfessionnel(): Promise<LeadPro[]> {
+  const supabase = supabaseServeur();
+  const { data, error } = await supabase
+    .from("ep_leads")
+    .select("id, reference, recu_le, attribue_le, delai_acceptation, source, contact_nom, telephone, email, ville, departement, projet, statut, configuration_ma_porte, compte:ep_comptes!ep_leads_compte_id_fkey (raison_sociale)")
+    .neq("statut", "a_valider")
+    .order("attribue_le", { ascending: false, nullsFirst: false })
+    .limit(100);
+  if (error) throw new Error(`Lecture des leads impossible : ${error.message}`);
+  type L = {
+    id: string; reference: string; recu_le: string; attribue_le: string | null; delai_acceptation: string; source: string;
+    contact_nom: string; telephone: string | null; email: string | null; ville: string | null; departement: string | null;
+    projet: string; statut: LeadReel["statut"]; configuration_ma_porte: Record<string, unknown> | null; compte: { raison_sociale: string } | null;
+  };
+  return ((data ?? []) as unknown as L[]).map((l) => ({
+    id: l.id,
+    reference: l.reference,
+    recuLe: l.recu_le,
+    attribueLe: l.attribue_le,
+    delaiMin: intervalleEnMinutes(l.delai_acceptation),
+    source: l.source,
+    contact: l.contact_nom,
+    telephone: l.telephone,
+    email: l.email,
+    ville: l.ville,
+    departement: l.departement,
+    projet: l.projet,
+    statut: l.statut,
+    configurationMaPorte: l.configuration_ma_porte,
+    compte: l.compte?.raison_sociale ?? null,
+  }));
+}
+
+/** « 24:00:00 » ou « 1 day » → minutes */
+function intervalleEnMinutes(v: string) {
+  const jours = /(\d+)\s*day/.exec(v);
+  const hms = /(\d+):(\d+):(\d+)/.exec(v);
+  return (jours ? Number(jours[1]) * 1440 : 0) + (hms ? Number(hms[1]) * 60 + Number(hms[2]) : 0) || 1440;
+}
