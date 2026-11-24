@@ -15,11 +15,12 @@ export async function compteursMenu(profil: ProfilReel): Promise<CompteursMenu> 
   const supabase = supabaseServeur();
   const depuis = new Date(Date.now() - 45 * 86400000).toISOString();
   const aujourdhui = new Date().toISOString().slice(0, 10);
-  const [recap, { data: annonces }, { data: ressources }, { data: evenements }] = await Promise.all([
+  const [recap, { data: annonces }, { data: ressources }, { data: evenements }, { data: animations }] = await Promise.all([
     recapAccueil(),
     supabase.from("ep_annonces").select("debut").eq("archivee", false).lte("debut", aujourdhui).gte("debut", depuis.slice(0, 10)).limit(100),
     supabase.from("ep_ressources").select("mis_a_jour_le").gte("mis_a_jour_le", depuis).limit(200),
     supabase.from("ep_evenements").select("cree_le").gte("cree_le", depuis).limit(100),
+    supabase.from("ep_animations").select("cree_le").eq("publie", true).gte("cree_le", depuis).limit(50),
   ]);
   const r = profil.role;
   const actions: CompteursMenu["actions"] = {};
@@ -33,6 +34,7 @@ export async function compteursMenu(profil: ProfilReel): Promise<CompteursMenu> 
       news: ((annonces ?? []) as { debut: string }[]).map((a) => a.debut),
       mediatheque: ((ressources ?? []) as { mis_a_jour_le: string }[]).map((x) => x.mis_a_jour_le),
       calendrier: ((evenements ?? []) as { cree_le: string }[]).map((x) => x.cree_le),
+      animations: ((animations ?? []) as { cree_le: string }[]).map((x) => x.cree_le),
     },
   };
 }
