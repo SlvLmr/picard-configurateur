@@ -43,7 +43,7 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   campagnes: { label: "Pilotage campagne", href: "/campagnes", phase: 2 },
   configurateur: { label: "Configurateur", href: "/configurateur", phase: 2 },
   mediatheque: { label: "Médiathèque", href: "/mediatheque", phase: 1 },
-  marketing: { label: "Marketing", href: "/marketing", phase: 4 },
+  marketing: { label: "Local", href: "/marketing", phase: 4 },
   boutique: { label: "Boutique", href: "/boutique", phase: 3 },
   sav: { label: "SAV", href: "/sav", phase: 2 },
   news: { label: "News", href: "/news", phase: 1 },
@@ -67,10 +67,10 @@ export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
 
 /** Organisation du menu : l'accueil, puis quatre parties. Seuls les modules du rôle s'affichent. */
 export const SECTIONS_MENU: { titre: string; modules: ModuleId[] }[] = [
-  { titre: "Interne", modules: ["crm", "pilotage", "campagnes"] },
-  { titre: "Développement", modules: ["leads", "marketing", "boutique"] },
   { titre: "Communication", modules: ["news", "calendrier", "mediatheque"] },
+  { titre: "Marketing", modules: ["leads", "marketing", "boutique"] },
   { titre: "Technique", modules: ["configurateur", "sav"] },
+  { titre: "Interne", modules: ["crm", "pilotage", "campagnes"] },
 ];
 
 /** Personas de démonstration (en attendant l'authentification). */
