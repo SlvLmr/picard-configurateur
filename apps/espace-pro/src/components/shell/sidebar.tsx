@@ -47,7 +47,7 @@ export function Sidebar({ open, onNavigate, profil }: { open: boolean; onNavigat
       )}
     >
       <div className="flex flex-col gap-4 px-5 pb-4 pt-5">
-        <LogoMarque marque={brand} className="h-7" />
+        <LogoMarque marque={brand} className="h-9" />
         <Link href="/accueil" onClick={onNavigate} className="block rounded-md" aria-label="Espace Pro, accueil">
           <LogoEspacePro />
         </Link>
