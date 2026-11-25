@@ -46,7 +46,7 @@ export async function enregistrerAnimation(a: FormAnimation): Promise<Resultat> 
   const nombre = (v: string) => (v.trim() ? Number(v.replace(",", ".")) : null);
   const { error } = await supabaseServeur().rpc("ep_admin_enregistrer_animation", {
     p_id: a.id, p_type: a.type, p_titre: a.titre, p_accroche: a.accroche, p_description: a.description, p_conditions: a.conditions,
-    p_debut: a.debut, p_fin: a.fin, p_montant: nombre(a.montant), p_points: nombre(a.points), p_produits: a.produits, p_lien_kit: a.lienKit,
+    p_debut: a.debut, p_fin: a.fin || null, p_montant: nombre(a.montant), p_points: nombre(a.points), p_produits: a.produits, p_lien_kit: a.lienKit,
     p_niveaux: a.niveaux, p_publie: a.publie,
   });
   if (error) return { ok: false, message: error.message };

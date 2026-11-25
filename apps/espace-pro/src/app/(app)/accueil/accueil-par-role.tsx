@@ -33,9 +33,11 @@ import type { Signal } from "@/lib/data/pilotage";
 import type { LeadReel, ProfilReel, StatsLeads } from "@/lib/data/types";
 import { formatDate, formatNumber } from "@/lib/format";
 import { LEADS } from "@/lib/mock/leads";
-import { type RoleId } from "@/lib/roles";
+import { type ModuleId, type RoleId } from "@/lib/roles";
 import { useSession } from "@/lib/session";
-import { AccueilClient, type DonneesClient } from "@/components/accueil/accueil-client";
+import { type DonneesClient } from "@/components/accueil/accueil-client";
+// Accueil client en style tablette. Pour revenir à la version en cartes : AccueilClient de "@/components/accueil/accueil-client".
+import { AccueilTablette } from "@/components/accueil/accueil-tablette";
 
 type Reel = { leads: LeadReel[]; stats: StatsLeads | null; peutAttribuer: boolean } | null;
 type Vue = "repartition" | "commercial" | "client" | "sav" | "direction";
@@ -65,6 +67,7 @@ export function AccueilParRole({
   signaux,
   palier,
   client,
+  modules,
 }: {
   profil: ProfilReel | null;
   recap: Recap;
@@ -75,6 +78,7 @@ export function AccueilParRole({
   signaux: Signal[];
   palier: number;
   client: DonneesClient | null;
+  modules: ModuleId[];
 }) {
   const { persona } = useSession();
   // L'administrateur prévisualise les autres rôles ; les autres voient leur propre accueil.
@@ -82,7 +86,7 @@ export function AccueilParRole({
   const vue = vueDuRole(role === "admin" ? "codir" : role);
   const r = recap;
   if (vue === "client" && client) {
-    return <AccueilClient profil={profil} donnees={client} recap={recap} annonces={annonces} agenda={agenda} palier={palier} />;
+    return <AccueilTablette profil={profil} donnees={client} recap={recap} annonces={annonces} agenda={agenda} palier={palier} modules={modules} />;
   }
 
   const briques: Record<Vue, Brique[]> = {

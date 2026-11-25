@@ -6,7 +6,7 @@ export type StatutParticipation = "inscrit" | "depose" | "valide" | "paye" | "re
 
 export type Animation = {
   id: string; type: TypeAnimation; titre: string; accroche: string | null; description: string | null; conditions: string | null;
-  debut: string; fin: string; montant: number | null; points: number | null; produits: string | null; lienKit: string | null;
+  debut: string; fin: string | null; montant: number | null; points: number | null; produits: string | null; lienKit: string | null;
   niveaux: string[]; publie: boolean; demo: boolean;
 };
 export type Participation = {
@@ -24,7 +24,7 @@ export async function donneesAnimations(client: boolean) {
     supabase.from("ep_parrainages").select("id, animation_id, filleul_nom, filleul_email, statut, cree_le, compte:ep_comptes (raison_sociale)").order("cree_le", { ascending: false }).limit(1000),
     client ? supabase.rpc("ep_mon_code_parrainage") : Promise.resolve({ data: null }),
   ]);
-  type LA = { id: string; type: TypeAnimation; titre: string; accroche: string | null; description: string | null; conditions: string | null; debut: string; fin: string; montant: number | null; points: number | null; produits: string | null; lien_kit: string | null; niveaux: string[]; publie: boolean; demo: boolean };
+  type LA = { id: string; type: TypeAnimation; titre: string; accroche: string | null; description: string | null; conditions: string | null; debut: string; fin: string | null; montant: number | null; points: number | null; produits: string | null; lien_kit: string | null; niveaux: string[]; publie: boolean; demo: boolean };
   type LP = { id: string; animation_id: string; statut: StatutParticipation; reference: string | null; client_final: string | null; montant: number | null; motif: string | null; cree_le: string; compte: { raison_sociale: string } | null };
   type LF = { id: string; animation_id: string; filleul_nom: string; filleul_email: string | null; statut: Parrainage["statut"]; cree_le: string; compte: { raison_sociale: string } | null };
   return {

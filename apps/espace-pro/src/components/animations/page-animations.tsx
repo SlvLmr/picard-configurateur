@@ -33,14 +33,24 @@ const MOIS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 const dateCourte = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(iso));
 const euros = (n: number | null) => (n === null ? null : new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n));
 
-type Etat = "en_cours" | "a_venir" | "terminee";
+type Etat = "en_cours" | "a_venir" | "terminee" | "permanente";
+/** Onglets : les offres en cours (et à venir), les offres permanentes (sans date de fin), les archives */
+type Onglet = "en_cours" | "permanentes" | "archivees";
 function etatDe(a: Animation): Etat {
   const auj = new Date().toISOString().slice(0, 10);
+  if (!a.fin) return "permanente";
   return a.fin < auj ? "terminee" : a.debut > auj ? "a_venir" : "en_cours";
 }
+const ongletDe = (a: Animation): Onglet => {
+  const e = etatDe(a);
+  return e === "permanente" ? "permanentes" : e === "terminee" ? "archivees" : "en_cours";
+};
+/** Période lisible : « 1 mars au 31 mars », ou « Dès le 1 janv. » pour une offre permanente */
+const periodeDe = (a: Animation) => (a.fin ? `${dateCourte(a.debut)} au ${dateCourte(a.fin)}` : `Dès le ${dateCourte(a.debut)}`);
 function echeance(a: Animation) {
   const e = etatDe(a);
-  if (e === "terminee") return "Terminée";
+  if (e === "terminee") return "Archivée";
+  if (e === "permanente") return a.debut > new Date().toISOString().slice(0, 10) ? `Dès le ${dateCourte(a.debut)}` : "Permanente";
   const cible = new Date(`${e === "a_venir" ? a.debut : a.fin}T23:59:59`);
   const j = Math.max(0, Math.ceil((cible.getTime() - Date.now()) / JOUR));
   return e === "a_venir" ? `Dans ${j} jour${j > 1 ? "s" : ""}` : j === 0 ? "Dernier jour" : `Plus que ${j} jour${j > 1 ? "s" : ""}`;
@@ -67,7 +77,7 @@ export function PageAnimations({
   const toast = useToast();
   const [pending, start] = useTransition();
   const [type, setType] = useState<TypeAnimation | "toutes">("toutes");
-  const [etat, setEtat] = useState<Etat | "toutes">("toutes");
+  const [etat, setEtat] = useState<Onglet>("en_cours");
   const [ouverte, setOuverte] = useState<string | null>(null);
   const [edition, setEdition] = useState<FormAnimation | null>(null);
   const [dossier, setDossier] = useState({ reference: "", client: "", montant: "" });
@@ -80,17 +90,18 @@ export function PageAnimations({
       if (r.ok) apres?.();
     });
 
-  const visibles = animations.filter((a) => (type === "toutes" || a.type === type) && (etat === "toutes" || etatDe(a) === etat));
+  const visibles = animations.filter((a) => (type === "toutes" || a.type === type) && ongletDe(a) === etat);
   const vedette = useMemo(() => {
-    const enCours = animations.filter((a) => etatDe(a) === "en_cours").sort((a, b) => a.fin.localeCompare(b.fin));
+    const enCours = animations.filter((a) => etatDe(a) === "en_cours").sort((a, b) => (a.fin ?? "").localeCompare(b.fin ?? ""));
     return enCours[0] ?? animations.filter((a) => etatDe(a) === "a_venir").sort((a, b) => a.debut.localeCompare(b.debut))[0] ?? null;
   }, [animations]);
   const choisie = animations.find((a) => a.id === ouverte) ?? null;
-  const annee = new Date().getFullYear();
+  // La frise de l’année démarre en 2027
+  const annee = Math.max(2027, new Date().getFullYear());
   const debutAnnee = new Date(annee, 0, 1).getTime();
   const dureeAnnee = new Date(annee + 1, 0, 1).getTime() - debutAnnee;
   const posAnnee = (iso: string) => Math.max(0, Math.min(100, ((new Date(iso).getTime() - debutAnnee) / dureeAnnee) * 100));
-  const surAnnee = animations.filter((a) => a.fin >= `${annee}-01-01` && a.debut <= `${annee}-12-31`);
+  const surAnnee = animations.filter((a) => (a.fin ?? "9999-12-31") >= `${annee}-01-01` && a.debut <= `${annee}-12-31`);
   const partsDe = (id: string) => participations.filter((p) => p.animationId === id);
   const filleulsDe = (id: string) => parrainages.filter((p) => p.animationId === id);
 
@@ -129,7 +140,7 @@ export function PageAnimations({
             <h2 className="mt-3 font-display text-2xl font-bold sm:text-3xl">{vedette.titre}</h2>
             {vedette.accroche ? <p className="mt-2 max-w-2xl text-base text-white/80">{vedette.accroche}</p> : null}
             <p className="mt-4 text-sm text-white/70">
-              Du {dateCourte(vedette.debut)} au {dateCourte(vedette.fin)}
+              {vedette.fin ? `Du ${dateCourte(vedette.debut)} au ${dateCourte(vedette.fin)}` : `Offre permanente, dès le ${dateCourte(vedette.debut)}`}
               {vedette.montant ? `, ${euros(vedette.montant)}` : ""}
               {vedette.points ? `, ${vedette.points} points` : ""}
             </p>
@@ -162,7 +173,7 @@ export function PageAnimations({
                   onClick={() => setOuverte(a.id)}
                   title={a.titre}
                   className="absolute flex h-6 items-center overflow-hidden rounded-full px-2 text-xs font-semibold text-white transition-transform hover:scale-y-110"
-                  style={{ top: i * 28, left: `${posAnnee(a.debut)}%`, width: `${Math.max(4, posAnnee(a.fin) - posAnnee(a.debut))}%`, background: TYPES[a.type].couleur }}
+                  style={{ top: i * 28, left: `${posAnnee(a.debut)}%`, width: `${Math.max(4, posAnnee(a.fin ?? `${annee}-12-31`) - posAnnee(a.debut))}%`, background: TYPES[a.type].couleur }}
                 >
                   <span className="truncate">{a.titre}</span>
                 </button>
@@ -192,14 +203,13 @@ export function PageAnimations({
         </div>
         <Segmented
           size="sm"
-          label="Période"
+          label="Offres"
           value={etat}
           onChange={setEtat}
           options={[
-            { value: "toutes", label: "Toutes" },
-            { value: "en_cours", label: "En cours" },
-            { value: "a_venir", label: "À venir" },
-            { value: "terminee", label: "Terminées" },
+            { value: "en_cours", label: "Offres en cours", count: animations.filter((a) => ongletDe(a) === "en_cours").length },
+            { value: "permanentes", label: "Offres permanentes", count: animations.filter((a) => ongletDe(a) === "permanentes").length },
+            { value: "archivees", label: "Offres archivées", count: animations.filter((a) => ongletDe(a) === "archivees").length },
           ]}
         />
       </div>
@@ -229,9 +239,9 @@ export function PageAnimations({
                     <span className="font-display text-lg font-semibold leading-tight text-text">{a.titre}</span>
                     {a.accroche ? <span className="line-clamp-2 text-sm text-text-2">{a.accroche}</span> : null}
                     <span className="mt-auto flex flex-wrap items-center gap-2 pt-3 text-xs">
-                      <span className={cn("rounded-full px-2 py-0.5 font-semibold", e === "en_cours" ? "bg-success-soft text-success" : e === "a_venir" ? "bg-accent-soft text-accent-strong" : "bg-sunken text-text-3")}>{echeance(a)}</span>
+                      <span className={cn("rounded-full px-2 py-0.5 font-semibold", e === "en_cours" || e === "permanente" ? "bg-success-soft text-success" : e === "a_venir" ? "bg-accent-soft text-accent-strong" : "bg-sunken text-text-3")}>{echeance(a)}</span>
                       <span className="text-text-3">
-                        {dateCourte(a.debut)} au {dateCourte(a.fin)}
+                        {periodeDe(a)}
                       </span>
                       {client && mesParts.length ? (
                         <Badge variant={STATUTS[mesParts[0].statut].variant}>
@@ -257,7 +267,7 @@ export function PageAnimations({
       {choisie ? (
         <PanneauEdition
           titre={choisie.titre}
-          description={`${TYPES[choisie.type].label}, du ${dateCourte(choisie.debut)} au ${dateCourte(choisie.fin)}`}
+          description={`${TYPES[choisie.type].label}, ${choisie.fin ? `du ${dateCourte(choisie.debut)} au ${dateCourte(choisie.fin)}` : `offre permanente dès le ${dateCourte(choisie.debut)}`}`}
           onFermer={() => setOuverte(null)}
           pied={
             <>
@@ -267,7 +277,7 @@ export function PageAnimations({
                   onClick={() => {
                     setEdition({
                       id: choisie.id, type: choisie.type, titre: choisie.titre, accroche: choisie.accroche ?? "", description: choisie.description ?? "", conditions: choisie.conditions ?? "",
-                      debut: choisie.debut, fin: choisie.fin, montant: choisie.montant?.toString() ?? "", points: choisie.points?.toString() ?? "", produits: choisie.produits ?? "",
+                      debut: choisie.debut, fin: choisie.fin ?? "", montant: choisie.montant?.toString() ?? "", points: choisie.points?.toString() ?? "", produits: choisie.produits ?? "",
                       lienKit: choisie.lienKit ?? "", niveaux: choisie.niveaux, publie: choisie.publie,
                     });
                     setOuverte(null);
@@ -475,7 +485,7 @@ export function PageAnimations({
               <Button variant="ghost" onClick={() => setEdition(null)}>
                 Annuler
               </Button>
-              <Button variant="primary" disabled={pending || !edition.titre.trim() || !edition.debut || !edition.fin} onClick={() => executer(() => enregistrerAnimation(edition), () => setEdition(null))}>
+              <Button variant="primary" disabled={pending || !edition.titre.trim() || !edition.debut} onClick={() => executer(() => enregistrerAnimation(edition), () => setEdition(null))}>
                 Enregistrer
               </Button>
             </>
@@ -506,7 +516,7 @@ export function PageAnimations({
             <Field label="Début" htmlFor="a-debut">
               <Input id="a-debut" type="date" value={edition.debut} onChange={(e) => setEdition({ ...edition, debut: e.target.value })} />
             </Field>
-            <Field label="Fin" htmlFor="a-fin">
+            <Field label="Fin" htmlFor="a-fin" hint="Laisser vide pour une offre permanente">
               <Input id="a-fin" type="date" value={edition.fin} onChange={(e) => setEdition({ ...edition, fin: e.target.value })} />
             </Field>
             {edition.type !== "offre" ? (

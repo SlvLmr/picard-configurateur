@@ -7,9 +7,10 @@ export const formatPercent = (n: number) => `${nf.format(Math.round(n))} %`;
 
 /** Durée en minutes → « 2 h 14 » / « 45 min » */
 export function formatDuree(minutes: number) {
-  if (minutes < 60) return `${Math.round(minutes)} min`;
-  const h = Math.floor(minutes / 60);
-  const m = Math.round(minutes % 60);
+  const total = Math.round(minutes);
+  if (total < 60) return `${total} min`;
+  const h = Math.floor(total / 60);
+  const m = total % 60;
   return m ? `${h} h ${String(m).padStart(2, "0")}` : `${h} h`;
 }
 
