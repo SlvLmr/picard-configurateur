@@ -28,6 +28,14 @@ export async function compteursMenu(profil: ProfilReel): Promise<CompteursMenu> 
   else if (r === "client_gerant" || r === "client_equipe" || r === "atc") actions.leads = recap.leads_a_accepter;
   actions.sav = recap.sav_reponse_attendue + (r === "sav" || r === "admin" ? recap.sav_nouveaux : 0);
   if (r === "admin") actions.boutique = recap.commandes_a_valider;
+  // Questionnaires ouverts qui me visent et auxquels je n'ai pas encore répondu
+  const [{ data: ouverts }, { data: mesReponses }] = await Promise.all([
+    supabase.from("ep_questionnaires").select("id").eq("statut", "ouvert"),
+    supabase.from("ep_questionnaire_reponses").select("questionnaire_id").eq("profil_id", profil.id),
+  ]);
+  const repondus = new Set(((mesReponses ?? []) as { questionnaire_id: string }[]).map((x) => x.questionnaire_id));
+  const aRemplir = ((ouverts ?? []) as { id: string }[]).filter((q) => !repondus.has(q.id)).length;
+  if (aRemplir && !["admin", "codir", "chef_service", "chef_marche", "repartiteur"].includes(r)) actions.questionnaires = aRemplir;
   return {
     actions,
     dates: {
