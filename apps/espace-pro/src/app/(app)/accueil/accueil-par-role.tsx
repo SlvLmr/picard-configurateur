@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import { Briques, type Brique } from "@/components/accueil/briques";
 import { Carte } from "@/components/accueil/carte";
+import { AjoutEvenement } from "@/components/communication/ajout-evenement";
 import { CanalMessages } from "@/components/communication/canal-messages";
 import { FriseCalendrier } from "@/components/communication/frise-calendrier";
 import { LeadQueue } from "@/components/leads/lead-queue";
@@ -168,7 +169,7 @@ export function AccueilParRole({
         </Carte>
       </div>
 
-      <Carte id="agenda" titre="Agenda du réseau" icone={CalendarDays} ton="warning" sousTitre="Salons, opérations, formations, webinaires et réunions" className="scroll-mt-24">
+      <Carte id="agenda" titre="Agenda du réseau" icone={CalendarDays} ton="warning" sousTitre="Salons, opérations, formations, webinaires et réunions" className="scroll-mt-24" actions={profil?.role === "admin" ? <AjoutEvenement /> : null}>
         <FriseCalendrier elements={agenda} />
       </Carte>
     </div>

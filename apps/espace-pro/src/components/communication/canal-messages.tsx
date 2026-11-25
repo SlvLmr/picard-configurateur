@@ -303,7 +303,7 @@ export function CanalMessages({ annonces, admin }: { annonces: Annonce[]; admin:
     <div className="wa flex h-[640px] flex-col overflow-hidden rounded-md border border-line">
       {/* En-tête du canal */}
       <header className="border-b border-[var(--wa-ligne)] bg-[var(--wa-barre)] px-4 py-3">
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1" role="group" aria-label="Filtrer les messages">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrer les messages">
           {(
             [
               ["toutes", "Tous", annonces.length],

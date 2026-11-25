@@ -1,11 +1,12 @@
 "use client";
 
-import { CalendarDays, CalendarPlus, LifeBuoy, MapPin, Phone, Send, Check, CheckCheck, Coins, Inbox, MessageCircle, Ruler, Timer, type LucideIcon } from "lucide-react";
+import { CalendarDays, LifeBuoy, MapPin, Phone, Send, Check, CheckCheck, Coins, Inbox, MessageCircle, Ruler, Timer, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { accepterLead } from "@/app/(app)/leads/actions";
 import { STATUTS as STATUTS_SAV } from "@/components/sav/libelles";
 import { Carte } from "@/components/accueil/carte";
+import { AjoutEvenement } from "@/components/communication/ajout-evenement";
 import { CanalMessages } from "@/components/communication/canal-messages";
 import { FriseCalendrier } from "@/components/communication/frise-calendrier";
 import { NiveauBadge } from "@/components/ui/badge";
@@ -357,12 +358,7 @@ export function AccueilClient({
         sousTitre="Salons, opérations, formations, webinaires et réunions"
         className="scroll-mt-24"
         actions={
-          donnees.apercu ? (
-            <ButtonLink href="/administration/contenus" variant="secondary" size="sm">
-              <CalendarPlus aria-hidden />
-              Ajouter un événement
-            </ButtonLink>
-          ) : null
+          donnees.apercu ? <AjoutEvenement /> : null
         }
       >
         <FriseCalendrier elements={agenda} />
