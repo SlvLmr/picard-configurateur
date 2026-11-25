@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, CalendarDays, Check, CheckCheck, Coins, Download, FolderOpen, Inbox, MessageCircle, Ruler, Timer, type LucideIcon } from "lucide-react";
+import { BadgeCheck, CalendarDays, MapPin, Check, CheckCheck, Coins, Download, FolderOpen, Inbox, MessageCircle, Ruler, Timer, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { accepterLead } from "@/app/(app)/leads/actions";
@@ -74,58 +74,89 @@ function Vide({ children }: { children: React.ReactNode }) {
   return <p className="rounded-md bg-sunken px-4 py-6 text-center text-sm text-text-3">{children}</p>;
 }
 
-/* ───────── Tâche : un lead à accepter, un SAV à compléter, un client à rappeler ───────── */
+/* ───────── Tâches : les leads à accepter en tête, puis le reste ───────── */
 type Tache = { id: string; titre: string; detail: string; href: string; lead?: LeadPro; urgent: boolean };
 
-function LigneTache({ t, fait, basculer, apercu }: { t: Tache; fait: boolean; basculer: () => void; apercu: boolean }) {
+/** Un lead à accepter : compte à rebours circulaire, projet, lieu, message et actions. */
+function CarteLead({ l, apercu }: { l: LeadPro; apercu: boolean }) {
   const toast = useToast();
   const [pending, start] = useTransition();
-  const l = t.lead;
-  const ecoule = l?.attribueLe ? (Date.now() - new Date(l.attribueLe).getTime()) / 60000 : 0;
-  const reste = l ? Math.max(0, l.delaiMin - ecoule) : 0;
-  const part = l ? Math.min(1, ecoule / l.delaiMin) : 0;
-
+  const ecoule = l.attribueLe ? (Date.now() - new Date(l.attribueLe).getTime()) / 60000 : 0;
+  const reste = Math.max(0, l.delaiMin - ecoule);
+  const partRestante = Math.max(0, 1 - ecoule / l.delaiMin);
+  const presse = partRestante < 0.25;
+  const couleur = presse ? "var(--danger)" : "var(--cta)";
+  const r = 26;
+  const c = 2 * Math.PI * r;
+  const heures = Math.floor(reste / 60);
   return (
-    <li className="flex items-start gap-4 py-4">
-      {l ? (
-        <span aria-hidden className="mt-1 size-5 shrink-0 rounded-full border-2 border-cta bg-cta/20" />
-      ) : (
-        <button
-          type="button"
-          onClick={basculer}
-          aria-pressed={fait}
-          aria-label={fait ? "Marquer comme à faire" : "Marquer comme fait"}
-          className={cn("mt-1 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors", fait ? "border-text bg-text text-surface" : t.urgent ? "border-cta" : "border-line-strong hover:border-text-2")}
-        >
-          {fait ? <Check aria-hidden className="size-3" /> : null}
-        </button>
-      )}
-      <div className="min-w-0 flex-1">
-        <Link href={t.href} className={cn("block text-sm font-semibold hover:underline", fait ? "text-text-3 line-through" : "text-text")}>
-          {t.titre}
-        </Link>
-        <p className="mt-0.5 truncate text-sm text-text-3">{t.detail}</p>
-        {l ? (
-          <div className="mt-3 flex items-center gap-3">
-            <span className="h-1 flex-1 overflow-hidden rounded-full bg-sunken">
-              <span className="block h-full rounded-full bg-cta" style={{ width: `${part * 100}%` }} />
+    <li className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 shadow-card sm:flex-row sm:items-center">
+      <div className="flex min-w-0 flex-1 items-center gap-4">
+        {/* Compte à rebours : l'anneau se vide à mesure que le délai s'écoule */}
+        <span className="relative flex size-16 shrink-0 items-center justify-center" title={reste > 0 ? `${formatDuree(reste)} pour répondre` : "Délai dépassé"}>
+          <svg viewBox="0 0 64 64" className="absolute inset-0 -rotate-90" aria-hidden>
+            <circle cx={32} cy={32} r={r} fill="none" stroke="var(--surface-sunken)" strokeWidth={5} />
+            <circle cx={32} cy={32} r={r} fill="none" stroke={couleur} strokeWidth={5} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - partRestante)} />
+          </svg>
+          <span className="text-center leading-none" suppressHydrationWarning>
+            <span className="block font-display tabular text-sm font-bold text-text">{reste <= 0 ? "0" : heures >= 1 ? `${heures} h` : `${Math.round(reste)}`}</span>
+            <span className="block text-xs text-text-3">{heures >= 1 || reste <= 0 ? "restant" : "min"}</span>
+          </span>
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="flex items-center gap-2">
+            <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: `color-mix(in srgb, ${couleur} 15%, transparent)`, color: presse ? "var(--danger)" : "var(--cta-deep)" }}>
+              Nouveau lead
             </span>
-            <span className="tabular shrink-0 text-xs text-text-3" suppressHydrationWarning>
-              {reste > 0 ? `${formatDuree(reste)} pour répondre` : "Délai dépassé"}
-            </span>
-          </div>
-        ) : null}
+            <span className="tabular text-xs text-text-3">{l.reference}</span>
+          </p>
+          <Link href={`/leads/${l.id}`} className="mt-1 block truncate text-base font-semibold text-text hover:underline">
+            {l.projet}
+          </Link>
+          <p className="mt-0.5 flex min-w-0 items-center gap-1 text-sm text-text-2">
+            <MapPin aria-hidden className="size-4 shrink-0 text-text-3" />
+            <span className="truncate">{[l.ville, l.cp].filter(Boolean).join(", ")}</span>
+          </p>
+          {l.message ? <p className="mt-1 line-clamp-1 text-sm italic text-text-3">« {l.message} »</p> : null}
+        </div>
       </div>
-      {l && !apercu ? (
-        <button
-          type="button"
-          disabled={pending || reste <= 0}
-          onClick={() => start(async () => toast((await accepterLead(l.id)).message))}
-          className="inline-flex h-10 shrink-0 items-center rounded-full bg-cta px-4 text-sm font-semibold text-cta-text transition-colors hover:bg-cta-hover disabled:opacity-50"
-        >
-          Accepter
-        </button>
-      ) : null}
+      <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-stretch">
+        {!apercu ? (
+          <button
+            type="button"
+            disabled={pending || reste <= 0}
+            onClick={() => start(async () => toast((await accepterLead(l.id)).message))}
+            className="inline-flex h-10 flex-1 items-center justify-center rounded-full bg-cta px-5 text-sm font-semibold text-cta-text shadow-cta transition-colors hover:bg-cta-hover disabled:opacity-50 sm:flex-none"
+          >
+            Accepter
+          </button>
+        ) : null}
+        <Link href={`/leads/${l.id}`} className="inline-flex h-10 flex-1 items-center justify-center rounded-full border border-line px-4 text-sm font-medium text-text-2 transition-colors hover:border-line-strong hover:text-text sm:flex-none">
+          Voir le détail
+        </Link>
+      </div>
+    </li>
+  );
+}
+
+/** Une tâche à cocher : SAV à compléter, client à appeler, devis à relancer. */
+function LigneTache({ t, fait, basculer }: { t: Tache; fait: boolean; basculer: () => void }) {
+  return (
+    <li className="flex items-center gap-3 py-3">
+      <button
+        type="button"
+        onClick={basculer}
+        aria-pressed={fait}
+        aria-label={fait ? "Marquer comme à faire" : "Marquer comme fait"}
+        className={cn("flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors", fait ? "border-text bg-text text-surface" : t.urgent ? "border-cta" : "border-line-strong hover:border-text-2")}
+      >
+        {fait ? <Check aria-hidden className="size-3" /> : null}
+      </button>
+      <Link href={t.href} className="min-w-0 flex-1">
+        <span className={cn("block truncate text-sm font-semibold hover:underline", fait ? "text-text-3 line-through" : "text-text")}>{t.titre}</span>
+        <span className="block truncate text-sm text-text-3">{t.detail}</span>
+      </Link>
+      {t.urgent && !fait ? <span className="shrink-0 rounded-full bg-cta-soft px-2 py-0.5 text-xs font-semibold text-cta-deep">Attendu</span> : null}
     </li>
   );
 }
@@ -275,11 +306,27 @@ export function AccueilClient({
           lien={{ href: "/leads", label: "Mes leads" }}
         >
           {taches.length ? (
-            <ul className="-mt-4 divide-y divide-line">
-              {taches.map((t) => (
-                <LigneTache key={t.id} t={t} fait={faits.includes(t.id)} basculer={() => basculer(t.id)} apercu={donnees.apercu} />
-              ))}
-            </ul>
+            <div className="flex flex-col gap-6">
+              {aAccepter.length ? (
+                <ul className="flex flex-col gap-3">
+                  {aAccepter.map((l) => (
+                    <CarteLead key={l.id} l={l} apercu={donnees.apercu} />
+                  ))}
+                </ul>
+              ) : null}
+              {taches.some((t) => !t.lead) ? (
+                <div>
+                  {aAccepter.length ? <p className="text-xs font-semibold text-text-3">Ensuite</p> : null}
+                  <ul className="divide-y divide-line">
+                    {taches
+                      .filter((t) => !t.lead)
+                      .map((t) => (
+                        <LigneTache key={t.id} t={t} fait={faits.includes(t.id)} basculer={() => basculer(t.id)} />
+                      ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
           ) : (
             <Vide>Rien à traiter. Vous serez prévenu ici, par e-mail et par SMS, dès qu’un lead arrive.</Vide>
           )}
