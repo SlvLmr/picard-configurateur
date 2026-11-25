@@ -8,14 +8,14 @@ Méthode : une rubrique à la fois. Fiche d'une page (fonctions, vue par rôle),
 - **Animations** : offres, remboursements et parrainages ; offres en cours, permanentes et archivées.
 - **Médiathèque** : gammes, produits et téléchargements.
 - **Titres modifiables** par l'administrateur.
+- **Aperçu « voir en tant que »** (lecture seule), **Zoning** des secteurs (départements à saisir), **Newsletters**, **Pilotage digital** (saisie mensuelle), **Questionnaires**, **Commandes Navision** (import CSV et rapprochement).
+- **Médiathèque** : aperçu des documents façon Coup d'œil.
 
-## À faire, demandé par Sylvain
-- **Aperçu « voir en tant que »** : l'administrateur choisit un profil (administrateur, chef de marché, IAP, ATC, Lead Manager, responsable SAV) et voit exactement ses écrans, en lecture seule.
-- **Zoning ATC** : reprendre le découpage des secteurs du « Dashboard ATC » (liste des départements par secteur à fournir).
-- **Newsletters** : contours à définir ensemble (à rappeler à Sylvain).
-- **Pilotage du marketing digital** : Google Ads, fréquentation du site, SEO et GEO, dans un tableau de pilotage. À construire ensemble.
-- **Questionnaires** : créer, diffuser et exploiter des questionnaires (réutilise le moteur des enquêtes NPS).
-- **Leads, reste à définir** : rapprochement lead et commande Navision (code lead sur la commande, export mensuel à obtenir auprès de la DSI).
+## À compléter avec Sylvain
+- **Zoning** : saisir les départements de chaque secteur (écran prêt dans Lead Management), puis brancher les suggestions d'attribution dessus.
+- **Pilotage digital** : connecter Google Ads, Google Analytics et Search Console pour remplacer la saisie mensuelle.
+- **Navision** : confirmer le format de l'export (intitulés des colonnes) et l'endroit où le code lead est saisi sur la commande.
+- **Newsletters** : images hébergées (aujourd'hui par adresse web) et désinscription.
 
 ## Réglages en attente (côté Sylvain)
 - Clé d'API Brevo dans Vercel (BREVO_API_KEY, BREVO_EXPEDITEUR_EMAIL) pour envoyer les e-mails et SMS.

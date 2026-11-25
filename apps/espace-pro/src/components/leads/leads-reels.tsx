@@ -1,7 +1,8 @@
 "use client";
 
 import {
-  MapPinned, Flame, Hourglass, Inbox, Smile } from "lucide-react";
+  MapPinned,
+  Receipt, Flame, Hourglass, Inbox, Smile } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { KpiBand } from "@/components/ui/kpi";
@@ -55,6 +56,10 @@ export function LeadsReels({
             <ButtonLink href="/lead-management/zoning" variant="secondary">
               <MapPinned aria-hidden />
               Zoning
+            </ButtonLink>
+            <ButtonLink href="/lead-management/navision" variant="secondary">
+              <Receipt aria-hidden />
+              Commandes Navision
             </ButtonLink>
             {peutAttribuer ? <BoutonNouveauLead /> : null}
           </>
