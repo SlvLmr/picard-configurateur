@@ -90,10 +90,10 @@ export function AccueilParRole({
 
   const briques: Record<Vue, Brique[]> = {
     repartition: [
-      { label: "Leads à valider", valeur: r.leads_a_valider, aide: "À attribuer à un professionnel", href: "/leads", icon: Inbox, ton: "cta", attention: r.leads_a_valider > 0 },
-      { label: "En attente du professionnel", valeur: r.leads_a_accepter, aide: "Attribués, pas encore acceptés", href: "/leads", icon: Hourglass, ton: "warning" },
-      { label: "En cours de suivi", valeur: r.leads_en_suivi, aide: "Acceptés, contactés ou en devis", href: "/leads", icon: Handshake, ton: "success" },
-      { label: "Transformation", valeur: reel?.stats?.transformation_pct ?? "–", unite: "%", aide: "Leads signés sur 30 jours", href: "/leads", icon: ChartLine },
+      { label: "Leads à valider", valeur: r.leads_a_valider, aide: "À attribuer à un professionnel", href: "/lead-management", icon: Inbox, ton: "cta", attention: r.leads_a_valider > 0 },
+      { label: "En attente du professionnel", valeur: r.leads_a_accepter, aide: "Attribués, pas encore acceptés", href: "/lead-management", icon: Hourglass, ton: "warning" },
+      { label: "En cours de suivi", valeur: r.leads_en_suivi, aide: "Acceptés, contactés ou en devis", href: "/lead-management", icon: Handshake, ton: "success" },
+      { label: "Transformation", valeur: reel?.stats?.transformation_pct ?? "–", unite: "%", aide: "Leads signés sur 30 jours", href: "/lead-management", icon: ChartLine },
     ],
     commercial: [
       { label: "Visites aujourd’hui", valeur: r.visites_aujourdhui, aide: "Voir ma tournée", href: "/crm/tournee", icon: Route, ton: "accent" },
@@ -114,7 +114,7 @@ export function AccueilParRole({
       { label: "Documentation technique", valeur: "Docs", aide: "Notices, PV, fiches", href: "/mediatheque", icon: FileText, ton: "neutral" },
     ],
     direction: [
-      { label: "Leads à valider", valeur: r.leads_a_valider, aide: `${pluriel(r.leads_a_accepter, "lead")} en attente du pro`, href: "/leads", icon: Inbox, ton: "cta", attention: r.leads_a_valider > 0 },
+      { label: "Leads à valider", valeur: r.leads_a_valider, aide: `${pluriel(r.leads_a_accepter, "lead")} en attente du pro`, href: "/lead-management", icon: Inbox, ton: "cta", attention: r.leads_a_valider > 0 },
       { label: "SAV nouveaux", valeur: r.sav_nouveaux, aide: `${pluriel(r.sav_ouverts, "demande")} ouvertes`, href: "/sav", icon: LifeBuoy, ton: "warning" },
       { label: "Commandes à valider", valeur: r.commandes_a_valider, aide: "Boutique, au-delà de 300 €", href: "/boutique/validations", icon: ClipboardCheck, ton: "accent", attention: r.commandes_a_valider > 0 },
       { label: "Actions commerciales en retard", valeur: r.actions_en_retard, aide: "Sur l’ensemble du réseau", href: "/crm/tournee", icon: CalendarClock, ton: "danger" },
@@ -127,7 +127,7 @@ export function AccueilParRole({
     : "Rien d’urgent pour le moment. Bonne journée.";
 
   const cta: Record<Vue, React.ReactNode> = {
-    repartition: <ButtonLink href="/leads" variant="primary" size="lg"><Inbox aria-hidden />Traiter les leads</ButtonLink>,
+    repartition: <ButtonLink href="/lead-management" variant="primary" size="lg"><Inbox aria-hidden />Traiter les leads</ButtonLink>,
     commercial: <ButtonLink href="/crm/tournee" variant="primary" size="lg"><Route aria-hidden />Préparer ma tournée</ButtonLink>,
     client: <ButtonLink href="/leads" variant="primary" size="lg"><Inbox aria-hidden />Voir mes leads</ButtonLink>,
     sav: <ButtonLink href="/sav" variant="primary" size="lg"><LifeBuoy aria-hidden />Ouvrir la file SAV</ButtonLink>,
@@ -183,7 +183,7 @@ function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; r
         <PanelHeader
           title="À valider en priorité"
           description="Les plus anciens d’abord"
-          actions={<Link href="/leads" className="text-sm font-medium text-accent hover:underline">Toute la file</Link>}
+          actions={<Link href="/lead-management" className="text-sm font-medium text-accent hover:underline">Toute la file</Link>}
         />
         {reel ? <LeadQueueReel leads={reel.leads} peutAttribuer={reel.peutAttribuer} compact /> : <LeadQueue leads={LEADS.slice(0, 3)} compact />}
       </Panel>

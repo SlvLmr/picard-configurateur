@@ -19,8 +19,10 @@ async function expedier() {
 
 const rafraichir = (leadId?: string) => {
   revalidatePath("/leads");
+  revalidatePath("/lead-management");
   revalidatePath("/accueil");
   if (leadId) revalidatePath(`/leads/${leadId}`);
+  revalidatePath(`/lead-management/${leadId}`);
 };
 
 export async function attribuerLead(leadId: string, compteId: string | null, commercialId: string | null = null): Promise<ResultatAction> {
@@ -96,6 +98,7 @@ export async function ajouterNote(leadId: string, contenu: string): Promise<Resu
   const { error } = await supabaseServeur().rpc("ep_ajouter_note_lead", { p_lead: leadId, p_contenu: contenu });
   if (error) return { ok: false, message: error.message };
   revalidatePath(`/leads/${leadId}`);
+  revalidatePath(`/lead-management/${leadId}`);
   return { ok: true, message: "Note ajoutée" };
 }
 
@@ -107,8 +110,10 @@ export async function accepterLead(leadId: string): Promise<ResultatAction> {
   const { error } = await supabaseServeur().rpc("ep_accepter_lead", { p_lead: leadId });
   if (error) return { ok: false, message: error.message };
   revalidatePath("/leads");
+  revalidatePath("/lead-management");
   revalidatePath("/accueil");
   revalidatePath(`/leads/${leadId}`);
+  revalidatePath(`/lead-management/${leadId}`);
   return { ok: true, message: "Lead accepté : les coordonnées du client sont visibles. +20 points" };
 }
 
@@ -116,6 +121,7 @@ export async function refuserLead(leadId: string, motif: string): Promise<Result
   const { error } = await supabaseServeur().rpc("ep_refuser_lead", { p_lead: leadId, p_motif: motif });
   if (error) return { ok: false, message: error.message };
   revalidatePath("/leads");
+  revalidatePath("/lead-management");
   revalidatePath("/accueil");
   return { ok: true, message: "Lead refusé. Il retourne au Lead Manager." };
 }
@@ -180,6 +186,7 @@ export async function commenterLead(leadId: string, contenu: string): Promise<Re
   const { error } = await supabaseServeur().rpc("ep_commenter_lead", { p_lead: leadId, p_contenu: contenu });
   if (error) return { ok: false, message: error.message };
   revalidatePath(`/leads/${leadId}`);
+  revalidatePath(`/lead-management/${leadId}`);
   return { ok: true, message: "Commentaire publié" };
 }
 
@@ -188,12 +195,14 @@ export async function envoyerEnquete(leadId: string, cible: "client" | "installa
   if (error) return { ok: false, message: error.message };
   const r = await envoyerNotifications().catch(() => null);
   revalidatePath(`/leads/${leadId}`);
+  revalidatePath(`/lead-management/${leadId}`);
   return { ok: true, message: r ? "Enquête envoyée" : "Enquête prête : elle partira dès que l’envoi d’e-mails sera configuré" };
 }
 
 export async function relancerEnvois(): Promise<ResultatAction> {
   const r = await envoyerNotifications(100).catch(() => null);
   revalidatePath("/leads");
+  revalidatePath("/lead-management");
   if (!r) return { ok: false, message: "L’envoi d’e-mails et de SMS n’est pas encore configuré" };
   return { ok: true, message: `${r.envoyes} message${r.envoyes > 1 ? "s" : ""} envoyé${r.envoyes > 1 ? "s" : ""}${r.echecs ? `, ${r.echecs} en échec` : ""}` };
 }

@@ -8,6 +8,7 @@ export type ModuleId =
   | "accueil"
   | "leads"
   | "crm"
+  | "lead_management"
   | "pilotage"
   | "configurateur"
   | "mediatheque"
@@ -38,6 +39,7 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   accueil: { label: "Accueil", href: "/accueil", phase: 1 },
   leads: { label: "Leads", href: "/leads", phase: 1 },
   crm: { label: "CRM", href: "/crm", phase: 2 },
+  lead_management: { label: "Lead Management", href: "/lead-management", phase: 1 },
   pilotage: { label: "Pilotage commercial", href: "/pilotage", phase: 2 },
   campagnes: { label: "Pilotage campagne", href: "/campagnes", phase: 2 },
   configurateur: { label: "Configurateur", href: "/configurateur", phase: 2 },
@@ -50,12 +52,12 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
 };
 
 export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
-  admin: ["accueil", "leads", "crm", "pilotage", "configurateur", "sav", "mediatheque", "marketing", "animations", "boutique", "administration", "campagnes"],
-  codir: ["accueil", "pilotage", "leads", "crm", "sav", "mediatheque", "animations", "boutique", "campagnes"],
-  chef_service: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "animations", "boutique", "campagnes"],
-  chef_marche: ["accueil", "pilotage", "crm", "leads", "sav", "mediatheque", "marketing", "animations", "boutique", "campagnes"],
+  admin: ["accueil", "leads", "crm", "lead_management", "pilotage", "configurateur", "sav", "mediatheque", "marketing", "animations", "boutique", "administration", "campagnes"],
+  codir: ["accueil", "pilotage", "leads", "crm", "lead_management", "sav", "mediatheque", "animations", "boutique", "campagnes"],
+  chef_service: ["accueil", "pilotage", "crm", "lead_management", "leads", "sav", "mediatheque", "animations", "boutique", "campagnes"],
+  chef_marche: ["accueil", "pilotage", "crm", "lead_management", "leads", "sav", "mediatheque", "marketing", "animations", "boutique", "campagnes"],
   atc: ["accueil", "crm", "leads", "configurateur", "sav", "mediatheque", "marketing", "animations", "boutique", "campagnes"],
-  repartiteur: ["accueil", "leads", "mediatheque"],
+  repartiteur: ["accueil", "lead_management", "mediatheque"],
   client_gerant: ["accueil", "leads", "configurateur", "sav", "mediatheque", "marketing", "animations", "boutique"],
   client_equipe: ["accueil", "leads", "configurateur", "sav", "mediatheque", "animations"],
   sav: ["accueil", "sav", "crm", "mediatheque"],
@@ -68,7 +70,7 @@ export const SECTIONS_MENU: { titre: string; modules: ModuleId[] }[] = [
   { titre: "Communication", modules: ["mediatheque"] },
   { titre: "Marketing", modules: ["leads", "marketing", "animations", "boutique"] },
   { titre: "Technique", modules: ["configurateur", "sav"] },
-  { titre: "Interne", modules: ["crm", "pilotage", "campagnes"] },
+  { titre: "Interne", modules: ["crm", "lead_management", "pilotage", "campagnes"] },
 ];
 
 /** Personas de démonstration (en attendant l'authentification). */

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { LeadsPro } from "@/components/leads/leads-pro";
-import { LeadsReels } from "@/components/leads/leads-reels";
-import { entonnoirLeads, expirerLeads, leadsGestion, leadsProfessionnel, notificationsRecentes, releveFacturation, statsLeadManager, statsPro } from "@/lib/data/leads";
-import { estInterne, peutAttribuer, profilCourant } from "@/lib/data/session";
-import { envoiConfigure } from "@/lib/notifications";
+import { expirerLeads, leadsProfessionnel, releveFacturation, statsPro } from "@/lib/data/leads";
+import { estInterne, profilCourant } from "@/lib/data/session";
 import { isClient } from "@/lib/roles";
 import { LeadsParRole } from "./leads-par-role";
 
@@ -14,18 +13,12 @@ export default async function Page() {
   const profil = await profilCourant();
   // Les leads non acceptés dans le délai reviennent au Lead Manager
   await expirerLeads();
+  // Le Lead Manager travaille dans Lead Management
+  if (profil?.role === "repartiteur") redirect("/lead-management");
   if (estInterne(profil)) {
-    const [leads, stats, entonnoir, notifications] = await Promise.all([leadsGestion(365), statsLeadManager(30), entonnoirLeads(30), notificationsRecentes()]);
-    return (
-      <LeadsReels
-        leads={leads}
-        stats={stats}
-        entonnoir={entonnoir}
-        peutAttribuer={peutAttribuer(profil)}
-        notifications={notifications}
-        envoiConfigure={envoiConfigure()}
-      />
-    );
+    // Vue simple des leads du réseau, en lecture (l'outil complet est dans Lead Management)
+    const leads = await leadsProfessionnel();
+    return <LeadsPro leads={leads} lectureSeule stats={null} releve={[]} peutCreer={false} />;
   }
   if (profil && (isClient(profil.role) || profil.role === "atc")) {
     const gerant = profil.role === "client_gerant";

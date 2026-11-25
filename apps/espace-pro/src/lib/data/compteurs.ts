@@ -24,7 +24,7 @@ export async function compteursMenu(profil: ProfilReel): Promise<CompteursMenu> 
   ]);
   const r = profil.role;
   const actions: CompteursMenu["actions"] = {};
-  if (r === "admin" || r === "repartiteur") actions.leads = recap.leads_a_valider;
+  if (r === "admin" || r === "repartiteur") actions.lead_management = recap.leads_a_valider;
   else if (r === "client_gerant" || r === "client_equipe" || r === "atc") actions.leads = recap.leads_a_accepter;
   actions.sav = recap.sav_reponse_attendue + (r === "sav" || r === "admin" ? recap.sav_nouveaux : 0);
   if (r === "admin") actions.boutique = recap.commandes_a_valider;

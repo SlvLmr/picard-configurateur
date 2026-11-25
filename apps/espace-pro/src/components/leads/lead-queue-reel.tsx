@@ -77,7 +77,7 @@ export function LeadQueueReel({ leads, peutAttribuer, compact = false }: { leads
                   <SourcePicto source={l.source} />
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Link href={`/leads/${l.id}`} className="font-semibold text-text hover:text-accent hover:underline">
+                      <Link href={`/lead-management/${l.id}`} className="font-semibold text-text hover:text-accent hover:underline">
                         {l.contact}
                       </Link>
                       <span className="text-text-3">

@@ -61,7 +61,7 @@ function BadgeAttribution({ a }: { a: Attribution }) {
 }
 
 /** Fiche d'un lead : Lead Manager (gestion), équipes internes et commercial (lecture), installateur (pro). */
-export function FicheLead({ fiche, mode }: { fiche: DonneesFiche; mode: ModeFiche }) {
+export function FicheLead({ fiche, mode, retour = "/leads" }: { fiche: DonneesFiche; mode: ModeFiche; retour?: string }) {
   const { lead, evenements, notes, candidats, enquetes, facturation } = fiche;
   const gestion = mode === "gestion";
   const pro = mode === "pro";
@@ -145,7 +145,7 @@ export function FicheLead({ fiche, mode }: { fiche: DonneesFiche; mode: ModeFich
 
   return (
     <>
-      <Link href="/leads" className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
+      <Link href={retour} className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
         <ChevronLeft aria-hidden className="size-4" />
         {pro ? "Mes leads" : "Tous les leads"}
       </Link>

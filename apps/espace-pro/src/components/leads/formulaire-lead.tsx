@@ -34,7 +34,7 @@ export function BoutonNouveauLead({ pourInstallateur = false }: { pourInstallate
       if (r.ok) {
         setOuvert(false);
         setL(VIDE);
-        if (!pourInstallateur && r.id) router.push(`/leads/${r.id}`);
+        if (!pourInstallateur && r.id) router.push(`/lead-management/${r.id}`);
       }
     });
 

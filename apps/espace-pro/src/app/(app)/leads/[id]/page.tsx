@@ -12,6 +12,8 @@ export default async function Page({ params }: { params: { id: string } }) {
   const profil = await profilCourant();
   if (!profil || !(estInterne(profil) || profil.role === "atc" || isClient(profil.role))) redirect("/leads");
   if (!/^[0-9a-f-]{36}$/i.test(params.id)) notFound();
+  // Les équipes internes ouvrent la fiche dans Lead Management
+  if (estInterne(profil)) redirect(`/lead-management/${params.id}`);
   // La sécurité par ligne filtre les leads que l'utilisateur ne peut pas voir
   const fiche = await ficheLead(params.id, estInterne(profil));
   if (!fiche) notFound();

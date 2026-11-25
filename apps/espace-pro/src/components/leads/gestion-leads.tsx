@@ -273,7 +273,7 @@ export function GestionLeads({ leads, peutGerer }: { leads: LeadGestion[]; peutG
                   ) : null}
                   <SourcePicto source={l.source} />
                   <div className="min-w-0">
-                    <Link href={`/leads/${l.id}`} className="font-semibold text-text after:absolute after:inset-0 focus-visible:outline-none">
+                    <Link href={`/lead-management/${l.id}`} className="font-semibold text-text after:absolute after:inset-0 focus-visible:outline-none">
                       {l.contact}
                     </Link>
                     <p className="truncate text-sm text-text-2">{l.projet}</p>

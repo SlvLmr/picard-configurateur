@@ -521,7 +521,7 @@ export function CarteLeads({ leads }: { leads: LeadGestion[] }) {
                       style={{ background: l.temperature === "chaud" ? "var(--danger)" : l.temperature === "tiede" ? "var(--warning)" : l.temperature === "froid" ? "var(--bleu-400)" : "var(--line-strong)" }}
                     />
                     <div className="min-w-0 flex-1">
-                      <Link href={`/leads/${l.id}`} className="block truncate text-sm font-semibold text-text after:absolute after:inset-0">
+                      <Link href={`/lead-management/${l.id}`} className="block truncate text-sm font-semibold text-text after:absolute after:inset-0">
                         {l.contact}
                       </Link>
                       <p className="truncate text-xs text-text-3" suppressHydrationWarning>

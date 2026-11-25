@@ -41,7 +41,7 @@ export function LeadsReels({
   return (
     <>
       <PageHeader
-        title={peutAttribuer ? "Gestion des leads" : "Leads du réseau"}
+        title="Lead Management"
         meta={demo ? <Badge variant="warning">Données de démonstration</Badge> : null}
         description={
           peutAttribuer
