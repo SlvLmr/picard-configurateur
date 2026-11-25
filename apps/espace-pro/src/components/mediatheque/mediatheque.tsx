@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronRight, Download, FileText, Pencil, Plus, Search, Spar
 import dynamic from "next/dynamic";
 import { useMemo, useState, useTransition } from "react";
 import { enregistrerProduit, lienTelechargement } from "@/app/(app)/mediatheque/actions";
+import { ApercuDocument } from "./apercu-document";
 import { PanneauEdition } from "@/components/administration/panneau-edition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ function DessinGamme({ code, className }: { code: string; className?: string }) 
   );
 }
 
-function LigneRessource({ r }: { r: Ressource }) {
+function LigneRessource({ r, onOuvrir }: { r: Ressource; onOuvrir: () => void }) {
   const toast = useToast();
   const [enCours, start] = useTransition();
   const t = TYPES[r.type];
@@ -74,18 +75,32 @@ function LigneRessource({ r }: { r: Ressource }) {
       if (res.ok && res.donnee) window.location.assign(res.donnee);
     });
   return (
-    <li className="group flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-sunken">
+    <li className="group relative flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-sunken">
       <Icone aria-hidden className="size-4 shrink-0 text-text-3" />
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium text-text">{r.titre}</span>
+          {/* Clic ou barre espace : aperçu du document */}
+          <button
+            type="button"
+            onClick={onOuvrir}
+            onKeyDown={(e) => {
+              if (e.key === " ") {
+                e.preventDefault();
+                onOuvrir();
+              }
+            }}
+            title="Aperçu (barre espace)"
+            className="truncate text-left text-sm font-medium text-text after:absolute after:inset-0 hover:underline focus-visible:outline-none"
+          >
+            {r.titre}
+          </button>
           {r.nouveau ? <Badge variant="success">Nouveau</Badge> : estMiseAJour(r.version, r.misAJourLe) ? <Badge variant="accent">Mis à jour</Badge> : null}
         </p>
         <p className="truncate text-xs text-text-3">
           {[r.format, formatTaille(r.tailleOctets), `v${r.version}`, formatJour(r.misAJourLe)].filter(Boolean).join(", ")}
         </p>
       </div>
-      <Button size="sm" variant="secondary" disabled={enCours || !r.fichierChemin} onClick={telecharger} aria-label={`Télécharger ${r.titre}`} title={r.fichierChemin ? "Télécharger" : "Fichier pas encore déposé"}>
+      <Button size="sm" variant="secondary" className="relative z-10" disabled={enCours || !r.fichierChemin} onClick={telecharger} aria-label={`Télécharger ${r.titre}`} title={r.fichierChemin ? "Télécharger" : "Fichier pas encore déposé"}>
         <Download aria-hidden />
         <span className="hidden sm:inline">Télécharger</span>
       </Button>
@@ -95,8 +110,12 @@ function LigneRessource({ r }: { r: Ressource }) {
 
 /** Les quatre familles de téléchargements d'un produit (ou d'une gamme), en colonnes. */
 function Telechargements({ ressources }: { ressources: Ressource[] }) {
+  // Ordre de navigation de l'aperçu : celui des colonnes
+  const ordre = ORDRE_TYPES.flatMap((type) => ressources.filter((r) => r.type === type));
+  const [ouvert, setOuvert] = useState<number | null>(null);
   return (
     <div className="grid gap-4 md:grid-cols-2">
+      {ouvert !== null ? <ApercuDocument liste={ordre} depart={ouvert} onFermer={() => setOuvert(null)} /> : null}
       {ORDRE_TYPES.map((type) => {
         const t = TYPES[type];
         const Icone = t.icon;
@@ -111,7 +130,7 @@ function Telechargements({ ressources }: { ressources: Ressource[] }) {
             {liste.length ? (
               <ul className="flex flex-col">
                 {liste.map((r) => (
-                  <LigneRessource key={r.id} r={r} />
+                  <LigneRessource key={r.id} r={r} onOuvrir={() => setOuvert(ordre.findIndex((x) => x.id === r.id))} />
                 ))}
               </ul>
             ) : (
@@ -144,6 +163,7 @@ export function Mediatheque({
   const [gamme, setGamme] = useState(gammes[0]?.code ?? "");
   const [produitId, setProduitId] = useState<string | null>(null);
   const [q, setQ] = useState("");
+  const [apercuRecherche, setApercuRecherche] = useState<number | null>(null);
   const [ajout, setAjout] = useState(false);
   const [edition, setEdition] = useState<FormProduit | null>(null);
 
@@ -209,10 +229,11 @@ export function Mediatheque({
           <h2 className="mb-2 px-3 font-semibold text-text">
             {resultats.length} résultat{resultats.length > 1 ? "s" : ""}
           </h2>
+          {apercuRecherche !== null ? <ApercuDocument liste={resultats} depart={apercuRecherche} onFermer={() => setApercuRecherche(null)} /> : null}
           {resultats.length ? (
             <ul className="flex flex-col">
-              {resultats.map((r) => (
-                <LigneRessource key={r.id} r={r} />
+              {resultats.map((r, i) => (
+                <LigneRessource key={r.id} r={r} onOuvrir={() => setApercuRecherche(i)} />
               ))}
             </ul>
           ) : (

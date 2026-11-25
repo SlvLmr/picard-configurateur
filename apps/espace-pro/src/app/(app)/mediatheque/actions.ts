@@ -20,6 +20,17 @@ export async function lienTelechargement(ressourceId: string): Promise<Resultat<
   return { ok: true, message: `Téléchargement de « ${r.titre} » lancé`, donnee: lien.signedUrl };
 }
 
+/** Lien temporaire (10 minutes) pour afficher un document dans l'aperçu, sans le télécharger. */
+export async function lienApercu(ressourceId: string): Promise<Resultat<string>> {
+  const supabase = supabaseServeur();
+  const { data: r, error } = await supabase.from("ep_ressources").select("id, fichier_chemin").eq("id", ressourceId).maybeSingle();
+  if (error || !r) return { ok: false, message: "Ressource introuvable ou non autorisée." };
+  if (!r.fichier_chemin) return { ok: false, message: "Le fichier de cette ressource n’a pas encore été déposé." };
+  const { data: lien, error: e2 } = await supabase.storage.from("ep-ressources").createSignedUrl(r.fichier_chemin, 600);
+  if (e2 || !lien) return { ok: false, message: "Impossible d’afficher ce document pour le moment." };
+  return { ok: true, message: "", donnee: lien.signedUrl };
+}
+
 export type NouvelleRessource = {
   titre: string;
   description: string;
