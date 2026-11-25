@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Download } from "lucide-react";
+import { BadgeCheck, Check, CheckCheck, Download } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { accepterLead } from "@/app/(app)/leads/actions";
@@ -162,10 +162,12 @@ function LigneTache({ t, fait, basculer, apercu }: { t: Tache; fait: boolean; ba
   );
 }
 
-/* ───────── Document téléchargeable ───────── */
-function LigneDocument({ r }: { r: Ressource }) {
+/* ───────── Document téléchargeable, présenté comme un fichier ───────── */
+const COULEUR_MEDIA: Record<Ressource["type"], string> = { photo: "#3b82f6", video: "#0ea5a0", doc_commerciale: "#f2643d", doc_technique: "#64748b" };
+function FichierDocument({ r }: { r: Ressource }) {
   const toast = useToast();
   const [pending, start] = useTransition();
+  const Icone = TYPES_MEDIA[r.type].icon;
   return (
     <li>
       <button
@@ -178,11 +180,17 @@ function LigneDocument({ r }: { r: Ressource }) {
             if (res.ok && res.donnee) window.location.assign(res.donnee);
           })
         }
-        className="group flex w-full items-center gap-4 py-3 text-left disabled:opacity-60"
+        className="group flex w-full items-center gap-3 rounded-md p-2 text-left transition-colors hover:bg-sunken disabled:opacity-60"
       >
+        <span className="relative flex h-12 w-10 shrink-0 items-center justify-center border border-line bg-sunken [clip-path:polygon(0_0,70%_0,100%_22%,100%_100%,0_100%)]">
+          <Icone aria-hidden className="size-4" style={{ color: COULEUR_MEDIA[r.type] }} />
+          <span className="absolute inset-x-0 bottom-0 text-center text-xs font-bold leading-4 text-white" style={{ background: COULEUR_MEDIA[r.type] }}>
+            {(r.format ?? "").slice(0, 4) || TYPES_MEDIA[r.type].label.slice(0, 3)}
+          </span>
+        </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold text-text group-hover:underline">{r.titre}</span>
-          <span className="block truncate text-sm text-text-3">{TYPES_MEDIA[r.type].label}</span>
+          <span className="line-clamp-2 text-sm font-semibold text-text group-hover:underline">{r.titre}</span>
+          <span className="block truncate text-xs text-text-3">{TYPES_MEDIA[r.type].label}</span>
         </span>
         <Download aria-label="Télécharger" className="size-4 shrink-0 text-text-3 transition-transform group-hover:translate-y-0.5 group-hover:text-text" />
       </button>
@@ -210,11 +218,13 @@ export function AccueilClient({
   const aAccepter = donnees.leads.filter((l) => l.statut === "attribue");
   const enCours = donnees.leads.filter((l) => ["accepte", "contacte", "rdv", "devis"].includes(l.statut));
   const savAttente = donnees.sav.filter((s) => s.statut === "infos_demandees");
-  const prochains = agenda
+  const aVenir = agenda
     .filter((e) => e.type !== "visite" && e.type !== "echeance" && new Date(e.fin ?? e.debut) >= maintenant)
-    .sort((a, b) => a.debut.localeCompare(b.debut))
-    .slice(0, 4);
-  const fil = [...annonces].sort((a, b) => Number(b.ton === "operation") - Number(a.ton === "operation") || b.debut.localeCompare(a.debut)).slice(0, 3);
+    .sort((a, b) => a.debut.localeCompare(b.debut));
+  const prochains = aVenir.slice(0, 3);
+  // Les trois derniers messages, dans l'ordre de la conversation (le plus récent en bas)
+  const fil = [...annonces].sort((a, b) => b.debut.localeCompare(a.debut)).slice(0, 3).reverse();
+  const nouveaux = annonces.filter((a) => Date.now() - new Date(a.debut).getTime() < 7 * JOUR).length;
 
   /* Une seule liste de tâches : rien n'est répété ailleurs sur la page */
   const taches = useMemo(() => {
@@ -264,7 +274,7 @@ export function AccueilClient({
       <section className="overflow-hidden rounded-lg bg-nav text-white shadow-card">
         <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div className="min-w-0">
-            <p className="text-sm capitalize text-nav-muted">{dateDuJour}</p>
+            <p className="text-sm text-nav-muted">{dateDuJour.replace(/^./, (c) => c.toLocaleUpperCase("fr-FR"))}</p>
             <h1 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{prenom ? `Bonjour ${prenom}` : "Bonjour"}</h1>
             <p className="mt-3 max-w-xl text-base text-white/80">{phrase}</p>
             {donnees.compte?.niveau_iap ? (
@@ -317,80 +327,123 @@ export function AccueilClient({
           </p>
         </Carte>
 
-        {/* ───────── Fil Picard, dans l'esprit de la page Messages ───────── */}
-        <Carte id="fil" titre="Picard Serrures" compteur="canal officiel" lien={{ href: "/news", label: "Ouvrir le canal" }}>
-          {fil.length ? (
-            <ol className="flex flex-col gap-3 rounded-md bg-sunken p-4">
-              {fil.map((a) => (
-                <li key={a.id} className="bulle-entree flex items-end gap-2">
-                  <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-nav">
-                    <SymboleEspacePro className="size-5" />
+        {/* ───────── Messages : les codes de la page Messages, dans une carte ───────── */}
+        <Carte id="fil" titre="Messages" compteur={nouveaux ? `${nouveaux} nouveau${nouveaux > 1 ? "x" : ""}` : undefined} lien={{ href: "/news", label: "Ouvrir" }}>
+          <Link href="/news" className="wa flex h-full flex-col overflow-hidden rounded-md border border-line transition-shadow hover:shadow-card">
+            <span className="flex items-center gap-3 bg-[var(--wa-barre)] px-4 py-2">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-nav">
+                <SymboleEspacePro className="size-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-1 text-sm font-semibold text-[var(--wa-texte)]">
+                  Picard Serrures
+                  <BadgeCheck aria-label="Chaîne officielle" className="size-4 fill-[var(--wa-vert)] text-[var(--wa-barre)]" />
+                </span>
+                <span className="block text-xs text-[var(--wa-texte-2)]">Chaîne officielle du réseau</span>
+              </span>
+              {nouveaux ? <span className="tabular flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--wa-vert)] px-1 text-xs font-bold text-white">{nouveaux}</span> : null}
+            </span>
+            <span className="wa-fond flex min-h-60 flex-1 flex-col justify-end gap-2 p-4">
+              {fil.length ? (
+                fil.map((a, i) => (
+                  <span key={a.id} className={cn("bulle-entree relative block max-w-[90%] rounded-lg bg-[var(--wa-bulle)] px-3 pb-1 pt-2 shadow-[var(--wa-ombre)]", i === 0 && "rounded-tl-none")} style={{ animationDelay: `${i * 60}ms` }}>
+                    {i === 0 ? <span aria-hidden className="absolute -left-2 top-0 h-3 w-2 bg-[var(--wa-bulle)] [clip-path:polygon(0_0,100%_0,100%_100%)]" /> : null}
+                    {a.ton !== "info" ? (
+                      <span className="block text-xs font-semibold" style={{ color: a.ton === "operation" ? "#e26b00" : "#ea0038" }}>
+                        {a.ton === "operation" ? "Opération" : "Important"}
+                      </span>
+                    ) : null}
+                    <span className="line-clamp-2 block text-sm text-[var(--wa-texte)]">
+                      {a.contenu.startsWith(a.titre) ? a.contenu : <><span className="font-semibold">{a.titre}</span> {a.contenu}</>}
+                    </span>
+                    <span className="flex items-center justify-end gap-1 text-xs text-[var(--wa-texte-2)]" suppressHydrationWarning>
+                      {jourCourt(a.debut)}
+                      <CheckCheck aria-hidden className="size-4 text-[var(--wa-bleu)]" />
+                    </span>
                   </span>
-                  <div className="min-w-0 flex-1 rounded-lg rounded-bl-sm bg-surface p-3 shadow-card">
-                    {a.ton === "operation" ? <p className="text-xs font-semibold text-cta-deep">Animation en cours</p> : null}
-                    <p className="text-sm font-semibold text-text">{a.titre}</p>
-                    <p className="mt-1 line-clamp-2 text-sm text-text-2">{a.contenu}</p>
-                    <p className="mt-2 flex items-center gap-3 text-xs text-text-3">
-                      {a.ton === "operation" && a.lienUrl ? (
-                        <Link href={a.lienUrl} className="font-semibold text-text underline underline-offset-4">
-                          {a.lienLibelle ?? "J’en profite"}
-                        </Link>
-                      ) : null}
-                      <span className="ml-auto" suppressHydrationWarning>
-                        {jourCourt(a.debut)}
-                      </span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <Vide>Aucune annonce pour l’instant.</Vide>
-          )}
+                ))
+              ) : (
+                <span className="mx-auto rounded-lg bg-[var(--wa-bulle)] px-3 py-1 text-xs text-[var(--wa-texte-2)] shadow-[var(--wa-ombre)]">Aucun message pour l’instant</span>
+              )}
+            </span>
+          </Link>
         </Carte>
 
-        {/* ───────── Agenda ───────── */}
-        <Carte id="agenda" titre="Prochains rendez-vous" lien={{ href: "/calendrier", label: "Calendrier" }}>
-          {prochains.length ? (
-            <ol className="-mt-3 divide-y divide-line">
-              {prochains.map((e) => {
-                const d = new Date(e.debut);
-                const j = Math.ceil((d.getTime() - maintenant.getTime()) / JOUR);
-                return (
-                  <li key={e.id} className="flex items-center gap-4 py-3">
-                    <span className="flex w-12 shrink-0 flex-col items-center">
-                      <span className="font-display tabular text-xl font-bold leading-none text-text">{d.getDate()}</span>
-                      <span className="mt-1 text-xs text-text-3">{new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(d)}</span>
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold text-text">{e.titre}</span>
-                      <span className="block truncate text-sm text-text-3">
-                        {TYPES_AGENDA[e.type].label}
-                        {e.lieu ? `, ${e.lieu}` : ""}
-                      </span>
-                    </span>
-                    <span className="tabular shrink-0 text-sm text-text-3">{j <= 0 ? "En cours" : `J-${j}`}</span>
-                  </li>
-                );
-              })}
-            </ol>
-          ) : (
-            <Vide>Aucun événement à venir.</Vide>
-          )}
-        </Carte>
-
-        {/* ───────── Documents ───────── */}
+        {/* ───────── Documents : façon gestionnaire de fichiers ───────── */}
         <Carte id="documents" titre="Derniers documents" lien={{ href: "/mediatheque", label: "Médiathèque" }}>
           {donnees.ressources.length ? (
-            <ul className="-mt-3 divide-y divide-line">
+            <ul className="grid gap-2 sm:grid-cols-2">
               {donnees.ressources.map((r) => (
-                <LigneDocument key={r.id} r={r} />
+                <FichierDocument key={r.id} r={r} />
               ))}
             </ul>
           ) : (
             <Vide>Aucun document pour l’instant.</Vide>
           )}
         </Carte>
+        {/* ───────── Calendrier : grande date, mini frise et code couleur du calendrier ───────── */}
+        <Carte id="agenda" titre="Calendrier" lien={{ href: "/calendrier", label: "Ouvrir" }}>
+          <div className="flex items-end justify-between gap-4" suppressHydrationWarning>
+            <span>
+              <span className="block text-sm font-semibold text-cta-deep">{new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(maintenant).replace(/^./, (c) => c.toLocaleUpperCase("fr-FR"))}</span>
+              <span className="block font-display text-3xl font-bold leading-none text-text">{maintenant.getDate()}</span>
+            </span>
+            <span className="pb-1 text-sm text-text-3">{new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(maintenant)}</span>
+          </div>
+          {/* Les 60 prochains jours, avec le code couleur des types d'événements */}
+          <div className="relative mt-4 h-4" aria-hidden>
+            <span className="absolute inset-x-0 top-1/2 h-px bg-line" />
+            <span className="absolute top-0 h-4 w-0.5 rounded-full bg-cta" />
+            {aVenir
+              .filter((e) => new Date(e.debut).getTime() - maintenant.getTime() < 60 * JOUR)
+              .map((e) => {
+                const debut = Math.max(0, (new Date(e.debut).getTime() - maintenant.getTime()) / JOUR);
+                const fin = Math.min(60, (new Date(e.fin ?? e.debut).getTime() - maintenant.getTime()) / JOUR + 1);
+                return (
+                  <span
+                    key={e.id}
+                    className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full"
+                    style={{ left: `${(debut / 60) * 100}%`, width: `max(8px, ${((fin - debut) / 60) * 100}%)`, background: TYPES_AGENDA[e.type].couleur }}
+                  />
+                );
+              })}
+          </div>
+          <div className="mt-1 flex justify-between text-xs text-text-3" aria-hidden>
+            <span>Aujourd’hui</span>
+            <span>Dans 60 jours</span>
+          </div>
+          {prochains.length ? (
+            <ol className="mt-4 flex flex-col gap-3">
+              {prochains.map((e) => {
+                const d = new Date(e.debut);
+                const j = Math.ceil((d.getTime() - maintenant.getTime()) / JOUR);
+                const couleur = TYPES_AGENDA[e.type].couleur;
+                return (
+                  <li key={e.id}>
+                    <Link href="/calendrier" className="flex items-center gap-3 rounded-md transition-colors hover:bg-sunken">
+                      <span className="h-10 w-1 shrink-0 rounded-full" style={{ background: couleur }} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold text-text">{e.titre}</span>
+                        <span className="block truncate text-sm text-text-3">
+                          <span style={{ color: couleur }}>{TYPES_AGENDA[e.type].label}</span>, {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(d)}
+                          {e.lieu ? `, ${e.lieu}` : ""}
+                        </span>
+                      </span>
+                      <span className="tabular shrink-0 pr-2 text-sm font-semibold" style={{ color: couleur }}>
+                        {j <= 0 ? "En cours" : `J-${j}`}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ol>
+          ) : (
+            <div className="mt-4">
+              <Vide>Aucun événement à venir.</Vide>
+            </div>
+          )}
+        </Carte>
+
       </div>
     </div>
   );

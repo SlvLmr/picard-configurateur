@@ -8,7 +8,7 @@ import { supabaseServeur } from "@/lib/supabase/server";
 import type { DonneesClient } from "@/components/accueil/accueil-client";
 import { isClient } from "@/lib/roles";
 import { peutPiloter, signauxPilotage } from "@/lib/data/pilotage";
-import { estInterne, modulesAutorises, peutAttribuer, profilCourant } from "@/lib/data/session";
+import { estInterne, peutAttribuer, profilCourant } from "@/lib/data/session";
 import { AccueilParRole } from "./accueil-par-role";
 
 export const metadata: Metadata = { title: "Accueil" };
@@ -65,7 +65,6 @@ export default async function Page() {
       signaux={signaux}
       palier={palier}
       client={client}
-      modules={profil ? await modulesAutorises(profil) : []}
     />
   );
 }

@@ -912,27 +912,3 @@ select { background-position: right 12px center; }
     animation: none;
   }
 }
-
-/* Accueil tablette : les widgets se posent l'un après l'autre */
-.widget-entree {
-  animation: widget-entree 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.05) both;
-}
-.widget-entree:nth-child(2) { animation-delay: 40ms; }
-.widget-entree:nth-child(3) { animation-delay: 80ms; }
-.widget-entree:nth-child(4) { animation-delay: 120ms; }
-.widget-entree:nth-child(5) { animation-delay: 160ms; }
-.widget-entree:nth-child(6) { animation-delay: 200ms; }
-.widget-entree:nth-child(7) { animation-delay: 240ms; }
-.widget-entree:nth-child(8) { animation-delay: 280ms; }
-.widget-entree:nth-child(9) { animation-delay: 320ms; }
-@keyframes widget-entree {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .widget-entree {
-    animation: none;
-  }
-}
