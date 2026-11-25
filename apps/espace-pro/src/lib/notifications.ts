@@ -18,7 +18,7 @@ export function envoiConfigure() {
   return Boolean(process.env.BREVO_API_KEY && process.env.BREVO_EXPEDITEUR_EMAIL);
 }
 
-type EnAttente = { id: number; canal: "email" | "sms"; destinataire: string; destinataire_nom: string | null; sujet: string | null; contenu: string; lien: string | null };
+type EnAttente = { id: number; canal: "email" | "sms"; destinataire: string; destinataire_nom: string | null; sujet: string | null; contenu: string; lien: string | null; html: string | null };
 
 function origine() {
   const h = headers();
@@ -61,7 +61,8 @@ async function envoyer(n: EnAttente, base: string): Promise<{ ok: boolean; erreu
               sender: { email: process.env.BREVO_EXPEDITEUR_EMAIL, name: process.env.BREVO_EXPEDITEUR_NOM ?? "Picard Serrures" },
               to: [{ email: n.destinataire, ...(n.destinataire_nom ? { name: n.destinataire_nom } : {}) }],
               subject: n.sujet ?? "Espace Pro Picard Serrures",
-              htmlContent: html(texte, n.contenu.includes("{{lien}}") ? null : lien),
+              // Les newsletters arrivent avec leur propre mise en page
+              htmlContent: n.html ?? html(texte, n.contenu.includes("{{lien}}") ? null : lien),
               textContent: texte,
             }),
           })
