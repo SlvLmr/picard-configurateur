@@ -10,6 +10,7 @@ import { CommandPalette } from "./command-palette";
 import type { CompteursMenu } from "@/lib/data/compteurs";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
+import { BandeauApercu } from "./apercu";
 
 const PERSONA_PAR_ROLE: Record<ProfilReel["role"], string> = {
   admin: "claire",
@@ -31,7 +32,8 @@ export function AppShell({ children, profil, modules, compteurs, textes }: { chi
 
   // Seul l'administrateur peut prévisualiser les écrans des autres profils.
   useEffect(() => {
-    if (profil.role !== "admin" && persona.id !== PERSONA_PAR_ROLE[profil.role]) setPersona(PERSONA_PAR_ROLE[profil.role]);
+    // Les écrans de démonstration suivent le rôle affiché (le rôle réel, ou celui de l'aperçu)
+    if (persona.id !== PERSONA_PAR_ROLE[profil.role]) setPersona(PERSONA_PAR_ROLE[profil.role]);
   }, [profil.role, persona.id, setPersona]);
   const [search, setSearch] = useState(false);
 
@@ -56,6 +58,7 @@ export function AppShell({ children, profil, modules, compteurs, textes }: { chi
         {menu ? <div className="fixed inset-0 z-30 bg-[#071a33]/40 lg:hidden" onClick={() => setMenu(false)} aria-hidden /> : null}
         <div className="min-w-0">
           <Topbar onMenu={() => setMenu(true)} onSearch={() => setSearch(true)} profil={profil} />
+          {profil.apercu ? <BandeauApercu role={profil.role} /> : null}
           <main id="contenu" className="mx-auto w-full max-w-page px-4 py-8 sm:px-8 sm:py-12">
             <TextesProvider textes={textes} admin={profil.role === "admin"}>
               {children}

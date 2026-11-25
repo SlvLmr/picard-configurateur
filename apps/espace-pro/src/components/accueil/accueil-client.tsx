@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { accepterLead } from "@/app/(app)/leads/actions";
 import { STATUTS as STATUTS_SAV } from "@/components/sav/libelles";
 import { Carte } from "@/components/accueil/carte";
-import { AjoutEvenement } from "@/components/communication/ajout-evenement";
 import { CanalMessages } from "@/components/communication/canal-messages";
 import { FriseCalendrier } from "@/components/communication/frise-calendrier";
 import { NiveauBadge } from "@/components/ui/badge";
@@ -263,7 +262,7 @@ export function AccueilClient({
             <>
               {dateDuJour.replace(/^./, (c) => c.toLocaleUpperCase("fr-FR"))}
               {donnees.compte?.raison_sociale ? `, ${donnees.compte.raison_sociale}` : ""}
-              {donnees.apercu ? <span className="mt-1 block text-sm text-text-3">Aperçu administrateur avec les données réelles du réseau. Le bouton Accepter est masqué.</span> : null}
+              {donnees.apercu ? <span className="mt-1 block text-sm text-text-3">Aperçu avec les données réelles du réseau : les boutons d’action sont masqués.</span> : null}
             </>
           }
           actions={
@@ -346,7 +345,7 @@ export function AccueilClient({
           sousTitre={nouveaux ? `${nouveaux} message${nouveaux > 1 ? "s" : ""} cette semaine` : "Chaîne officielle du réseau"}
           className="scroll-mt-24"
         >
-          <CanalMessages annonces={annonces} admin={donnees.apercu} />
+          <CanalMessages annonces={annonces} admin={false} />
         </Carte>
       </div>
 
@@ -360,7 +359,7 @@ export function AccueilClient({
         sousTitreFixe
         className="scroll-mt-24"
         actions={
-          donnees.apercu ? <AjoutEvenement /> : null
+          null
         }
       >
         <FriseCalendrier elements={agenda} />

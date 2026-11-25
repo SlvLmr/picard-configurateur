@@ -44,7 +44,7 @@ export default async function Page() {
       leadsProfessionnel().catch(() => []),
       supabase.from("ep_sav_demandes").select("id, reference, type, statut, mis_a_jour_le, produit").not("statut", "in", "(cloturee)").order("mis_a_jour_le", { ascending: false }).limit(6),
       ressourcesVisibles().catch(() => ({ ressources: [], stats: null })),
-      isClient(profil.role) ? statsPro() : Promise.resolve(null),
+      isClient(profil.role) ? statsPro().catch(() => null) : Promise.resolve(null),
       profil.compteId ? supabase.from("ep_comptes").select("raison_sociale, niveau_iap").eq("id", profil.compteId).maybeSingle() : Promise.resolve({ data: null }),
     ]);
     client = {
@@ -53,7 +53,7 @@ export default async function Page() {
       ressources: media.ressources.slice(0, 4),
       stats: statsClient,
       compte: (compte.data as DonneesClient["compte"]) ?? null,
-      apercu: profil.role === "admin",
+      apercu: profil.roleReel === "admin",
     };
   }
 

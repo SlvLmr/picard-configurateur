@@ -5,11 +5,14 @@ import { seDeconnecter } from "@/app/connexion/actions";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import type { ProfilReel } from "@/lib/data/types";
-import { PERSONAS, ROLE_LABEL } from "@/lib/roles";
+import { ROLE_LABEL, type RoleId } from "@/lib/roles";
+import { useRouter } from "next/navigation";
+import { ROLES_APERCU, changerApercu } from "./apercu";
 import { useSession } from "@/lib/session";
 
 export function Topbar({ onMenu, onSearch, profil }: { onMenu: () => void; onSearch: () => void; profil: ProfilReel }) {
-  const { persona, setPersona, theme, setTheme } = useSession();
+  const { theme, setTheme } = useSession();
+  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
@@ -30,18 +33,16 @@ export function Topbar({ onMenu, onSearch, profil }: { onMenu: () => void; onSea
         </button>
 
         <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 sm:flex-none">
-          {profil.role === "admin" ? (
-          <>
-          <Combobox
-            id="persona"
-            label="Aperçu en tant que"
-            size="md"
-            className="min-w-0 flex-1 sm:w-64 sm:flex-none"
-            value={persona.id}
-            onChange={setPersona}
-            options={PERSONAS.map((p) => ({ value: p.id, label: `Aperçu : ${p.prenom}`, detail: p.societe ?? p.fonction }))}
-          />
-          </>
+          {profil.roleReel === "admin" ? (
+            <Combobox
+              id="apercu"
+              label="Voir en tant que"
+              size="md"
+              className="min-w-0 flex-1 sm:w-64 sm:flex-none"
+              value={profil.role}
+              onChange={(v) => changerApercu(v as RoleId, () => router.refresh())}
+              options={ROLES_APERCU.map((r) => ({ value: r.role, label: r.role === "admin" ? "Mon affichage" : `Voir en tant que ${r.label}`, detail: r.detail }))}
+            />
           ) : null}
           <Button
             variant="ghost"
@@ -51,8 +52,8 @@ export function Topbar({ onMenu, onSearch, profil }: { onMenu: () => void; onSea
           >
             {theme === "dark" ? <Sun /> : <Moon />}
           </Button>
-          <form action={seDeconnecter}>
-            <Button type="submit" variant="ghost" iconOnly aria-label={`Se déconnecter (${profil.prenom ?? ""}, ${ROLE_LABEL[profil.role]})`} title="Se déconnecter">
+          <form action={seDeconnecter} onSubmit={() => { document.cookie = "ep-apercu=; path=/; max-age=0; samesite=lax"; }}>
+            <Button type="submit" variant="ghost" iconOnly aria-label={`Se déconnecter (${profil.prenom ?? ""}, ${ROLE_LABEL[profil.roleReel]})`} title="Se déconnecter">
               <LogOut />
             </Button>
           </form>

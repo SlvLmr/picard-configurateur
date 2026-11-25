@@ -11,6 +11,11 @@ const PAGES_PUBLIQUES = ["/connexion", "/mot-de-passe-oublie", "/rejoindre", "/a
  * Rafraîchit aussi la session Supabase à chaque requête.
  */
 export async function middleware(request: NextRequest) {
+  // Aperçu « voir en tant que » de l'administrateur : lecture seule, aucune action serveur n'est exécutée
+  const apercu = request.cookies.get("ep-apercu")?.value;
+  if (apercu && apercu !== "admin" && request.method === "POST" && request.headers.has("next-action")) {
+    return new NextResponse("Aperçu en lecture seule : aucune modification n'est enregistrée.", { status: 403 });
+  }
   // Le chemin demandé est transmis au rendu serveur pour le contrôle des droits par rubrique.
   request.headers.set("x-chemin", request.nextUrl.pathname);
   let response = NextResponse.next({ request });

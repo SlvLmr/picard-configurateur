@@ -11,6 +11,10 @@ export type ProfilReel = {
   email: string | null;
   compteId: string | null;
   commercialId: string | null;
+  /** Rôle réel du compte connecté (diffère de role pendant un aperçu de l'administrateur) */
+  roleReel: RoleId;
+  /** L'administrateur regarde l'Espace Pro avec les yeux d'un autre rôle, en lecture seule */
+  apercu: boolean;
 };
 
 export type Candidat = { id: string; nom: string; niveau: NiveauIAP | null; ville: string | null };

@@ -22,7 +22,7 @@ export default async function Page() {
   }
   if (profil && (isClient(profil.role) || profil.role === "atc")) {
     const gerant = profil.role === "client_gerant";
-    const [leads, stats, releve] = await Promise.all([leadsProfessionnel(), isClient(profil.role) ? statsPro() : null, gerant ? releveFacturation() : []]);
+    const [leads, stats, releve] = await Promise.all([leadsProfessionnel(), isClient(profil.role) ? statsPro().catch(() => null) : null, gerant ? releveFacturation().catch(() => []) : []]);
     return <LeadsPro leads={leads} lectureSeule={profil.role === "atc"} stats={stats} releve={releve} peutCreer={isClient(profil.role)} />;
   }
   return <LeadsParRole />;

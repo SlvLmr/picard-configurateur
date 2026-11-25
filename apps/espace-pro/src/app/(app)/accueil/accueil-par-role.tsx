@@ -25,7 +25,6 @@ import { CanalMessages } from "@/components/communication/canal-messages";
 import { FriseCalendrier } from "@/components/communication/frise-calendrier";
 import { LeadQueue } from "@/components/leads/lead-queue";
 import { LeadQueueReel } from "@/components/leads/lead-queue-reel";
-import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Jauge } from "@/components/ui/jauge";
 import { PageHeader } from "@/components/ui/page-header";
@@ -82,7 +81,7 @@ export function AccueilParRole({
 }) {
   const { persona } = useSession();
   // L'administrateur prévisualise les autres rôles ; les autres voient leur propre accueil.
-  const role: RoleId = profil && profil.role !== "admin" ? profil.role : persona.role;
+  const role: RoleId = profil?.role ?? persona.role;
   const vue = vueDuRole(role === "admin" ? "codir" : role);
   const r = recap;
   if (vue === "client" && client) {
@@ -141,7 +140,7 @@ export function AccueilParRole({
         editable={false}
         className="pb-0"
         title={profil?.prenom ? `Bonjour ${profil.prenom}` : aujourdhui()}
-        meta={profil?.role === "admin" && persona.role !== "admin" ? <Badge variant="accent">Aperçu : {persona.fonction}</Badge> : null}
+        meta={null}
         description={`${aujourdhui()}. ${resume}`}
         actions={
           <>
