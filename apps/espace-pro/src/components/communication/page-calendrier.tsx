@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Segmented } from "@/components/ui/segmented";
 import { cn } from "@/lib/cn";
 import type { ElementAgenda, TypeAgenda } from "@/lib/data/accueil";
+import { ANNEE_DEPART, ANNEES } from "@/lib/periode-calendrier";
 
 /*
  * Frise du réseau
@@ -31,12 +32,14 @@ const TYPES_FRISE = new Set(LIGNES.map((l) => l.type));
 
 type Echelle = "annee" | "trimestre" | "mois";
 const JOURS_VISIBLES: Record<Echelle, number> = { annee: 365, trimestre: 91, mois: 31 };
+/** Place minimale d'une pastille (environ 160 px) exprimée en jours, selon le zoom */
+const PLACE_PASTILLE: Record<Echelle, number> = { annee: 60, trimestre: 15, mois: 5 };
 
 const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
 const MOIS_LONGS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 const JOUR = 86400000;
-const HAUT_AXE = 48;
-const HAUT_RANG = 56;
+const HAUT_AXE = 56;
+const HAUT_RANG = 48;
 const MARGE_COULOIR = 12;
 
 const dateFr = (d: Date) => new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short" }).format(d);
@@ -55,8 +58,9 @@ type Place = { e: ElementAgenda; j0: number; duree: number; rang: number; espace
 /** Calendrier du réseau : une frise animée et interactive. */
 export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[]; admin: boolean }) {
   const maintenant = useMemo(() => new Date(), []);
-  const origine = useMemo(() => new Date(maintenant.getFullYear() - 1, 0, 1), [maintenant]);
-  const total = useMemo(() => Math.round((utc(new Date(maintenant.getFullYear() + 2, 0, 1)) - utc(origine)) / JOUR), [maintenant, origine]);
+  // La frise démarre en janvier 2027 (ou l'année en cours si elle est postérieure) et couvre deux ans
+  const origine = useMemo(() => new Date(Math.max(ANNEE_DEPART, maintenant.getFullYear()), 0, 1), [maintenant]);
+  const total = useMemo(() => Math.round((utc(new Date(origine.getFullYear() + ANNEES, 0, 1)) - utc(origine)) / JOUR), [origine]);
   const jourDe = useCallback((d: Date) => (utc(d) - utc(origine)) / JOUR, [origine]);
   const jAujourdhui = jourDe(maintenant) + (maintenant.getHours() * 60 + maintenant.getMinutes()) / 1440;
 
@@ -87,10 +91,10 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
         .filter((p) => p.j0 + p.duree >= 0 && p.j0 < total)
         .sort((a, b) => a.j0 - b.j0)
         .map((p) => {
-          // Un titre occupe au moins 10 jours de place avant le suivant sur le même rang
+          // Une pastille occupe une place minimale avant la suivante sur le même rang
           let rang = fins.findIndex((f) => f <= p.j0);
           if (rang === -1) rang = fins.length;
-          fins[rang] = p.j0 + Math.max(p.duree, 10);
+          fins[rang] = p.j0 + Math.max(p.duree, PLACE_PASTILLE[echelle]);
           return { ...p, rang, espace: total - p.j0 };
         });
       // Place disponible pour le titre : jusqu'au prochain événement du même rang
@@ -103,7 +107,7 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
       haut += c.hauteur;
       return c;
     });
-  }, [evenements, actifs, jourDe, total]);
+  }, [evenements, actifs, jourDe, total, echelle]);
   const hauteurTotale = couloirs.reduce((s, c) => s + c.hauteur, HAUT_AXE);
 
   /* Synchronise le titre et la fenêtre de la mini-carte avec la position */
@@ -167,7 +171,7 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
     const el = defilant.current;
     if (!el) return;
     appliquer(el.clientWidth / JOURS_VISIBLES.trimestre);
-    el.scrollLeft = jAujourdhui * pxJour.current - el.clientWidth * 0.3;
+    el.scrollLeft = Math.max(0, jAujourdhui * pxJour.current - el.clientWidth * 0.3);
     synchroniser();
     setPret(true);
     const obs = new ResizeObserver(() => zoomer(echelleRef.current, undefined, false));
@@ -237,7 +241,7 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
   /* Graduations : mois toujours, semaines au trimestre, jours au mois */
   const mois = useMemo(() => {
     const r: { j: number; d: Date }[] = [];
-    for (let m = 0; m < 36; m++) {
+    for (let m = 0; m < 12 * ANNEES; m++) {
       const d = new Date(origine.getFullYear(), m, 1);
       r.push({ j: jourDe(d), d });
     }
@@ -278,12 +282,15 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
                 onClick={() => choisir(e, true)}
                 className={cn(
                   "ruban-carte w-64 shrink-0 snap-start rounded-lg border bg-surface p-4 text-left shadow-card transition-[transform,border-color] hover:-translate-y-0.5",
-                  actif ? "border-cta" : "border-line",
+                  actif ? "border-transparent ring-2" : "border-line",
                 )}
-                style={{ animationDelay: `${i * 40}ms` }}
+                style={{ animationDelay: `${i * 40}ms`, ["--tw-ring-color" as string]: TYPES_AGENDA[e.type].couleur }}
               >
                 <span className="flex items-baseline justify-between gap-2">
-                  <span className="text-xs text-text-3">{TYPES_AGENDA[e.type].label}</span>
+                  <span className="flex items-center gap-2 text-xs font-semibold" style={{ color: TYPES_AGENDA[e.type].couleur }}>
+                    <span aria-hidden className="size-2 rounded-full" style={{ background: TYPES_AGENDA[e.type].couleur }} />
+                    {TYPES_AGENDA[e.type].label}
+                  </span>
                   <span className={cn("tabular font-display text-sm font-bold", j <= 7 ? "text-cta-deep" : "text-text")}>{j <= 0 ? "En cours" : j === 1 ? "Demain" : `J-${j}`}</span>
                 </span>
                 <span className="mt-1 block truncate font-semibold text-text">{e.titre}</span>
@@ -322,7 +329,7 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
               { value: "mois", label: "Mois" },
             ]}
           />
-          <button type="button" onClick={() => allerA(jAujourdhui)} className="text-sm font-medium text-text-2 underline-offset-4 hover:text-text hover:underline">
+          <button type="button" onClick={() => allerA(Math.max(0, jAujourdhui))} className="text-sm font-medium text-text-2 underline-offset-4 hover:text-text hover:underline">
             Aujourd’hui
           </button>
           <div className="flex flex-wrap gap-2 lg:ml-auto" role="group" aria-label="Types affichés">
@@ -334,9 +341,12 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
                   type="button"
                   aria-pressed={on}
                   onClick={() => basculer(l.type)}
-                  className={cn("inline-flex h-8 items-center rounded-full border px-3 text-xs font-semibold transition-colors", on ? "border-text bg-text text-surface" : "border-line text-text-3 hover:text-text")}
+                  className={cn("inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs font-semibold transition-colors", on ? "border-transparent text-text" : "border-line text-text-3 hover:text-text")}
+                  style={on ? { background: `color-mix(in srgb, ${TYPES_AGENDA[l.type].couleur} 16%, transparent)` } : undefined}
                 >
+                  <span aria-hidden className="size-2 rounded-full" style={{ background: on ? TYPES_AGENDA[l.type].couleur : "var(--line-strong)" }} />
                   {l.label}
+                  <span className={cn("tabular", on ? "opacity-60" : "")}>{elements.filter((e) => e.type === l.type).length}</span>
                 </button>
               );
             })}
@@ -346,13 +356,20 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
         {/* Frise */}
         <div className="flex">
           <div className="w-40 shrink-0 border-r border-line bg-surface" style={{ height: hauteurTotale }}>
-            <div style={{ height: HAUT_AXE }} className="border-b border-line" />
-            {couloirs.map((c) => (
-              <div key={c.type} className="flex flex-col justify-center border-b border-line px-4 last:border-b-0" style={{ height: c.hauteur }}>
-                <span className="text-sm font-semibold text-text">{c.label}</span>
-                <span className="tabular text-xs text-text-3">
-                  {c.places.length} événement{c.places.length > 1 ? "s" : ""}
+            <div style={{ height: HAUT_AXE }} className="flex items-end border-b border-line px-4 pb-2">
+              <span className="text-xs text-text-3">{evenements.length} temps forts</span>
+            </div>
+            {couloirs.map((c, k) => (
+              <div
+                key={c.type}
+                className="flex items-center justify-between gap-2 border-b border-line px-4 last:border-b-0"
+                style={{ height: c.hauteur, background: k % 2 ? "color-mix(in srgb, var(--text) 2.5%, transparent)" : undefined }}
+              >
+                <span className="flex items-center gap-2 text-sm font-semibold text-text">
+                  <span aria-hidden className="h-4 w-1 rounded-full" style={{ background: TYPES_AGENDA[c.type].couleur }} />
+                  {c.label}
                 </span>
+                <span className="tabular flex h-6 min-w-6 items-center justify-center rounded-full bg-sunken px-2 text-xs font-semibold text-text-2">{c.places.length}</span>
               </div>
             ))}
           </div>
@@ -367,59 +384,83 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
             className={cn("scroll-nav min-w-0 flex-1 cursor-grab select-none overflow-x-auto overflow-y-hidden transition-opacity duration-300 active:cursor-grabbing", pret ? "opacity-100" : "opacity-0")}
           >
             <div ref={contenu} className="relative" style={{ width: px(total), height: hauteurTotale, ["--px" as string]: pxJour.current }}>
-              {/* Jours ou semaines */}
+              {/* Couloirs alternés */}
+              {couloirs.map((c, k) => (
+                <div
+                  key={`fond-${c.type}`}
+                  aria-hidden
+                  className="absolute inset-x-0 border-b border-line last:border-b-0"
+                  style={{ top: c.haut, height: c.hauteur, background: k % 2 ? "color-mix(in srgb, var(--text) 2.5%, transparent)" : undefined }}
+                />
+              ))}
+
+              {/* Jours (zoom mois) ou semaines (zoom trimestre) */}
               {jours.map(({ j, d, we }) => (
                 <div key={j} className="absolute inset-y-0" style={{ left: px(j), width: px(echelle === "mois" ? 1 : 7) }}>
-                  {we ? <span aria-hidden className="absolute inset-0 bg-sunken/60" /> : null}
-                  {echelle === "trimestre" ? <span aria-hidden className="absolute inset-y-0 left-0 border-l border-line/60" /> : null}
-                  <span className={cn("tabular absolute left-1 text-xs", we ? "text-text-3/70" : "text-text-3")} style={{ top: 26 }}>
-                    {d.getDate()}
+                  {we ? <span aria-hidden className="absolute inset-x-0 bottom-0" style={{ top: HAUT_AXE, background: "color-mix(in srgb, var(--text) 3%, transparent)" }} /> : null}
+                  <span aria-hidden className="absolute bottom-0 left-0 border-l border-dashed" style={{ top: HAUT_AXE, borderColor: "var(--line)" }} />
+                  <span className={cn("tabular absolute left-2 whitespace-nowrap text-xs", we ? "text-text-3/70" : "text-text-3")} style={{ top: 30 }}>
+                    {echelle === "mois" ? `${"dlmmjvs"[d.getDay()]} ${d.getDate()}` : d.getDate()}
                   </span>
                 </div>
               ))}
 
               {/* Mois et années */}
-              {mois.map(({ j, d }) => (
-                <div key={j} className="absolute inset-y-0" style={{ left: px(j) }}>
-                  <span aria-hidden className={cn("absolute inset-y-0 left-0 border-l", d.getMonth() === 0 ? "border-line-strong" : "border-line")} />
-                  <span className="absolute left-2 top-1 whitespace-nowrap text-xs font-semibold text-text-2">
-                    {echelle === "annee" ? MOIS[d.getMonth()] : MOIS_LONGS[d.getMonth()]}
-                    {d.getMonth() === 0 || echelle !== "annee" ? <span className="ml-1 font-normal text-text-3">{d.getFullYear()}</span> : null}
-                  </span>
-                </div>
-              ))}
+              {mois.map(({ j, d }) => {
+                const courant = d.getMonth() === maintenant.getMonth() && d.getFullYear() === maintenant.getFullYear();
+                return (
+                  <div key={j} className="absolute inset-y-0" style={{ left: px(j) }}>
+                    <span aria-hidden className="absolute bottom-0 left-0 border-l" style={{ top: d.getMonth() === 0 ? 0 : 8, borderColor: d.getMonth() === 0 ? "var(--line-strong)" : "var(--line)" }} />
+                    <span className={cn("absolute left-2 top-2 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold", courant ? "bg-text text-surface" : "text-text-2")}>
+                      {echelle === "annee" ? MOIS[d.getMonth()] : MOIS_LONGS[d.getMonth()]}
+                      {d.getMonth() === 0 || echelle !== "annee" ? <span className={cn("ml-1 font-normal", courant ? "opacity-70" : "text-text-3")}>{d.getFullYear()}</span> : null}
+                    </span>
+                  </div>
+                );
+              })}
               <div aria-hidden className="absolute inset-x-0 border-b border-line" style={{ top: HAUT_AXE - 1 }} />
 
-              {/* Couloirs */}
+              {/* Événements : une bande pour la durée, une pastille flottante pour le titre */}
               {couloirs.map((c) => (
-                <div key={c.type} className="absolute inset-x-0 border-b border-line last:border-b-0" style={{ top: c.haut, height: c.hauteur }}>
+                <div key={c.type} className="absolute inset-x-0" style={{ top: c.haut, height: c.hauteur }}>
                   {c.places.map((p, i) => {
-                    const passe = finDe(p.e) < maintenant;
+                    const fin = finDe(p.e);
+                    const passe = fin < maintenant;
+                    const enCours = !passe && new Date(p.e.debut) <= maintenant;
                     const actif = choisi?.id === p.e.id;
+                    const haut = MARGE_COULOIR + p.rang * HAUT_RANG;
+                    const teinte = TYPES_AGENDA[p.e.type].couleur;
                     return (
-                      <button
+                      <div
                         key={p.e.id}
-                        type="button"
-                        onClick={() => setChoisi(actif ? null : p.e)}
-                        className="frise-evenement group absolute flex flex-col items-start text-left"
-                        style={{
-                          left: px(p.j0),
-                          top: MARGE_COULOIR + p.rang * HAUT_RANG,
-                          width: `max(12px, calc(var(--px) * ${p.espace} * 1px - 8px))`,
-                          animationDelay: `${Math.min(i, 12) * 35}ms`,
-                        }}
+                        className="frise-evenement absolute"
+                        style={{ left: px(p.j0), top: haut, width: `max(40px, ${px(p.duree)})`, animationDelay: `${Math.min(i, 12) * 35}ms` }}
                       >
+                        {/* La bande de durée n'apparaît que pour les événements de plusieurs jours */}
                         <span
                           aria-hidden
-                          className={cn("block h-2 origin-left rounded-full transition-colors", actif ? "bg-cta" : passe ? "bg-line-strong group-hover:bg-text-3" : "bg-nav group-hover:bg-text")}
-                          style={{ width: `max(8px, ${px(p.duree)})` }}
+                          className="absolute left-0 top-0 h-10 origin-left rounded-full transition-colors"
+                          style={{ width: p.duree >= 3 ? "100%" : 0, background: `color-mix(in srgb, ${teinte} ${actif ? 30 : passe ? 8 : 16}%, transparent)` }}
                         />
-                        <span className={cn("mt-2 block w-full truncate text-sm font-semibold", actif ? "text-cta-deep" : passe ? "text-text-3" : "text-text")}>{p.e.titre}</span>
-                        <span className="block w-full truncate text-xs text-text-3">
-                          {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(p.e.debut))}
-                          {p.e.lieu ? `, ${p.e.lieu}` : ""}
-                        </span>
-                      </button>
+                        {/* La pastille reste accrochée au bord gauche tant que l'événement est à l'écran */}
+                        <button
+                          type="button"
+                          onClick={() => setChoisi(actif ? null : p.e)}
+                          title={`${p.e.titre}, ${periode(p.e)}`}
+                          className={cn(
+                            "sticky left-2 top-1 mt-1 ml-1 flex h-8 w-max items-center gap-2 overflow-hidden whitespace-nowrap rounded-full border bg-surface pl-2 pr-3 text-left shadow-card transition-[box-shadow,transform,border-color] duration-200 hover:-translate-y-0.5 hover:shadow-lg",
+                            passe && !actif && "opacity-70",
+                          )}
+                          style={{ maxWidth: `max(32px, calc(var(--px) * ${p.espace} * 1px - 12px))`, borderColor: actif ? teinte : `color-mix(in srgb, ${teinte} 35%, var(--line))` }}
+                        >
+                          <span aria-hidden className="relative flex size-4 shrink-0 items-center justify-center">
+                            {enCours ? <span className="absolute inset-0 animate-ping rounded-full opacity-40" style={{ background: teinte }} /> : null}
+                            <span className="relative size-2 rounded-full" style={{ background: teinte }} />
+                          </span>
+                          <span className={cn("truncate text-sm font-semibold", passe && !actif ? "text-text-3" : "text-text")}>{p.e.titre}</span>
+                          {echelle !== "annee" ? <span className="shrink-0 text-xs text-text-3">{new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(p.e.debut))}</span> : null}
+                        </button>
+                      </div>
                     );
                   })}
                   {!c.places.length ? <span className="sr-only">Aucun événement</span> : null}
@@ -428,20 +469,22 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
 
               {/* Aujourd'hui */}
               {jAujourdhui >= 0 && jAujourdhui < total ? (
-                <div aria-hidden className="pointer-events-none absolute inset-y-0" style={{ left: px(jAujourdhui) }}>
-                  <span className="frise-aujourdhui absolute bottom-0 w-0.5 -translate-x-1/2 bg-cta" style={{ top: HAUT_AXE - 8 }} />
-                  <span className="absolute size-3 -translate-x-1/2 rounded-full bg-cta ring-4 ring-cta/20" style={{ top: HAUT_AXE - 14 }} />
+                <div aria-hidden className="pointer-events-none absolute inset-y-0 z-10" style={{ left: px(jAujourdhui) }}>
+                  <span className="frise-aujourdhui absolute bottom-0 w-0.5 -translate-x-1/2 rounded-full" style={{ top: HAUT_AXE - 4, background: "linear-gradient(180deg, var(--cta), color-mix(in srgb, var(--cta) 15%, transparent))" }} />
+                  <span className="absolute -translate-x-1/2 whitespace-nowrap rounded-full bg-cta px-2 py-0.5 text-xs font-semibold text-cta-text shadow-cta" style={{ top: HAUT_AXE - 14 }}>
+                    Aujourd’hui
+                  </span>
                 </div>
               ) : null}
             </div>
           </div>
         </div>
 
-        {/* Mini-carte des trois années */}
-        <div className="border-t border-line px-6 py-4">
+        {/* Mini-carte des années couvertes */}
+        <div className="border-t border-line bg-sunken/50 px-6 py-4">
           <div
             ref={carte}
-            className="relative h-10 cursor-pointer touch-none rounded-md bg-sunken"
+            className="relative h-12 cursor-pointer touch-none overflow-hidden rounded-md border border-line bg-surface"
             onPointerDown={(ev) => {
               ev.currentTarget.setPointerCapture(ev.pointerId);
               deplacerParCarte(ev.clientX);
@@ -461,11 +504,11 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
               if (ev.key === "ArrowRight") decaler(1);
             }}
           >
-            {[1, 2].map((a) => (
-              <span key={a} aria-hidden className="absolute inset-y-0 border-l border-line-strong" style={{ left: `${(a / 3) * 100}%` }} />
+            {Array.from({ length: ANNEES - 1 }, (_, k) => k + 1).map((a) => (
+              <span key={a} aria-hidden className="absolute inset-y-0 border-l border-line" style={{ left: `${(a / ANNEES) * 100}%` }} />
             ))}
-            {[0, 1, 2].map((a) => (
-              <span key={a} aria-hidden className="absolute bottom-1 text-xs font-semibold text-text-3" style={{ left: `calc(${(a / 3) * 100}% + 8px)` }}>
+            {Array.from({ length: ANNEES }, (_, k) => k).map((a) => (
+              <span key={a} aria-hidden className="absolute bottom-1 text-xs font-semibold text-text-3" style={{ left: `calc(${(a / ANNEES) * 100}% + 8px)` }}>
                 {origine.getFullYear() + a}
               </span>
             ))}
@@ -474,13 +517,19 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
                 <span
                   key={p.e.id}
                   aria-hidden
-                  className={cn("absolute h-1 rounded-full", choisi?.id === p.e.id ? "bg-cta" : "bg-text-3")}
-                  style={{ left: `${(p.j0 / total) * 100}%`, width: `max(2px, ${(p.duree / total) * 100}%)`, top: 4 + k * 4 }}
+                  className="absolute h-1 rounded-full"
+                  style={{
+                    left: `${(p.j0 / total) * 100}%`,
+                    width: `max(3px, ${(p.duree / total) * 100}%)`,
+                    top: 6 + k * 5,
+                    background: TYPES_AGENDA[p.e.type].couleur,
+                    opacity: finDe(p.e) < maintenant && choisi?.id !== p.e.id ? 0.45 : 1,
+                  }}
                 />
               )),
             )}
-            <span aria-hidden className="absolute inset-y-0 w-0.5 bg-cta" style={{ left: `${(jAujourdhui / total) * 100}%` }} />
-            <div ref={fenetreCarte} aria-hidden className="pointer-events-none absolute inset-y-0 rounded-md border-2 border-text bg-text/5" />
+            {jAujourdhui >= 0 && jAujourdhui < total ? <span aria-hidden className="absolute inset-y-0 w-0.5 bg-cta" style={{ left: `${(jAujourdhui / total) * 100}%` }} /> : null}
+            <div ref={fenetreCarte} aria-hidden className="pointer-events-none absolute inset-y-0 rounded-md border-2 border-text" style={{ background: "color-mix(in srgb, var(--text) 6%, transparent)" }} />
           </div>
           <p className="mt-2 text-xs text-text-3">Glissez la frise ou la fenêtre pour vous déplacer. Cliquez sur un événement pour le détail.</p>
         </div>
@@ -491,7 +540,10 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
         <aside className="fixed inset-x-4 bottom-4 z-30 mx-auto max-w-lg rounded-lg border border-line bg-surface shadow-lg sm:inset-x-auto sm:right-6">
           <div className="flex items-start gap-3 p-6">
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-text-3">{TYPES_AGENDA[choisi.type].label}</p>
+              <p className="flex items-center gap-2 text-xs font-semibold" style={{ color: TYPES_AGENDA[choisi.type].couleur }}>
+                <span aria-hidden className="size-2 rounded-full" style={{ background: TYPES_AGENDA[choisi.type].couleur }} />
+                {TYPES_AGENDA[choisi.type].label}
+              </p>
               <h3 className="mt-1 font-display text-lg font-semibold text-text">{choisi.titre}</h3>
               <p className="mt-1 text-sm text-text-2">{periode(choisi)}</p>
               {choisi.lieu ? (

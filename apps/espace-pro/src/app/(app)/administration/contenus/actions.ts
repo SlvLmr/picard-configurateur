@@ -9,17 +9,18 @@ export type Resultat = { ok: boolean; message: string };
 const vide = (s: string) => (s.trim() ? s.trim() : null);
 
 export async function publierAnnonce(f: {
-  titre: string; contenu: string; ton: string; lienLibelle: string; lienUrl: string; cible: Cible; debut: string; fin: string; epinglee: boolean;
+  titre: string; contenu: string; ton: string; lienLibelle: string; lienUrl: string; cible: Cible; debut: string; fin: string; epinglee: boolean; photos?: string[];
 }): Promise<Resultat> {
   const c = CIBLES[f.cible];
   const { error } = await supabaseServeur().rpc("ep_publier_annonce", {
     p_titre: f.titre, p_contenu: f.contenu, p_ton: f.ton, p_lien_libelle: vide(f.lienLibelle), p_lien_url: vide(f.lienUrl),
-    p_roles: c.roles, p_niveaux: c.niveaux, p_debut: f.debut || null, p_fin: f.fin || null, p_epinglee: f.epinglee,
+    p_roles: c.roles, p_niveaux: c.niveaux, p_debut: f.debut || null, p_fin: f.fin || null, p_epinglee: f.epinglee, p_photos: f.photos ?? [],
   });
   if (error) return { ok: false, message: error.message };
   revalidatePath("/administration/contenus");
   revalidatePath("/accueil");
-  return { ok: true, message: "Annonce publiée" };
+  revalidatePath("/news");
+  return { ok: true, message: "Message envoyé" };
 }
 
 export async function archiverAnnonce(id: string): Promise<Resultat> {

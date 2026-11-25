@@ -29,6 +29,10 @@ export type Annonce = {
   roles: RoleId[];
   niveaux: NiveauIAP[];
   archivee: boolean;
+  /** Photos jointes, avec un lien signé valable une heure */
+  photos: { chemin: string; url: string }[];
+  /** Date et heure d'envoi */
+  creeLe: string;
 };
 
 export type TypeAgenda = "salon" | "formation" | "operation" | "webinaire" | "reunion" | "visite" | "echeance";
@@ -57,12 +61,28 @@ export async function recapAccueil(): Promise<Recap> {
 
 type LigneAnnonce = {
   id: string; titre: string; contenu: string; ton: Annonce["ton"]; lien_libelle: string | null; lien_url: string | null;
-  epinglee: boolean; debut: string; fin: string | null; roles: RoleId[]; niveaux: NiveauIAP[]; archivee: boolean;
+  epinglee: boolean; debut: string; fin: string | null; roles: RoleId[]; niveaux: NiveauIAP[]; archivee: boolean; photos?: string[] | null; cree_le?: string;
 };
 const versAnnonce = (a: LigneAnnonce): Annonce => ({
   id: a.id, titre: a.titre, contenu: a.contenu, ton: a.ton, lienLibelle: a.lien_libelle, lienUrl: a.lien_url,
-  epinglee: a.epinglee, debut: a.debut, fin: a.fin, roles: a.roles, niveaux: a.niveaux, archivee: a.archivee,
+  epinglee: a.epinglee, debut: a.debut, fin: a.fin, roles: a.roles, niveaux: a.niveaux, archivee: a.archivee, photos: [], creeLe: a.cree_le ?? a.debut,
 });
+
+/** Ajoute aux annonces les liens signés de leurs photos (un seul appel au stockage). */
+async function avecPhotos(lignes: LigneAnnonce[]): Promise<Annonce[]> {
+  const chemins = lignes.flatMap((a) => a.photos ?? []);
+  const liens = new Map<string, string>();
+  if (chemins.length) {
+    const { data } = await supabaseServeur().storage.from("ep-annonces").createSignedUrls(chemins, 3600);
+    (data ?? []).forEach((d) => {
+      if (d.path && d.signedUrl) liens.set(d.path, d.signedUrl);
+    });
+  }
+  return lignes.map((a) => ({
+    ...versAnnonce(a),
+    photos: (a.photos ?? []).filter((c) => liens.has(c)).map((c) => ({ chemin: c, url: liens.get(c)! })),
+  }));
+}
 
 /** Annonces actives visibles par l'utilisateur, épinglées d'abord (3 au plus). */
 export async function annoncesAccueil(): Promise<Annonce[]> {
@@ -145,5 +165,5 @@ export async function annoncesActives(): Promise<Annonce[]> {
     .order("epinglee", { ascending: false })
     .order("debut", { ascending: false })
     .limit(50);
-  return ((data ?? []) as LigneAnnonce[]).map(versAnnonce);
+  return avecPhotos((data ?? []) as LigneAnnonce[]);
 }

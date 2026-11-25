@@ -4,13 +4,12 @@ import { LogOut, Menu, Moon, Search, Sun } from "lucide-react";
 import { seDeconnecter } from "@/app/connexion/actions";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
-import { Segmented } from "@/components/ui/segmented";
 import type { ProfilReel } from "@/lib/data/types";
 import { PERSONAS, ROLE_LABEL } from "@/lib/roles";
 import { useSession } from "@/lib/session";
 
 export function Topbar({ onMenu, onSearch, profil }: { onMenu: () => void; onSearch: () => void; profil: ProfilReel }) {
-  const { persona, setPersona, brand, setBrand, theme, setTheme } = useSession();
+  const { persona, setPersona, theme, setTheme } = useSession();
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
@@ -44,17 +43,6 @@ export function Topbar({ onMenu, onSearch, profil }: { onMenu: () => void; onSea
           />
           </>
           ) : null}
-          <div className="hidden xl:block">
-            <Segmented
-              label="Marque"
-              value={brand}
-              onChange={setBrand}
-              options={[
-                { value: "picard", label: "Picard" },
-                { value: "eliot", label: "Eliot" },
-              ]}
-            />
-          </div>
           <Button
             variant="ghost"
             iconOnly

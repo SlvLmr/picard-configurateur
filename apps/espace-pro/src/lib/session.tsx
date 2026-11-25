@@ -83,4 +83,4 @@ export function useSession() {
 }
 
 /** Script injecté avant le rendu pour éviter le flash de thème. */
-export const themeInitScript = `(function(){try{var d=document.documentElement;var t=localStorage.getItem('ep.theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.dataset.brand=localStorage.getItem('ep.brand')||'picard';}catch(e){}})();`;
+export const themeInitScript = `(function(){try{var d=document.documentElement;var t=localStorage.getItem('ep.theme');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.dataset.brand='picard';try{localStorage.removeItem('ep.brand')}catch(e){}}catch(e){}})();`;

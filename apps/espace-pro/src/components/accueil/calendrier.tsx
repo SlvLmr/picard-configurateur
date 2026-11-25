@@ -8,12 +8,13 @@ import { Panel, PanelHeader } from "@/components/ui/panel";
 import { cn } from "@/lib/cn";
 import type { ElementAgenda, TypeAgenda } from "@/lib/data/accueil";
 
+/** Code couleur des événements : une teinte par type, lisible en clair comme en sombre */
 export const TYPES_AGENDA: Record<TypeAgenda, { label: string; couleur: string }> = {
-  salon: { label: "Salon", couleur: "var(--cta)" },
-  formation: { label: "Formation", couleur: "var(--success)" },
-  webinaire: { label: "Webinaire", couleur: "var(--accent)" },
-  operation: { label: "Opération", couleur: "var(--warning)" },
-  reunion: { label: "Réunion", couleur: "var(--text-2)" },
+  salon: { label: "Salon", couleur: "#7c5cff" },
+  formation: { label: "Formation", couleur: "#0ea5a0" },
+  webinaire: { label: "Webinaire", couleur: "#3b82f6" },
+  operation: { label: "Opération", couleur: "#f2643d" },
+  reunion: { label: "Réunion", couleur: "#d9468f" },
   visite: { label: "Visite", couleur: "var(--bleu-400)" },
   echeance: { label: "Échéance", couleur: "var(--danger)" },
 };

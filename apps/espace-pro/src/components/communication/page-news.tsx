@@ -1,27 +1,31 @@
 "use client";
 
-import { BadgeCheck, CheckCheck, ChevronRight, Info, Megaphone, Pin, SendHorizontal, TriangleAlert } from "lucide-react";
+import { BadgeCheck, CheckCheck, ChevronDown, ImagePlus, Pin, SendHorizontal, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { publierAnnonce } from "@/app/(app)/administration/contenus/actions";
 import { SymboleEspacePro } from "@/components/marque/logo-espace-pro";
+import { useToast } from "@/components/ui/toast";
+import { CIBLES, type Cible } from "@/lib/cibles";
 import { cn } from "@/lib/cn";
 import type { Annonce } from "@/lib/data/accueil";
+import { supabaseNavigateur } from "@/lib/supabase/client";
+import { Visionneuse, type PhotoVisionneuse } from "./visionneuse";
 
 type Filtre = "toutes" | Annonce["ton"];
 
-/** Chaque type a sa nuance : couleur du libellé et teinte légère de la bulle */
-const STYLE = {
-  info: { icon: Info, couleur: "var(--accent)", fond: "color-mix(in srgb, var(--accent) 7%, var(--surface))", label: "Information" },
-  operation: { icon: Megaphone, couleur: "var(--cta-deep)", fond: "color-mix(in srgb, var(--cta) 12%, var(--surface))", label: "Opération" },
-  important: { icon: TriangleAlert, couleur: "var(--danger)", fond: "color-mix(in srgb, var(--danger) 7%, var(--surface))", label: "Important" },
+/** Nom coloré en tête de bulle, comme l'expéditeur dans un groupe */
+const TON = {
+  info: { label: "Information", couleur: "var(--wa-vert-fonce)" },
+  operation: { label: "Opération", couleur: "#e26b00" },
+  important: { label: "Important", couleur: "#ea0038" },
 } as const;
 
-/** Motif de fond façon messagerie : petites portes, clés et serrures en filigrane */
-const MOTIF =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='none' stroke='%231f5aa6' stroke-opacity='0.09' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 40V14h16v26M26 28h2'/%3E%3Ccircle cx='86' cy='24' r='6'/%3E%3Cpath d='M92 24h14M102 24v5M98 24v4'/%3E%3Cpath d='M30 92a8 8 0 1 1 16 0v6H30z'/%3E%3Cpath d='M34 92v-4a4 4 0 0 1 8 0v4'/%3E%3Cpath d='M78 78h20v26H78zM88 88v6'/%3E%3Cpath d='M56 54l4 4 8-8'/%3E%3C/svg%3E\")";
-
 const jour = (iso: string) => iso.slice(0, 10);
-const dateLongue = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
+const dateLongue = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" }).format(new Date(iso));
+const heure = (iso: string) => new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+const libellePhotos = (n: number) => (n > 1 ? `${n} photos` : "Photo");
 
 function libelleJour(iso: string) {
   const d = new Date(`${jour(iso)}T12:00:00`);
@@ -31,59 +35,251 @@ function libelleJour(iso: string) {
   if (ecart === 0) return "Aujourd’hui";
   if (ecart === 1) return "Hier";
   if (ecart > 1 && ecart < 7) return new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(d);
-  return new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" }).format(d);
+  return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(d);
 }
 
-function heure(iso: string) {
-  return iso.length > 10 ? new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(new Date(iso)) : null;
+/** Ce que la bulle affiche : le titre seulement s'il n'est pas déjà le début du message. */
+function texteDe(a: Annonce) {
+  const photosSeules = a.photos.length > 0 && a.contenu === a.titre && a.titre === libellePhotos(a.photos.length);
+  if (photosSeules) return { titre: null, contenu: null };
+  return { titre: a.contenu.startsWith(a.titre) ? null : a.titre, contenu: a.contenu };
 }
 
-/** Aperçu de lien intégré à la bulle, comme dans une messagerie. */
+/* ───────── Mosaïque de photos dans la bulle ───────── */
+function Mosaique({ a, onOuvrir, horodatage, onCharge }: { a: Annonce; onOuvrir: (i: number) => void; horodatage: React.ReactNode; onCharge: () => void }) {
+  const n = a.photos.length;
+  const visibles = a.photos.slice(0, 4);
+  return (
+    <div className={cn("relative grid gap-1 overflow-hidden rounded-md", n === 1 ? "grid-cols-1" : "grid-cols-2")}>
+      {visibles.map((p, i) => (
+        <button
+          key={p.chemin}
+          type="button"
+          onClick={() => onOuvrir(i)}
+          aria-label={`Ouvrir la photo ${i + 1}`}
+          className={cn("group relative block overflow-hidden bg-black/5", n === 1 ? "max-h-80" : "aspect-square", n === 3 && i === 0 && "col-span-2 aspect-[2/1]")}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={p.url} alt="" onLoad={onCharge} className="size-full object-cover transition-transform duration-300 group-hover:scale-105" />
+          {i === 3 && n > 4 ? <span className="absolute inset-0 flex items-center justify-center bg-black/50 font-display text-2xl font-semibold text-white">+{n - 4}</span> : null}
+        </button>
+      ))}
+      {horodatage ? (
+        <span className="pointer-events-none absolute bottom-0 right-0 flex items-center gap-1 rounded-tl-lg bg-gradient-to-tl from-black/50 to-transparent px-2 pb-1 pt-4 text-xs text-white">{horodatage}</span>
+      ) : null}
+    </div>
+  );
+}
+
+/* ───────── Aperçu de lien ───────── */
 function ApercuLien({ a }: { a: Annonce }) {
   if (!a.lienUrl) return null;
   const interne = a.lienUrl.startsWith("/");
+  const classe = "mb-1 flex items-center gap-3 rounded-md bg-[color-mix(in_srgb,var(--wa-texte)_6%,transparent)] p-2 transition-colors hover:bg-[color-mix(in_srgb,var(--wa-texte)_10%,transparent)]";
   const contenu = (
     <>
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-surface">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-nav">
         <SymboleEspacePro className="size-6" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold text-text">{a.lienLibelle ?? "En savoir plus"}</span>
-        <span className="block truncate text-xs text-text-3">{interne ? "Espace Pro" : a.lienUrl.replace(/^https?:\/\//, "").split("/")[0]}</span>
+        <span className="block truncate text-sm font-semibold text-[var(--wa-texte)]">{a.lienLibelle ?? "En savoir plus"}</span>
+        <span className="block truncate text-xs text-[var(--wa-texte-2)]">{interne ? "espace-pro" : a.lienUrl.replace(/^https?:\/\//, "").split("/")[0]}</span>
       </span>
-      <ChevronRight aria-hidden className="size-4 shrink-0 text-text-3 transition-transform group-hover/lien:translate-x-0.5" />
     </>
   );
-  const classe = "group/lien mt-3 flex items-center gap-3 rounded-md border-l-4 bg-sunken p-2 pr-3 transition-colors hover:bg-[color-mix(in_srgb,var(--accent)_8%,var(--surface-sunken))]";
   return interne ? (
-    <Link href={a.lienUrl} className={classe} style={{ borderLeftColor: STYLE[a.ton].couleur }}>
+    <Link href={a.lienUrl} className={classe}>
       {contenu}
     </Link>
   ) : (
-    <a href={a.lienUrl} target="_blank" rel="noreferrer" className={classe} style={{ borderLeftColor: STYLE[a.ton].couleur }}>
+    <a href={a.lienUrl} target="_blank" rel="noreferrer" className={classe}>
       {contenu}
     </a>
   );
 }
 
-/** Actualités du réseau, présentées comme un canal de messagerie de Picard Serrures. */
+/* ───────── Zone d'écriture (administrateur) ───────── */
+function Composeur() {
+  const toast = useToast();
+  const router = useRouter();
+  const [texte, setTexte] = useState("");
+  const [fichiers, setFichiers] = useState<{ f: File; url: string }[]>([]);
+  const [ton, setTon] = useState<Annonce["ton"]>("info");
+  const [cible, setCible] = useState<Cible>("tous");
+  const [epinglee, setEpinglee] = useState(false);
+  const [envoi, setEnvoi] = useState(false);
+  const champ = useRef<HTMLTextAreaElement>(null);
+  const selecteur = useRef<HTMLInputElement>(null);
+  const actif = texte.trim().length > 0 || fichiers.length > 0;
+
+  useEffect(() => {
+    const t = champ.current;
+    if (!t) return;
+    t.style.height = "auto";
+    t.style.height = `${Math.min(t.scrollHeight, 160)}px`;
+  }, [texte]);
+  useEffect(() => () => fichiers.forEach((x) => URL.revokeObjectURL(x.url)), [fichiers]);
+
+  const ajouter = (liste: FileList | null) => {
+    if (!liste) return;
+    const images = Array.from(liste).filter((f) => f.type.startsWith("image/"));
+    const trop = images.filter((f) => f.size > 15 * 1024 * 1024);
+    if (trop.length) toast("Une photo dépasse 15 Mo, elle n’a pas été ajoutée.");
+    setFichiers((l) => [...l, ...images.filter((f) => f.size <= 15 * 1024 * 1024).map((f) => ({ f, url: URL.createObjectURL(f) }))].slice(0, 10));
+  };
+
+  const envoyer = async () => {
+    if (!actif || envoi) return;
+    setEnvoi(true);
+    const supabase = supabaseNavigateur();
+    const chemins: string[] = [];
+    for (let i = 0; i < fichiers.length; i++) {
+      const f = fichiers[i].f;
+      const ext = (f.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const chemin = `${new Date().getFullYear()}/${Date.now()}-${i}.${ext || "jpg"}`;
+      const { error } = await supabase.storage.from("ep-annonces").upload(chemin, f, { contentType: f.type, upsert: false });
+      if (error) {
+        if (chemins.length) await supabase.storage.from("ep-annonces").remove(chemins);
+        setEnvoi(false);
+        return toast("L’envoi d’une photo a échoué. Réessayez.");
+      }
+      chemins.push(chemin);
+    }
+    const propre = texte.trim();
+    const titre = propre ? propre.split("\n")[0].slice(0, 120) : libellePhotos(chemins.length);
+    const res = await publierAnnonce({ titre, contenu: propre || titre, ton, lienLibelle: "", lienUrl: "", cible, debut: "", fin: "", epinglee, photos: chemins });
+    if (!res.ok && chemins.length) await supabase.storage.from("ep-annonces").remove(chemins);
+    setEnvoi(false);
+    toast(res.message);
+    if (res.ok) {
+      setTexte("");
+      setFichiers([]);
+      setEpinglee(false);
+      router.refresh();
+    }
+  };
+
+  return (
+    <footer className="border-t border-[var(--wa-ligne)] bg-[var(--wa-barre)]">
+      {actif ? (
+        <div className="flex flex-col gap-3 px-3 pt-3 sm:px-4">
+          {fichiers.length ? (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {fichiers.map((x, i) => (
+                <span key={x.url} className="relative size-20 shrink-0 overflow-hidden rounded-md shadow-[var(--wa-ombre)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={x.url} alt="" className="size-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setFichiers((l) => l.filter((_, k) => k !== i))}
+                    aria-label="Retirer la photo"
+                    className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          ) : null}
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            {(Object.keys(TON) as Annonce["ton"][]).map((t) => (
+              <button
+                key={t}
+                type="button"
+                aria-pressed={ton === t}
+                onClick={() => setTon(t)}
+                className={cn("h-8 rounded-full px-3 font-medium transition-colors", ton === t ? "bg-[var(--wa-vert-pale)] text-[var(--wa-vert-fonce)]" : "bg-[var(--wa-bulle)] text-[var(--wa-texte-2)] hover:text-[var(--wa-texte)]")}
+              >
+                {TON[t].label}
+              </button>
+            ))}
+            <select
+              aria-label="Destinataires"
+              value={cible}
+              onChange={(e) => setCible(e.target.value as Cible)}
+              className="h-8 rounded-full border-0 bg-[var(--wa-bulle)] px-3 text-xs font-medium text-[var(--wa-texte)] focus:outline-none focus:ring-2 focus:ring-[var(--wa-vert)]"
+            >
+              {(Object.keys(CIBLES) as Cible[]).map((c) => (
+                <option key={c} value={c}>
+                  {CIBLES[c].label}
+                </option>
+              ))}
+            </select>
+            <label className="ml-auto flex h-8 cursor-pointer items-center gap-2 font-medium text-[var(--wa-texte-2)]">
+              <input type="checkbox" checked={epinglee} onChange={(e) => setEpinglee(e.target.checked)} className="accent-[var(--wa-vert)]" />
+              Épingler
+            </label>
+          </div>
+        </div>
+      ) : null}
+      <div className="flex items-end gap-2 px-3 py-3 sm:px-4">
+        <input ref={selecteur} type="file" accept="image/*" multiple hidden onChange={(e) => {
+          ajouter(e.target.files);
+          e.target.value = "";
+        }} />
+        <button type="button" onClick={() => selecteur.current?.click()} aria-label="Joindre des photos" title="Joindre des photos" className="flex size-10 shrink-0 items-center justify-center rounded-full text-[var(--wa-icone)] transition-colors hover:bg-[color-mix(in_srgb,var(--wa-texte)_8%,transparent)]">
+          <ImagePlus className="size-6" />
+        </button>
+        <textarea
+          ref={champ}
+          rows={1}
+          value={texte}
+          onChange={(e) => setTexte(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              envoyer();
+            }
+          }}
+          onPaste={(e) => {
+            if (e.clipboardData.files.length) {
+              e.preventDefault();
+              ajouter(e.clipboardData.files);
+            }
+          }}
+          placeholder="Écrire au réseau"
+          aria-label="Message au réseau"
+          className="min-h-10 flex-1 resize-none rounded-lg border-0 bg-[var(--wa-bulle)] px-4 py-2 text-base leading-6 text-[var(--wa-texte)] placeholder:text-[var(--wa-texte-2)] focus:outline-none"
+        />
+        <button
+          type="button"
+          onClick={envoyer}
+          disabled={!actif || envoi}
+          aria-label="Envoyer"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--wa-vert)] text-white transition-[transform,opacity] hover:scale-105 disabled:scale-100 disabled:opacity-40"
+        >
+          <SendHorizontal className={cn("size-5", envoi && "animate-pulse")} />
+        </button>
+      </div>
+    </footer>
+  );
+}
+
+/** Messages du réseau : la chaîne officielle de Picard Serrures, façon messagerie. */
 export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: boolean }) {
   const [filtre, setFiltre] = useState<Filtre>("toutes");
   const [surbrillance, setSurbrillance] = useState<string | null>(null);
+  const [visionneuse, setVisionneuse] = useState<{ photos: PhotoVisionneuse[]; depart: number } | null>(null);
+  const [enBas, setEnBas] = useState(true);
   const filRef = useRef<HTMLDivElement>(null);
 
   // Ordre chronologique, la plus récente en bas, comme une conversation
   const liste = useMemo(
-    () => (filtre === "toutes" ? annonces : annonces.filter((a) => a.ton === filtre)).slice().sort((a, b) => a.debut.localeCompare(b.debut)),
+    () =>
+      (filtre === "toutes" ? annonces : annonces.filter((a) => a.ton === filtre))
+        .slice()
+        .sort((a, b) => a.debut.localeCompare(b.debut) || a.creeLe.localeCompare(b.creeLe)),
     [annonces, filtre],
   );
   const epinglee = annonces.find((a) => a.epinglee) ?? null;
   const compte = (t: Annonce["ton"]) => annonces.filter((a) => a.ton === t).length;
+  const nbPhotos = annonces.reduce((s, a) => s + a.photos.length, 0);
 
-  useEffect(() => {
+  const descendre = (comportement: ScrollBehavior = "smooth") => {
     const f = filRef.current;
-    if (f) f.scrollTo({ top: f.scrollHeight, behavior: "instant" as ScrollBehavior });
-  }, [filtre]);
+    if (f) f.scrollTo({ top: f.scrollHeight, behavior: comportement });
+  };
+  useEffect(() => descendre("instant" as ScrollBehavior), [filtre, annonces.length]);
 
   const allerA = (id: string) => {
     setFiltre("toutes");
@@ -102,25 +298,28 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
   }
 
   return (
-    <div className="-mx-4 -my-8 flex h-[calc(100dvh-72px)] min-h-[560px] flex-col overflow-hidden border-x border-line bg-surface sm:-mx-8 sm:-my-12">
+    <div className="wa -mx-4 -my-8 flex h-[calc(100dvh-72px)] min-h-[560px] flex-col overflow-hidden sm:-mx-8 sm:-my-12">
       {/* En-tête du canal */}
-      <header className="flex flex-col gap-3 border-b border-line bg-nav-gradient px-4 py-3 text-white sm:px-6">
+      <header className="flex flex-col gap-3 border-b border-[var(--wa-ligne)] bg-[var(--wa-barre)] px-4 pb-3 pt-3 sm:px-6">
         <div className="flex items-center gap-3">
-          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
-            <SymboleEspacePro className="size-8" />
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-nav">
+            <SymboleEspacePro className="size-6" />
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="flex items-center gap-1 font-display text-lg font-semibold">
+            <h1 className="flex items-center gap-1 text-base font-semibold text-[var(--wa-texte)]">
               Picard Serrures
-              <BadgeCheck aria-label="Canal officiel" className="size-4 text-cta" />
+              <BadgeCheck aria-label="Chaîne officielle" className="size-4 fill-[var(--wa-vert)] text-[var(--wa-barre)]" />
             </h1>
-            <p className="truncate text-xs text-nav-muted">Chaîne officielle du réseau, {annonces.length} annonce{annonces.length > 1 ? "s" : ""}</p>
+            <p className="truncate text-sm text-[var(--wa-texte-2)]">
+              Chaîne officielle du réseau, {annonces.length} message{annonces.length > 1 ? "s" : ""}
+              {nbPhotos ? `, ${nbPhotos} photo${nbPhotos > 1 ? "s" : ""}` : ""}
+            </p>
           </div>
         </div>
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="group" aria-label="Filtrer les actualités">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1" role="group" aria-label="Filtrer les messages">
           {(
             [
-              ["toutes", "Toutes", annonces.length],
+              ["toutes", "Tous", annonces.length],
               ["operation", "Opérations", compte("operation")],
               ["important", "Important", compte("important")],
               ["info", "Informations", compte("info")],
@@ -133,11 +332,11 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
               onClick={() => setFiltre(v)}
               className={cn(
                 "inline-flex h-8 shrink-0 items-center gap-2 rounded-full px-3 text-sm font-medium transition-colors",
-                filtre === v ? "bg-white text-[#0b2545]" : "bg-white/10 text-white hover:bg-white/20",
+                filtre === v ? "bg-[var(--wa-vert-pale)] text-[var(--wa-vert-fonce)]" : "bg-[var(--wa-bulle)] text-[var(--wa-texte-2)] hover:text-[var(--wa-texte)]",
               )}
             >
               {l}
-              <span className={cn("tabular text-xs", filtre === v ? "text-[#0b2545]/60" : "text-white/60")}>{n}</span>
+              <span className="tabular text-xs opacity-70">{n}</span>
             </button>
           ))}
         </div>
@@ -145,93 +344,124 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
 
       {/* Message épinglé */}
       {epinglee ? (
-        <button type="button" onClick={() => allerA(epinglee.id)} className="flex items-center gap-3 border-b border-line bg-surface px-4 py-2 text-left transition-colors hover:bg-sunken sm:px-6">
-          <span className="h-8 w-1 shrink-0 rounded-full bg-cta" aria-hidden />
-          <Pin aria-hidden className="size-4 shrink-0 text-cta-deep" />
+        <button type="button" onClick={() => allerA(epinglee.id)} className="flex items-center gap-3 border-b border-[var(--wa-ligne)] bg-[var(--wa-bulle)] px-4 py-2 text-left sm:px-6">
+          <Pin aria-hidden className="size-4 shrink-0 rotate-45 text-[var(--wa-icone)]" />
           <span className="min-w-0 flex-1">
-            <span className="block text-xs font-semibold text-cta-deep">Message épinglé</span>
-            <span className="block truncate text-sm text-text">{epinglee.titre}</span>
+            <span className="block text-xs font-semibold text-[var(--wa-vert-fonce)]">Message épinglé</span>
+            <span className="block truncate text-sm text-[var(--wa-texte)]">{epinglee.titre}</span>
           </span>
         </button>
       ) : null}
 
-      {/* Fil */}
-      <div
-        ref={filRef}
-        className="scroll-nav flex-1 overflow-y-auto px-3 py-6 sm:px-6"
-        style={{ backgroundColor: "color-mix(in srgb, var(--cta) 6%, var(--surface-sunken))", backgroundImage: MOTIF, backgroundSize: "120px 120px" }}
-      >
-        {liste.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <p className="rounded-full bg-surface px-4 py-2 text-sm text-text-2 shadow-card">Aucune annonce dans cette catégorie pour le moment.</p>
-          </div>
-        ) : (
-          <ol className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-            {groupes.map((g) => (
-              <li key={g.jour} className="flex flex-col gap-2">
-                <p className="sticky top-0 z-10 mx-auto rounded-full bg-surface/95 px-3 py-1 text-xs font-medium capitalize text-text-2 shadow-card backdrop-blur">{libelleJour(g.jour)}</p>
-                <ul className="flex flex-col gap-2">
-                  {g.annonces.map((a, i) => {
-                    const s = STYLE[a.ton];
-                    const Icone = s.icon;
-                    const premier = i === 0;
-                    return (
-                      <li key={a.id} id={`annonce-${a.id}`} className="bulle-entree flex items-end gap-2" style={{ animationDelay: `${Math.min(i, 6) * 60}ms` }}>
-                        <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0b2545]", !premier && "invisible")} aria-hidden>
-                          <SymboleEspacePro className="size-5" />
-                        </span>
-                        <article
-                          className={cn(
-                            "relative max-w-[min(640px,85%)] rounded-lg px-4 pb-2 pt-3 shadow-[0_1px_1px_rgba(11,37,69,0.12)] transition-shadow duration-500",
-                            premier && "rounded-bl-sm",
-                            surbrillance === a.id && "ring-2 ring-cta",
-                          )}
-                          style={{ background: s.fond }}
-                        >
-                          {premier ? <span aria-hidden className="absolute -left-1 bottom-0 size-3 [clip-path:polygon(100%_0,100%_100%,0_100%)]" style={{ background: s.fond }} /> : null}
-                          <p className="flex flex-wrap items-center gap-2 text-xs font-semibold" style={{ color: s.couleur }}>
-                            <Icone aria-hidden className="size-4" />
-                            {s.label}
-                            {a.epinglee ? (
-                              <span className="inline-flex items-center gap-1 font-medium text-cta-deep">
-                                <Pin aria-hidden className="size-3" />
-                                Épinglé
-                              </span>
-                            ) : null}
-                          </p>
-                          <h2 className="mt-1 text-base font-semibold text-text">{a.titre}</h2>
-                          <p className="mt-1 whitespace-pre-line text-sm leading-6 text-text">{a.contenu}</p>
-                          <ApercuLien a={a} />
-                          <p className="mt-2 flex flex-wrap items-center justify-end gap-x-2 gap-y-1 text-xs text-text-3">
-                            {a.fin ? <span className="mr-auto">Valable jusqu’au {dateLongue(a.fin)}</span> : null}
-                            <span className="tabular">{heure(a.debut) ?? new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(a.debut))}</span>
-                            <CheckCheck aria-label="Publié" className="size-4 text-accent" />
-                          </p>
-                        </article>
-                      </li>
-                    );
-                  })}
-                </ul>
+      {/* Fil, sur le papier peint */}
+      <div className="wa-fond min-h-0 flex-1">
+        <div
+          ref={filRef}
+          onScroll={(e) => {
+            const f = e.currentTarget;
+            setEnBas(f.scrollHeight - f.scrollTop - f.clientHeight < 120);
+          }}
+          className="scroll-nav absolute inset-0 overflow-y-auto px-3 py-4 sm:px-16"
+        >
+          {liste.length === 0 ? (
+            <div className="flex h-full items-center justify-center">
+              <p className="rounded-lg bg-[var(--wa-bulle)] px-4 py-2 text-sm text-[var(--wa-texte-2)] shadow-[var(--wa-ombre)]">Aucun message dans cette catégorie pour le moment.</p>
+            </div>
+          ) : (
+            <ol className="mx-auto flex w-full max-w-4xl flex-col gap-4">
+              <li className="mx-auto max-w-md rounded-lg bg-[#ffeecd] px-3 py-2 text-center text-xs text-[#54656f] shadow-[var(--wa-ombre)] [[data-theme=dark]_&]:bg-[#182229] [[data-theme=dark]_&]:text-[#ffd279]">
+                Chaîne officielle de Picard Serrures. Seule l’équipe Picard publie ici ; vous recevez les messages en lecture.
               </li>
-            ))}
-          </ol>
-        )}
+              {groupes.map((g) => (
+                <li key={g.jour} className="flex flex-col gap-1">
+                  <p className="sticky top-0 z-10 mx-auto mb-2 rounded-lg bg-[var(--wa-bulle)] px-3 py-1 text-xs font-medium text-[var(--wa-texte-2)] shadow-[var(--wa-ombre)]">{libelleJour(g.jour).replace(/^./, (c) => c.toLocaleUpperCase("fr-FR"))}</p>
+                  <ul className="flex flex-col gap-1">
+                    {g.annonces.map((a, i) => {
+                      const premier = i === 0;
+                      const { titre, contenu } = texteDe(a);
+                      const memeJour = jour(a.creeLe) === jour(a.debut);
+                      const horodatage = (
+                        <>
+                          <span className="tabular">{memeJour ? heure(a.creeLe) : dateLongue(a.debut)}</span>
+                          <CheckCheck aria-label="Distribué" className="size-4 text-[var(--wa-bleu)]" />
+                        </>
+                      );
+                      const sansTexte = !titre && !contenu && !a.lienUrl;
+                      return (
+                        <li key={a.id} id={`annonce-${a.id}`} className={cn("bulle-entree flex", premier ? "mt-2" : "")} style={{ animationDelay: `${Math.min(i, 6) * 50}ms` }}>
+                          <article
+                            className={cn(
+                              "relative rounded-lg bg-[var(--wa-bulle)] p-1 shadow-[var(--wa-ombre)] transition-shadow duration-500",
+                              a.photos.length ? "w-[min(340px,88%)]" : "max-w-[min(560px,88%)] sm:max-w-[65%]",
+                              premier && "rounded-tl-none",
+                              surbrillance === a.id && "ring-2 ring-[var(--wa-vert)]",
+                            )}
+                          >
+                            {premier ? <span aria-hidden className="absolute -left-2 top-0 h-3 w-2 bg-[var(--wa-bulle)] [clip-path:polygon(0_0,100%_0,100%_100%)]" /> : null}
+                            {premier || a.ton !== "info" || a.epinglee ? (
+                              <p className="flex items-center gap-2 px-2 pt-1 text-sm font-semibold" style={{ color: TON[a.ton].couleur }}>
+                                {premier ? "Picard Serrures" : TON[a.ton].label}
+                                {premier && a.ton !== "info" ? <span className="text-xs font-medium opacity-80">{TON[a.ton].label}</span> : null}
+                                {a.epinglee ? <Pin aria-label="Épinglé" className="size-3 rotate-45 text-[var(--wa-icone)]" /> : null}
+                              </p>
+                            ) : null}
+                            {a.photos.length ? (
+                              <div className={cn(premier || a.ton !== "info" || a.epinglee ? "mt-1" : "")}>
+                                <Mosaique
+                                  a={a}
+                                  horodatage={sansTexte ? horodatage : null}
+                                  onCharge={() => {
+                                    if (enBas) descendre("instant" as ScrollBehavior);
+                                  }}
+                                  onOuvrir={(k) =>
+                                    setVisionneuse({
+                                      depart: k,
+                                      photos: a.photos.map((p) => ({ url: p.url, legende: contenu ?? "", date: a.creeLe })),
+                                    })
+                                  }
+                                />
+                              </div>
+                            ) : null}
+                            {!sansTexte ? (
+                              <div className="px-2 pb-1 pt-1">
+                                {titre ? <h2 className="text-sm font-semibold text-[var(--wa-texte)]">{titre}</h2> : null}
+                                {a.lienUrl ? <div className="mt-1"><ApercuLien a={a} /></div> : null}
+                                {contenu ? (
+                                  <p className="whitespace-pre-line break-words text-sm leading-6 text-[var(--wa-texte)]">
+                                    {contenu}
+                                    {/* Réserve la place de l'heure en fin de ligne, comme dans une messagerie */}
+                                    <span aria-hidden className="inline-block w-20" />
+                                  </p>
+                                ) : null}
+                                {a.fin ? <p className="text-xs italic text-[var(--wa-texte-2)]">Valable jusqu’au {dateLongue(a.fin)}</p> : null}
+                                <span className="float-right -mt-5 ml-2 flex items-center gap-1 text-xs text-[var(--wa-texte-2)]">{horodatage}</span>
+                              </div>
+                            ) : null}
+                          </article>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+        {!enBas ? (
+          <button
+            type="button"
+            onClick={() => descendre()}
+            aria-label="Aller au dernier message"
+            className="absolute bottom-4 right-4 flex size-10 items-center justify-center rounded-full bg-[var(--wa-bulle)] text-[var(--wa-icone)] shadow-lg transition-transform hover:scale-105"
+          >
+            <ChevronDown className="size-6" />
+          </button>
+        ) : null}
       </div>
 
-      {/* Publication (administrateur) : les autres lisent, la chaîne est en lecture seule */}
-      {admin ? (
-        <footer className="border-t border-line bg-surface px-3 py-3 sm:px-4">
-          <Link href="/administration/contenus" className="group mx-auto flex max-w-4xl items-center gap-2">
-            <span className="flex h-10 flex-1 items-center rounded-full border border-line-strong bg-sunken px-4 text-sm text-text-3 transition-colors group-hover:border-accent">
-              Écrire une annonce au réseau…
-            </span>
-            <span className="flex size-10 items-center justify-center rounded-full bg-cta text-cta-text shadow-cta transition-transform group-hover:scale-105" aria-hidden>
-              <SendHorizontal className="size-4" />
-            </span>
-            <span className="sr-only">Publier une annonce</span>
-          </Link>
-        </footer>
-      ) : null}
+      {admin ? <Composeur /> : null}
+
+      {visionneuse ? <Visionneuse photos={visionneuse.photos} depart={visionneuse.depart} onFermer={() => setVisionneuse(null)} /> : null}
     </div>
   );
 }

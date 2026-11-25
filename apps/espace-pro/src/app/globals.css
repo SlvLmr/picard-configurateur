@@ -853,3 +853,62 @@ select { background-position: right 12px center; }
     animation: none;
   }
 }
+
+/* Messages : palette de messagerie, claire et sombre */
+.wa {
+  --wa-fond: #efeae2;
+  --wa-motif: rgba(106, 86, 58, 0.17);
+  --wa-barre: #f0f2f5;
+  --wa-bulle: #ffffff;
+  --wa-texte: #111b21;
+  --wa-texte-2: #667781;
+  --wa-icone: #54656f;
+  --wa-vert: #00a884;
+  --wa-vert-fonce: #008069;
+  --wa-vert-pale: #d9fdd3;
+  --wa-bleu: #53bdeb;
+  --wa-lien: #027eb5;
+  --wa-ombre: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+  --wa-ligne: #e9edef;
+}
+[data-theme="dark"] .wa {
+  --wa-fond: #0b141a;
+  --wa-motif: rgba(255, 255, 255, 0.06);
+  --wa-barre: #202c33;
+  --wa-bulle: #202c33;
+  --wa-texte: #e9edef;
+  --wa-texte-2: #8696a0;
+  --wa-icone: #aebac1;
+  --wa-vert-pale: #005c4b;
+  --wa-lien: #53bdeb;
+  --wa-ligne: #222d34;
+}
+.wa-fond {
+  background-color: var(--wa-fond);
+  position: relative;
+  isolation: isolate;
+}
+.wa-fond::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--wa-motif);
+  -webkit-mask: url("/motifs/messages.svg") 0 0 / 400px 400px repeat;
+  mask: url("/motifs/messages.svg") 0 0 / 400px 400px repeat;
+  pointer-events: none;
+}
+.wa-visionneuse-image {
+  animation: wa-visionneuse 0.28s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes wa-visionneuse {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wa-visionneuse-image {
+    animation: none;
+  }
+}
