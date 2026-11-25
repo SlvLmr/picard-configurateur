@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, CalendarDays, MapPin, Check, CheckCheck, Coins, Download, FolderOpen, Inbox, MessageCircle, Ruler, Timer, type LucideIcon } from "lucide-react";
+import { BadgeCheck, CalendarDays, LifeBuoy, MapPin, Phone, Send, Check, CheckCheck, Coins, Download, FolderOpen, Inbox, MessageCircle, Ruler, Timer, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { accepterLead } from "@/app/(app)/leads/actions";
@@ -75,7 +75,34 @@ function Vide({ children }: { children: React.ReactNode }) {
 }
 
 /* ───────── Tâches : les leads à accepter en tête, puis le reste ───────── */
-type Tache = { id: string; titre: string; detail: string; href: string; lead?: LeadPro; urgent: boolean };
+type Genre = "accepter" | "sav" | "appeler" | "relancer";
+type Tache = { id: string; genre: Genre; titre: string; detail: string; lieu: string | null; href: string; telephone?: string | null; lead?: LeadPro; urgent: boolean };
+
+/** Villes saisies en capitales : « HAY-LES-ROSES » devient « Hay-les-Roses » */
+const PETITS_MOTS = new Set(["le", "la", "les", "de", "du", "des", "sur", "en", "et", "sous", "lès"]);
+function joliNom(v: string | null) {
+  if (!v) return null;
+  if (v !== v.toUpperCase()) return v;
+  return v
+    .toLowerCase()
+    .split(/([\s-])/)
+    .map((m, i) => (i > 0 && PETITS_MOTS.has(m) ? m : m.charAt(0).toUpperCase() + m.slice(1)))
+    .join("");
+}
+const initiales = (nom: string | null) =>
+  (nom ?? "?")
+    .replace(/^(M\.|Mme|Mlle|Monsieur|Madame)\s+/i, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((m) => m.charAt(0).toUpperCase())
+    .join("") || "?";
+
+const GENRES: Record<Exclude<Genre, "accepter">, { groupe: string; etiquette: string; action: string; icone: LucideIcon; fond: string; texte: string }> = {
+  sav: { groupe: "SAV à compléter", etiquette: "Réponse attendue", action: "Répondre", icone: LifeBuoy, fond: "var(--success-soft)", texte: "var(--success)" },
+  appeler: { groupe: "Clients à appeler", etiquette: "À appeler", action: "Appeler", icone: Phone, fond: "var(--accent-soft)", texte: "var(--accent-strong)" },
+  relancer: { groupe: "Devis à relancer", etiquette: "Devis envoyé", action: "Relancer", icone: Send, fond: "var(--warning-soft)", texte: "var(--warning)" },
+};
 
 /** Un lead à accepter : compte à rebours circulaire, projet, lieu, message et actions. */
 function CarteLead({ l, apercu }: { l: LeadPro; apercu: boolean }) {
@@ -139,24 +166,56 @@ function CarteLead({ l, apercu }: { l: LeadPro; apercu: boolean }) {
   );
 }
 
-/** Une tâche à cocher : SAV à compléter, client à appeler, devis à relancer. */
-function LigneTache({ t, fait, basculer }: { t: Tache; fait: boolean; basculer: () => void }) {
+/** Une tâche de suivi : avatar, étiquette, lieu, action directe et case « fait ». */
+function LigneSuivi({ t, fait, basculer }: { t: Tache; fait: boolean; basculer: () => void }) {
+  const g = GENRES[t.genre as Exclude<Genre, "accepter">];
+  const Icone = g.icone;
+  const telephone = t.genre === "appeler" && t.telephone ? `tel:${t.telephone.replace(/\s/g, "")}` : null;
   return (
-    <li className="flex items-center gap-3 py-3">
+    <li className={cn("group flex items-center gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-sunken", fait && "opacity-60")}>
+      <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold" style={{ background: g.fond, color: g.texte }}>
+        {t.genre === "sav" ? <LifeBuoy className="size-5" /> : initiales(t.titre)}
+      </span>
+      <Link href={t.href} className="min-w-0 flex-1">
+        <span className="flex min-w-0 items-center gap-2">
+          <span className={cn("truncate text-sm font-semibold", fait ? "text-text-3 line-through" : "text-text")}>{t.titre}</span>
+          <span className="hidden shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold sm:inline" style={{ background: g.fond, color: g.texte }}>
+            {g.etiquette}
+          </span>
+        </span>
+        <span className="mt-0.5 flex min-w-0 items-center gap-1 text-sm text-text-3">
+          <span className="truncate">{t.detail}</span>
+          {t.lieu ? (
+            <>
+              <MapPin aria-hidden className="ml-1 size-3 shrink-0" />
+              <span className="shrink-0">{t.lieu}</span>
+            </>
+          ) : null}
+        </span>
+      </Link>
+      {!fait ? (
+        telephone ? (
+          <a href={telephone} className="inline-flex h-8 shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-3 text-xs font-semibold text-text-2 transition-colors hover:border-line-strong hover:text-text">
+            <Icone aria-hidden className="size-4" />
+            {g.action}
+          </a>
+        ) : (
+          <Link href={t.href} className="inline-flex h-8 shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-3 text-xs font-semibold text-text-2 transition-colors hover:border-line-strong hover:text-text">
+            <Icone aria-hidden className="size-4" />
+            {g.action}
+          </Link>
+        )
+      ) : null}
       <button
         type="button"
         onClick={basculer}
         aria-pressed={fait}
         aria-label={fait ? "Marquer comme à faire" : "Marquer comme fait"}
-        className={cn("flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors", fait ? "border-text bg-text text-surface" : t.urgent ? "border-cta" : "border-line-strong hover:border-text-2")}
+        title={fait ? "Marquer comme à faire" : "Marquer comme fait"}
+        className={cn("flex size-8 shrink-0 items-center justify-center rounded-full border transition-colors", fait ? "border-text bg-text text-surface" : "border-line text-text-3 hover:border-success hover:text-success")}
       >
-        {fait ? <Check aria-hidden className="size-3" /> : null}
+        <Check aria-hidden className="size-4" />
       </button>
-      <Link href={t.href} className="min-w-0 flex-1">
-        <span className={cn("block truncate text-sm font-semibold hover:underline", fait ? "text-text-3 line-through" : "text-text")}>{t.titre}</span>
-        <span className="block truncate text-sm text-text-3">{t.detail}</span>
-      </Link>
-      {t.urgent && !fait ? <span className="shrink-0 rounded-full bg-cta-soft px-2 py-0.5 text-xs font-semibold text-cta-deep">Attendu</span> : null}
     </li>
   );
 }
@@ -228,15 +287,15 @@ export function AccueilClient({
   /* Une seule liste de tâches : rien n'est répété ailleurs sur la page */
   const taches = useMemo(() => {
     const t: Tache[] = [];
-    aAccepter.forEach((l) => t.push({ id: `accepter-${l.id}`, titre: `Nouveau lead : ${l.projet}`, detail: [l.ville, l.message ? `« ${l.message} »` : null].filter(Boolean).join(", ") || l.reference, href: `/leads/${l.id}`, lead: l, urgent: true }));
-    savAttente.forEach((s) => t.push({ id: `sav-${s.id}`, titre: `Compléter la demande SAV ${s.reference}`, detail: s.produit ?? "Le service SAV attend votre réponse", href: `/sav/${s.id}`, urgent: true }));
+    aAccepter.forEach((l) => t.push({ id: `accepter-${l.id}`, genre: "accepter", titre: l.projet, detail: l.reference, lieu: joliNom(l.ville), href: `/leads/${l.id}`, lead: l, urgent: true }));
+    savAttente.forEach((s) => t.push({ id: `sav-${s.id}`, genre: "sav", titre: `Demande ${s.reference}`, detail: s.produit ?? "Le service SAV attend votre réponse", lieu: null, href: `/sav/${s.id}`, urgent: true }));
     enCours
       .filter((l) => l.statut === "accepte")
-      .forEach((l) => t.push({ id: `appeler-${l.id}`, titre: `Appeler ${l.contact ?? "le client"}`, detail: `${l.projet}${l.ville ? `, ${l.ville}` : ""}`, href: `/leads/${l.id}`, urgent: false }));
+      .forEach((l) => t.push({ id: `appeler-${l.id}`, genre: "appeler", titre: l.contact ?? "Votre client", detail: l.projet, lieu: joliNom(l.ville), href: `/leads/${l.id}`, telephone: l.masque ? null : l.telephone, urgent: false }));
     enCours
       .filter((l) => l.statut === "devis")
-      .forEach((l) => t.push({ id: `relancer-${l.id}`, titre: `Relancer le devis de ${l.contact ?? "votre client"}`, detail: `${l.projet}${l.ville ? `, ${l.ville}` : ""}`, href: `/leads/${l.id}`, urgent: false }));
-    return t.slice(0, 6);
+      .forEach((l) => t.push({ id: `relancer-${l.id}`, genre: "relancer", titre: l.contact ?? "Votre client", detail: l.projet, lieu: joliNom(l.ville), href: `/leads/${l.id}`, urgent: false }));
+    return t;
   }, [aAccepter, savAttente, enCours]);
 
   const [faits, setFaits] = useState<string[]>([]);
@@ -314,18 +373,29 @@ export function AccueilClient({
                   ))}
                 </ul>
               ) : null}
-              {taches.some((t) => !t.lead) ? (
-                <div>
-                  {aAccepter.length ? <p className="text-xs font-semibold text-text-3">Ensuite</p> : null}
-                  <ul className="divide-y divide-line">
-                    {taches
-                      .filter((t) => !t.lead)
-                      .map((t) => (
-                        <LigneTache key={t.id} t={t} fait={faits.includes(t.id)} basculer={() => basculer(t.id)} />
+              {(["sav", "appeler", "relancer"] as const).map((genre) => {
+                const liste = taches.filter((t) => t.genre === genre);
+                if (!liste.length) return null;
+                const visibles = liste.slice(0, 4);
+                return (
+                  <div key={genre}>
+                    <p className="flex items-center gap-2 px-3 text-xs font-semibold text-text-3">
+                      {GENRES[genre].groupe}
+                      <span className="tabular flex h-5 min-w-5 items-center justify-center rounded-full bg-sunken px-1 text-xs text-text-2">{liste.length}</span>
+                    </p>
+                    <ul className="mt-1 flex flex-col">
+                      {visibles.map((t) => (
+                        <LigneSuivi key={t.id} t={t} fait={faits.includes(t.id)} basculer={() => basculer(t.id)} />
                       ))}
-                  </ul>
-                </div>
-              ) : null}
+                    </ul>
+                    {liste.length > visibles.length ? (
+                      <Link href="/leads" className="mt-1 inline-block px-3 text-sm font-medium text-text-2 underline-offset-4 hover:text-text hover:underline">
+                        {liste.length - visibles.length > 1 ? `Voir les ${liste.length - visibles.length} autres` : "Voir le dernier"}
+                      </Link>
+                    ) : null}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <Vide>Rien à traiter. Vous serez prévenu ici, par e-mail et par SMS, dès qu’un lead arrive.</Vide>
