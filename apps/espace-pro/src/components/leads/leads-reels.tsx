@@ -1,9 +1,11 @@
 "use client";
 
-import { Flame, Hourglass, Inbox, Smile } from "lucide-react";
+import {
+  MapPinned, Flame, Hourglass, Inbox, Smile } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { KpiBand } from "@/components/ui/kpi";
+import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Segmented } from "@/components/ui/segmented";
 import type { Entonnoir, LeadGestion, Notification, StatsLeadManager as Stats } from "@/lib/data/types";
@@ -48,7 +50,15 @@ export function LeadsReels({
             ? "Qualifiez chaque demande, orientez-la vers le bon installateur et suivez-la jusqu’à la pose. L’installateur a 24 h pour accepter, sinon le lead vous revient."
             : "Tous les leads du réseau, leur avancement et la satisfaction des clients. Consultation seule."
         }
-        actions={peutAttribuer ? <BoutonNouveauLead /> : null}
+        actions={
+          <>
+            <ButtonLink href="/lead-management/zoning" variant="secondary">
+              <MapPinned aria-hidden />
+              Zoning
+            </ButtonLink>
+            {peutAttribuer ? <BoutonNouveauLead /> : null}
+          </>
+        }
       />
       <KpiBand
         items={[
