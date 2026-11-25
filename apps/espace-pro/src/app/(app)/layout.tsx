@@ -5,6 +5,7 @@ import { seDeconnecter } from "@/app/connexion/actions";
 import { AppShell } from "@/components/shell/app-shell";
 import { Button } from "@/components/ui/button";
 import { compteursMenu } from "@/lib/data/compteurs";
+import { textesPersonnalises } from "@/lib/data/textes";
 import { modulesAutorises, profilCourant } from "@/lib/data/session";
 import { MODULES, type ModuleId } from "@/lib/roles";
 
@@ -21,9 +22,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const modules = await modulesAutorises(profil);
   const rubrique = moduleDuChemin(headers().get("x-chemin") ?? "");
   if (rubrique && rubrique !== "accueil" && !modules.includes(rubrique)) redirect("/accueil");
-  const compteurs = await compteursMenu(profil).catch(() => ({ actions: {}, dates: {} }));
+  const [compteurs, textes] = await Promise.all([compteursMenu(profil).catch(() => ({ actions: {}, dates: {} })), textesPersonnalises()]);
   return (
-    <AppShell profil={profil} modules={modules} compteurs={compteurs}>
+    <AppShell profil={profil} modules={modules} compteurs={compteurs} textes={textes}>
       {children}
     </AppShell>
   );

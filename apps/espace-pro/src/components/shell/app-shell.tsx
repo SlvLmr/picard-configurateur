@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { TextesProvider } from "@/components/ui/texte-editable";
 import { ToastProvider } from "@/components/ui/toast";
 import type { ProfilReel } from "@/lib/data/types";
 import { useSession } from "@/lib/session";
@@ -24,7 +25,7 @@ const PERSONA_PAR_ROLE: Record<ProfilReel["role"], string> = {
   qualite: "philippe",
 };
 
-export function AppShell({ children, profil, modules, compteurs }: { children: React.ReactNode; profil: ProfilReel; modules: ModuleId[]; compteurs: CompteursMenu }) {
+export function AppShell({ children, profil, modules, compteurs, textes }: { children: React.ReactNode; profil: ProfilReel; modules: ModuleId[]; compteurs: CompteursMenu; textes: Record<string, string> }) {
   const { persona, setPersona } = useSession();
   const [menu, setMenu] = useState(false);
 
@@ -56,7 +57,9 @@ export function AppShell({ children, profil, modules, compteurs }: { children: R
         <div className="min-w-0">
           <Topbar onMenu={() => setMenu(true)} onSearch={() => setSearch(true)} profil={profil} />
           <main id="contenu" className="mx-auto w-full max-w-page px-4 py-8 sm:px-8 sm:py-12">
-            {children}
+            <TextesProvider textes={textes} admin={profil.role === "admin"}>
+              {children}
+            </TextesProvider>
           </main>
         </div>
       </div>

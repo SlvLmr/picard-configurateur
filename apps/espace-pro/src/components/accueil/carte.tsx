@@ -1,13 +1,16 @@
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { Picto } from "@/components/ui/picto";
+import { TexteEditable } from "@/components/ui/texte-editable";
 import { cn } from "@/lib/cn";
 
 /* ───────── Carte : même gabarit que les panneaux du site (picto, titre, sous-titre, lien) ───────── */
 export function Carte({
-  id, titre, sousTitre, icone, ton, lien, actions, children, className,
+  id, titre, sousTitre, sousTitreFixe = false, icone, ton, lien, actions, children, className,
 }: {
-  id: string; titre: string; sousTitre: React.ReactNode; icone: LucideIcon; ton: React.ComponentProps<typeof Picto>["tone"];
+  id: string; titre: string; sousTitre: React.ReactNode;
+  /** Sous-titre fixe, donc modifiable par l'administrateur (un sous-titre calculé ne l'est pas) */
+  sousTitreFixe?: boolean; icone: LucideIcon; ton: React.ComponentProps<typeof Picto>["tone"];
   lien?: { href: string; label: string }; actions?: React.ReactNode; children: React.ReactNode; className?: string;
 }) {
   return (
@@ -16,9 +19,11 @@ export function Carte({
         <Picto icon={icone} tone={ton} />
         <div className="min-w-0 flex-1">
           <h2 id={id} className="font-display text-lg font-semibold leading-tight text-text">
-            {titre}
+            <TexteEditable cle={`accueil.${id}.titre`} champ="titre" defaut={titre} />
           </h2>
-          <p className="mt-0.5 truncate text-sm text-text-3">{sousTitre}</p>
+          <p className="mt-0.5 truncate text-sm text-text-3">
+            {sousTitreFixe && typeof sousTitre === "string" ? <TexteEditable cle={`accueil.${id}.sous-titre`} champ="sous-titre" defaut={sousTitre} /> : sousTitre}
+          </p>
         </div>
         {actions}
         {lien ? (

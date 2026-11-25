@@ -138,6 +138,7 @@ export function AccueilParRole({
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
+        editable={false}
         className="pb-0"
         title={profil?.prenom ? `Bonjour ${profil.prenom}` : aujourdhui()}
         meta={profil?.role === "admin" && persona.role !== "admin" ? <Badge variant="accent">Aperçu : {persona.fonction}</Badge> : null}
@@ -164,12 +165,12 @@ export function AccueilParRole({
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <BlocRole vue={vue} reel={reel} journee={journee} signaux={signaux} points={r.points} palier={palier} />
-        <Carte id="messages" titre="Le fil Picard" icone={MessageCircle} ton="success" sousTitre="Chaîne officielle du réseau" className="scroll-mt-24">
+        <Carte id="messages" titre="Le fil Picard" icone={MessageCircle} ton="success" sousTitre="Chaîne officielle du réseau" sousTitreFixe className="scroll-mt-24">
           <CanalMessages annonces={annonces} admin={profil?.role === "admin"} />
         </Carte>
       </div>
 
-      <Carte id="agenda" titre="Agenda du réseau" icone={CalendarDays} ton="warning" sousTitre="Salons, opérations, formations, webinaires et réunions" className="scroll-mt-24" actions={profil?.role === "admin" ? <AjoutEvenement /> : null}>
+      <Carte id="agenda" titre="Agenda du réseau" icone={CalendarDays} ton="warning" sousTitre="Salons, opérations, formations, webinaires et réunions" sousTitreFixe className="scroll-mt-24" actions={profil?.role === "admin" ? <AjoutEvenement /> : null}>
         <FriseCalendrier elements={agenda} />
       </Carte>
     </div>

@@ -255,6 +255,7 @@ export function AccueilClient({
       {/* ───────── En-tête et indicateurs, aux standards des autres pages ───────── */}
       <div>
         <PageHeader
+          editable={false}
           className="pb-6"
           title={prenom ? `Bonjour ${prenom}` : "Bonjour"}
           meta={donnees.compte?.niveau_iap ? <NiveauBadge type={donnees.compte.niveau_iap} /> : null}
@@ -356,6 +357,7 @@ export function AccueilClient({
         icone={CalendarDays}
         ton="warning"
         sousTitre="Salons, opérations, formations, webinaires et réunions"
+        sousTitreFixe
         className="scroll-mt-24"
         actions={
           donnees.apercu ? <AjoutEvenement /> : null

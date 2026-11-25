@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { TexteEditable } from "./texte-editable";
 
 /** Conteneur pour un ensemble de données qu'on manipule. Ne pas l'utiliser pour décorer. */
 export function Panel({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
@@ -19,8 +20,8 @@ export function PanelHeader({
   return (
     <header className={cn("flex items-start gap-4 px-6 pb-4 pt-5", className)}>
       <div className="min-w-0 flex-1">
-        <h2 className="text-base font-semibold text-text">{title}</h2>
-        {description ? <p className="mt-0.5 text-sm text-text-3">{description}</p> : null}
+        <h2 className="text-base font-semibold text-text">{typeof title === "string" ? <TexteEditable champ="panneau" defaut={title} /> : title}</h2>
+        {description ? <p className="mt-0.5 text-sm text-text-3">{typeof description === "string" ? <TexteEditable champ="panneau-description" defaut={description} /> : description}</p> : null}
       </div>
       {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
     </header>
