@@ -1,4 +1,4 @@
-import { Mail, Workflow, PartyPopper, ListChecks, ChartLine, Contact, FolderOpen, House, Inbox, LifeBuoy, Megaphone, Ruler, ShoppingBag, UserCog, type LucideIcon } from "lucide-react";
+import { MousePointerClick, Mail, Workflow, PartyPopper, ListChecks, ChartLine, Contact, FolderOpen, House, Inbox, LifeBuoy, Megaphone, Ruler, ShoppingBag, UserCog, type LucideIcon } from "lucide-react";
 import type { ModuleId } from "@/lib/roles";
 
 export const NAV_ICONS: Record<ModuleId, LucideIcon> = {
@@ -11,6 +11,7 @@ export const NAV_ICONS: Record<ModuleId, LucideIcon> = {
   mediatheque: FolderOpen,
   newsletters: Mail,
   marketing: Megaphone,
+  digital: MousePointerClick,
   animations: PartyPopper,
   boutique: ShoppingBag,
   sav: LifeBuoy,
