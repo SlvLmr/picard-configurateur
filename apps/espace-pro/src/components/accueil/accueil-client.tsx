@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, Check, CheckCheck, Download } from "lucide-react";
+import { BadgeCheck, CalendarDays, Check, CheckCheck, Coins, Download, FolderOpen, Inbox, MessageCircle, Ruler, Timer, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { accepterLead } from "@/app/(app)/leads/actions";
@@ -10,6 +10,10 @@ import { SymboleEspacePro } from "@/components/marque/logo-espace-pro";
 import { TYPES as TYPES_MEDIA } from "@/components/mediatheque/libelles";
 import { STATUTS as STATUTS_SAV } from "@/components/sav/libelles";
 import { NiveauBadge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
+import { KpiBand } from "@/components/ui/kpi";
+import { PageHeader } from "@/components/ui/page-header";
+import { Picto } from "@/components/ui/picto";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import type { Annonce, ElementAgenda, Recap } from "@/lib/data/accueil";
@@ -38,17 +42,25 @@ export type DonneesClient = {
 const JOUR = 86400000;
 const jourCourt = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(iso));
 
-/* ───────── Carte : un seul gabarit pour toutes les zones ───────── */
-function Carte({ id, titre, compteur, lien, children, className }: { id: string; titre: string; compteur?: string; lien?: { href: string; label: string }; children: React.ReactNode; className?: string }) {
+/* ───────── Carte : même gabarit que les panneaux du site (picto, titre, sous-titre, lien) ───────── */
+function Carte({
+  id, titre, sousTitre, icone, ton, lien, children, className,
+}: {
+  id: string; titre: string; sousTitre: React.ReactNode; icone: LucideIcon; ton: React.ComponentProps<typeof Picto>["tone"];
+  lien?: { href: string; label: string }; children: React.ReactNode; className?: string;
+}) {
   return (
     <section aria-labelledby={id} className={cn("flex flex-col rounded-lg border border-line bg-surface shadow-card", className)}>
-      <header className="flex items-baseline gap-2 px-6 pb-4 pt-6">
-        <h2 id={id} className="font-display text-lg font-semibold text-text">
-          {titre}
-        </h2>
-        {compteur ? <span className="tabular text-sm text-text-3">{compteur}</span> : null}
+      <header className="flex items-center gap-4 px-6 pb-4 pt-6">
+        <Picto icon={icone} tone={ton} />
+        <div className="min-w-0 flex-1">
+          <h2 id={id} className="font-display text-lg font-semibold leading-tight text-text">
+            {titre}
+          </h2>
+          <p className="mt-0.5 truncate text-sm text-text-3">{sousTitre}</p>
+        </div>
         {lien ? (
-          <Link href={lien.href} className="ml-auto text-sm font-medium text-text-2 underline-offset-4 hover:text-text hover:underline">
+          <Link href={lien.href} className="shrink-0 rounded-full border border-line px-3 py-1 text-sm font-medium text-text-2 transition-colors hover:border-line-strong hover:text-text">
             {lien.label}
           </Link>
         ) : null}
@@ -60,50 +72,6 @@ function Carte({ id, titre, compteur, lien, children, className }: { id: string;
 
 function Vide({ children }: { children: React.ReactNode }) {
   return <p className="rounded-md bg-sunken px-4 py-6 text-center text-sm text-text-3">{children}</p>;
-}
-
-/* ───────── Porte qui s'ouvre au survol du configurateur ───────── */
-function PorteAnimee() {
-  return (
-    <svg viewBox="0 0 120 140" className="h-24 w-auto" aria-hidden>
-      <path d="M20 132h80" stroke="currentColor" strokeOpacity={0.3} strokeWidth={2} strokeLinecap="round" />
-      <path d="M30 130V14h60v116" fill="none" stroke="currentColor" strokeWidth={3} strokeLinejoin="round" />
-      <rect x={34} y={18} width={52} height={112} rx={2} fill="var(--cta)" />
-      <g className="porte-vantail">
-        <rect x={34} y={18} width={52} height={112} rx={2} fill="var(--nav-bg)" stroke="currentColor" strokeWidth={2.5} />
-        <rect x={42} y={28} width={36} height={40} rx={1} fill="none" stroke="currentColor" strokeOpacity={0.35} strokeWidth={1.5} />
-        <rect x={42} y={78} width={36} height={40} rx={1} fill="none" stroke="currentColor" strokeOpacity={0.35} strokeWidth={1.5} />
-        <circle cx={78} cy={74} r={3} fill="var(--cta)" />
-      </g>
-    </svg>
-  );
-}
-
-/* ───────── Jauge de points, sur le même modèle que les autres chiffres ───────── */
-function Chiffre({ valeur, label, part, href }: { valeur: string; label: string; part?: number; href?: string }) {
-  const [pret, setPret] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setPret(true), 120);
-    return () => clearTimeout(t);
-  }, []);
-  const contenu = (
-    <>
-      <span className="block font-display tabular text-xl font-bold text-white">{valeur}</span>
-      <span className="mt-1 block text-xs text-nav-muted">{label}</span>
-      <span className="mt-3 block h-1 overflow-hidden rounded-full bg-white/10">
-        {part !== undefined ? (
-          <span className="block h-full rounded-full bg-cta transition-[width] duration-1000 ease-out" style={{ width: pret ? `${Math.min(1, part) * 100}%` : 0 }} />
-        ) : null}
-      </span>
-    </>
-  );
-  return href ? (
-    <Link href={href} className="block min-w-0 hover:opacity-90">
-      {contenu}
-    </Link>
-  ) : (
-    <div className="min-w-0">{contenu}</div>
-  );
 }
 
 /* ───────── Tâche : un lead à accepter, un SAV à compléter, un client à rappeler ───────── */
@@ -261,55 +229,51 @@ export function AccueilClient({
   const restantes = taches.filter((t) => !faits.includes(t.id)).length;
 
   const prenom = profil?.prenom ?? "";
-  const phrase =
-    restantes === 0
-      ? "Tout est à jour. Belle journée."
-      : `${restantes} chose${restantes > 1 ? "s" : ""} à traiter aujourd’hui${aAccepter.length ? `, dont ${aAccepter.length} lead${aAccepter.length > 1 ? "s" : ""} à accepter` : ""}.`;
   const tauxAcceptation = donnees.stats && donnees.stats.recus ? Math.round((donnees.stats.acceptes / donnees.stats.recus) * 100) : null;
   const dateDuJour = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" }).format(maintenant);
 
   return (
     <div className="flex flex-col gap-6">
-      {/* ───────── Bandeau ───────── */}
-      <section className="overflow-hidden rounded-lg bg-nav text-white shadow-card">
-        <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div className="min-w-0">
-            <p className="text-sm text-nav-muted">{dateDuJour.replace(/^./, (c) => c.toLocaleUpperCase("fr-FR"))}</p>
-            <h1 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{prenom ? `Bonjour ${prenom}` : "Bonjour"}</h1>
-            <p className="mt-3 max-w-xl text-base text-white/80">{phrase}</p>
-            {donnees.compte?.niveau_iap ? (
-              <p className="mt-4 flex items-center gap-2 text-sm text-nav-muted">
-                <NiveauBadge type={donnees.compte.niveau_iap} />
-                {donnees.compte.raison_sociale}
-              </p>
-            ) : donnees.apercu ? (
-              <p className="mt-4 text-sm text-nav-muted">Aperçu administrateur avec les données réelles du réseau. Le bouton Accepter est masqué.</p>
-            ) : null}
-          </div>
-
-          <Link href="/configurateur" className="group flex items-center gap-6 rounded-lg bg-white/5 p-4 pr-8 ring-1 ring-white/10 transition-colors hover:bg-white/10">
-            <span className="text-white">
-              <PorteAnimee />
-            </span>
-            <span>
-              <span className="block font-display text-xl font-semibold leading-tight">Configurer une porte</span>
-              <span className="mt-1 block text-sm text-nav-muted">Votre devis en quelques minutes</span>
-              <span className="mt-4 inline-flex h-10 items-center rounded-full bg-cta px-4 text-sm font-semibold text-cta-text transition-colors group-hover:bg-cta-hover">Commencer</span>
-            </span>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 gap-6 border-t border-white/10 px-6 py-6 sm:px-8 lg:grid-cols-4">
-          <Chiffre valeur={formatNumber(recap.points)} label={`points, prochain palier à ${formatNumber(palier)}`} part={recap.points / Math.max(1, palier)} href="/boutique" />
-          <Chiffre valeur={donnees.stats ? String(donnees.stats.recus) : "–"} label="leads reçus sur 12 mois" />
-          <Chiffre valeur={tauxAcceptation === null ? "–" : `${tauxAcceptation} %`} label="de leads acceptés" part={tauxAcceptation === null ? undefined : tauxAcceptation / 100} />
-          <Chiffre valeur={donnees.stats?.temps_reponse_min ? formatDuree(donnees.stats.temps_reponse_min) : "–"} label="temps de réponse moyen" />
-        </div>
-      </section>
+      {/* ───────── En-tête et indicateurs, aux standards des autres pages ───────── */}
+      <div>
+        <PageHeader
+          className="pb-6"
+          title={prenom ? `Bonjour ${prenom}` : "Bonjour"}
+          meta={donnees.compte?.niveau_iap ? <NiveauBadge type={donnees.compte.niveau_iap} /> : null}
+          description={
+            <>
+              {dateDuJour.replace(/^./, (c) => c.toLocaleUpperCase("fr-FR"))}
+              {donnees.compte?.raison_sociale ? `, ${donnees.compte.raison_sociale}` : ""}
+              {donnees.apercu ? <span className="mt-1 block text-sm text-text-3">Aperçu administrateur avec les données réelles du réseau. Le bouton Accepter est masqué.</span> : null}
+            </>
+          }
+          actions={
+            <ButtonLink href="/configurateur" variant="primary" size="lg">
+              <Ruler aria-hidden />
+              Configurer une porte
+            </ButtonLink>
+          }
+        />
+        <KpiBand
+          items={[
+            { label: "Points fidélité", value: formatNumber(recap.points), icon: Coins, tone: "cta", note: `Prochain palier à ${formatNumber(palier)}`, href: "/boutique" },
+            { label: "Leads reçus", value: donnees.stats ? String(donnees.stats.recus) : "–", icon: Inbox, tone: "accent", note: "Sur 12 mois", href: "/leads" },
+            { label: "Leads acceptés", value: tauxAcceptation === null ? "–" : tauxAcceptation, unit: tauxAcceptation === null ? undefined : "%", icon: CheckCheck, tone: "success", note: "Taux d’acceptation" },
+            { label: "Temps de réponse", value: donnees.stats?.temps_reponse_min ? formatDuree(donnees.stats.temps_reponse_min) : "–", icon: Timer, tone: "neutral", note: "En moyenne" },
+          ]}
+        />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         {/* ───────── À traiter ───────── */}
-        <Carte id="a-traiter" titre="À traiter" compteur={taches.length ? `${restantes} sur ${taches.length}` : undefined} lien={{ href: "/leads", label: "Mes leads" }}>
+        <Carte
+          id="a-traiter"
+          titre="Vos priorités"
+          icone={Inbox}
+          ton="cta"
+          sousTitre={restantes ? `${restantes} action${restantes > 1 ? "s" : ""} à mener${aAccepter.length ? `, dont ${aAccepter.length} lead${aAccepter.length > 1 ? "s" : ""} à accepter` : ""}` : "Tout est à jour"}
+          lien={{ href: "/leads", label: "Mes leads" }}
+        >
           {taches.length ? (
             <ul className="-mt-4 divide-y divide-line">
               {taches.map((t) => (
@@ -328,7 +292,14 @@ export function AccueilClient({
         </Carte>
 
         {/* ───────── Messages : les codes de la page Messages, dans une carte ───────── */}
-        <Carte id="fil" titre="Messages" compteur={nouveaux ? `${nouveaux} nouveau${nouveaux > 1 ? "x" : ""}` : undefined} lien={{ href: "/news", label: "Ouvrir" }}>
+        <Carte
+          id="fil"
+          titre="Le fil Picard"
+          icone={MessageCircle}
+          ton="success"
+          sousTitre={nouveaux ? `${nouveaux} message${nouveaux > 1 ? "s" : ""} cette semaine` : "Chaîne officielle du réseau"}
+          lien={{ href: "/news", label: "Tous les messages" }}
+        >
           <Link href="/news" className="wa flex h-full flex-col overflow-hidden rounded-md border border-line transition-shadow hover:shadow-card">
             <span className="flex items-center gap-3 bg-[var(--wa-barre)] px-4 py-2">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-nav">
@@ -370,7 +341,7 @@ export function AccueilClient({
         </Carte>
 
         {/* ───────── Documents : façon gestionnaire de fichiers ───────── */}
-        <Carte id="documents" titre="Derniers documents" lien={{ href: "/mediatheque", label: "Médiathèque" }}>
+        <Carte id="documents" titre="Nouveautés de la médiathèque" icone={FolderOpen} ton="accent" sousTitre="Brochures, notices, vidéos et photos à télécharger" lien={{ href: "/mediatheque", label: "Médiathèque" }}>
           {donnees.ressources.length ? (
             <ul className="grid gap-2 sm:grid-cols-2">
               {donnees.ressources.map((r) => (
@@ -382,7 +353,14 @@ export function AccueilClient({
           )}
         </Carte>
         {/* ───────── Calendrier : grande date, mini frise et code couleur du calendrier ───────── */}
-        <Carte id="agenda" titre="Calendrier" lien={{ href: "/calendrier", label: "Ouvrir" }}>
+        <Carte
+          id="agenda"
+          titre="Agenda du réseau"
+          icone={CalendarDays}
+          ton="warning"
+          sousTitre="Salons, formations et opérations à venir"
+          lien={{ href: "/calendrier", label: "Calendrier" }}
+        >
           <div className="flex items-end justify-between gap-4" suppressHydrationWarning>
             <span>
               <span className="block text-sm font-semibold text-cta-deep">{new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(maintenant).replace(/^./, (c) => c.toLocaleUpperCase("fr-FR"))}</span>
