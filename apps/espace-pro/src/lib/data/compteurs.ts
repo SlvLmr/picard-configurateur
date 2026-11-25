@@ -31,9 +31,9 @@ export async function compteursMenu(profil: ProfilReel): Promise<CompteursMenu> 
   return {
     actions,
     dates: {
-      news: ((annonces ?? []) as { debut: string }[]).map((a) => a.debut),
+      // Nouveaux messages et nouveaux événements : ils sont désormais sur l'accueil
+      accueil: [...((annonces ?? []) as { debut: string }[]).map((a) => a.debut), ...((evenements ?? []) as { cree_le: string }[]).map((x) => x.cree_le)],
       mediatheque: ((ressources ?? []) as { mis_a_jour_le: string }[]).map((x) => x.mis_a_jour_le),
-      calendrier: ((evenements ?? []) as { cree_le: string }[]).map((x) => x.cree_le),
       animations: ((animations ?? []) as { cree_le: string }[]).map((x) => x.cree_le),
     },
   };

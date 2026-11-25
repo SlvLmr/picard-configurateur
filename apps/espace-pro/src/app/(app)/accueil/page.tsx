@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { agenda, annoncesAccueil, recapAccueil } from "@/lib/data/accueil";
+import { agenda, annoncesActives, recapAccueil } from "@/lib/data/accueil";
+import { ANNEE_DEPART, ANNEES } from "@/lib/periode-calendrier";
 import { parametres } from "@/lib/data/administration";
 import { journeeCommercial } from "@/lib/data/crm";
 import { leadsAValider, leadsProfessionnel, statsLeads, statsPro } from "@/lib/data/leads";
@@ -16,14 +17,16 @@ export const metadata: Metadata = { title: "Accueil" };
 export default async function Page() {
   const profil = await profilCourant();
   const maintenant = new Date();
-  const debut = new Date(maintenant.getFullYear(), maintenant.getMonth() - 1, 1);
-  const fin = new Date(maintenant.getFullYear(), maintenant.getMonth() + 4, 0);
+  // Même période que la frise de l'agenda : à partir de janvier 2027, sur deux ans
+  const depart = Math.max(ANNEE_DEPART, maintenant.getFullYear());
+  const debut = new Date(depart, 0, 1);
+  const fin = new Date(depart + ANNEES - 1, 11, 31, 23, 59);
   const interne = estInterne(profil);
   const avecJournee = !!profil && ["atc", "admin", "codir", "chef_service", "chef_marche"].includes(profil.role);
 
   const [recap, annonces, elements, leads, stats, journee, signaux, params] = await Promise.all([
     recapAccueil(),
-    annoncesAccueil(),
+    annoncesActives(),
     agenda(debut, fin).catch(() => []),
     interne ? leadsAValider(4) : Promise.resolve([]),
     interne ? statsLeads(30) : Promise.resolve(null),

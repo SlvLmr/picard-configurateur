@@ -1,4 +1,4 @@
-import { CalendarDays, PartyPopper, ListChecks, ChartLine, Contact, FolderOpen, House, Inbox, LifeBuoy, Megaphone, Newspaper, Ruler, ShoppingBag, UserCog, type LucideIcon } from "lucide-react";
+import { PartyPopper, ListChecks, ChartLine, Contact, FolderOpen, House, Inbox, LifeBuoy, Megaphone, Ruler, ShoppingBag, UserCog, type LucideIcon } from "lucide-react";
 import type { ModuleId } from "@/lib/roles";
 
 export const NAV_ICONS: Record<ModuleId, LucideIcon> = {
@@ -13,7 +13,5 @@ export const NAV_ICONS: Record<ModuleId, LucideIcon> = {
   boutique: ShoppingBag,
   sav: LifeBuoy,
   campagnes: ListChecks,
-  news: Newspaper,
-  calendrier: CalendarDays,
   administration: UserCog,
 };

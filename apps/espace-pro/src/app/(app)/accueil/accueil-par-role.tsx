@@ -2,6 +2,8 @@
 
 import {
   CalendarClock,
+  CalendarDays,
+  MessageCircle,
   ChartLine,
   ClipboardCheck,
   Coins,
@@ -16,9 +18,10 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import Link from "next/link";
-import { Annonces } from "@/components/accueil/annonces";
 import { Briques, type Brique } from "@/components/accueil/briques";
-import { Calendrier } from "@/components/accueil/calendrier";
+import { Carte } from "@/components/accueil/carte";
+import { CanalMessages } from "@/components/communication/canal-messages";
+import { FriseCalendrier } from "@/components/communication/frise-calendrier";
 import { LeadQueue } from "@/components/leads/lead-queue";
 import { LeadQueueReel } from "@/components/leads/lead-queue-reel";
 import { Badge } from "@/components/ui/badge";
@@ -151,20 +154,6 @@ export function AccueilParRole({
         }
       />
 
-      {annonces.length ? (
-        <section aria-labelledby="actualites" className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between gap-4">
-            <h2 id="actualites" className="font-display text-lg font-semibold text-text">
-              Actualités
-            </h2>
-            <Link href="/news" className="text-sm font-medium text-accent hover:underline">
-              Toutes les news
-            </Link>
-          </div>
-          <Annonces annonces={annonces} />
-        </section>
-      ) : null}
-
       <section aria-labelledby="priorites" className="flex flex-col gap-4">
         <h2 id="priorites" className="font-display text-lg font-semibold text-text">
           Vos priorités
@@ -172,10 +161,16 @@ export function AccueilParRole({
         <Briques items={briques[vue]} />
       </section>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Calendrier elements={agenda} lienComplet="/calendrier" />
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <BlocRole vue={vue} reel={reel} journee={journee} signaux={signaux} points={r.points} palier={palier} />
+        <Carte id="messages" titre="Le fil Picard" icone={MessageCircle} ton="success" sousTitre="Chaîne officielle du réseau" className="scroll-mt-24">
+          <CanalMessages annonces={annonces} admin={profil?.role === "admin"} />
+        </Carte>
       </div>
+
+      <Carte id="agenda" titre="Agenda du réseau" icone={CalendarDays} ton="warning" sousTitre="Salons, opérations, formations, webinaires et réunions" className="scroll-mt-24">
+        <FriseCalendrier elements={agenda} />
+      </Carte>
     </div>
   );
 }

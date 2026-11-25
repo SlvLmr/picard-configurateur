@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, CheckCheck, ChevronDown, ImagePlus, Pin, SendHorizontal, X } from "lucide-react";
+import { CheckCheck, ChevronDown, ImagePlus, Pin, SendHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -255,8 +255,11 @@ function Composeur() {
   );
 }
 
-/** Messages du réseau : la chaîne officielle de Picard Serrures, façon messagerie. */
-export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: boolean }) {
+/**
+ * Canal des messages du réseau : la chaîne officielle de Picard Serrures, façon messagerie.
+ * Intégré à l'accueil : il prend la hauteur de sa carte, sans l'en-tête de chaîne (la carte le porte).
+ */
+export function CanalMessages({ annonces, admin }: { annonces: Annonce[]; admin: boolean }) {
   const [filtre, setFiltre] = useState<Filtre>("toutes");
   const [surbrillance, setSurbrillance] = useState<string | null>(null);
   const [visionneuse, setVisionneuse] = useState<{ photos: PhotoVisionneuse[]; depart: number } | null>(null);
@@ -273,7 +276,6 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
   );
   const epinglee = annonces.find((a) => a.epinglee) ?? null;
   const compte = (t: Annonce["ton"]) => annonces.filter((a) => a.ton === t).length;
-  const nbPhotos = annonces.reduce((s, a) => s + a.photos.length, 0);
 
   const descendre = (comportement: ScrollBehavior = "smooth") => {
     const f = filRef.current;
@@ -298,24 +300,9 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
   }
 
   return (
-    <div className="wa -mx-4 -my-8 flex h-[calc(100dvh-72px)] min-h-[560px] flex-col overflow-hidden sm:-mx-8 sm:-my-12">
+    <div className="wa flex h-[640px] flex-col overflow-hidden rounded-md border border-line">
       {/* En-tête du canal */}
-      <header className="flex flex-col gap-3 border-b border-[var(--wa-ligne)] bg-[var(--wa-barre)] px-4 pb-3 pt-3 sm:px-6">
-        <div className="flex items-center gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-nav">
-            <SymboleEspacePro className="size-6" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h1 className="flex items-center gap-1 text-base font-semibold text-[var(--wa-texte)]">
-              Picard Serrures
-              <BadgeCheck aria-label="Chaîne officielle" className="size-4 fill-[var(--wa-vert)] text-[var(--wa-barre)]" />
-            </h1>
-            <p className="truncate text-sm text-[var(--wa-texte-2)]">
-              Chaîne officielle du réseau, {annonces.length} message{annonces.length > 1 ? "s" : ""}
-              {nbPhotos ? `, ${nbPhotos} photo${nbPhotos > 1 ? "s" : ""}` : ""}
-            </p>
-          </div>
-        </div>
+      <header className="border-b border-[var(--wa-ligne)] bg-[var(--wa-barre)] px-4 py-3">
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1" role="group" aria-label="Filtrer les messages">
           {(
             [
@@ -361,7 +348,7 @@ export function PageNews({ annonces, admin }: { annonces: Annonce[]; admin: bool
             const f = e.currentTarget;
             setEnBas(f.scrollHeight - f.scrollTop - f.clientHeight < 120);
           }}
-          className="scroll-nav absolute inset-0 overflow-y-auto px-3 py-4 sm:px-16"
+          className="scroll-nav absolute inset-0 overflow-y-auto px-3 py-4 sm:px-6"
         >
           {liste.length === 0 ? (
             <div className="flex h-full items-center justify-center">

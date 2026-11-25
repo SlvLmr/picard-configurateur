@@ -1,11 +1,9 @@
 "use client";
 
-import { CalendarPlus, ChevronLeft, ChevronRight, MapPin, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TYPES_AGENDA } from "@/components/accueil/calendrier";
-import { ButtonLink } from "@/components/ui/button";
-import { PageHeader } from "@/components/ui/page-header";
 import { Segmented } from "@/components/ui/segmented";
 import { cn } from "@/lib/cn";
 import type { ElementAgenda, TypeAgenda } from "@/lib/data/accueil";
@@ -55,8 +53,8 @@ const adoucir = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 
 
 type Place = { e: ElementAgenda; j0: number; duree: number; rang: number; espace: number };
 
-/** Calendrier du réseau : une frise animée et interactive. */
-export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[]; admin: boolean }) {
+/** Agenda du réseau : une frise animée et interactive, intégrée à l’accueil. */
+export function FriseCalendrier({ elements }: { elements: ElementAgenda[] }) {
   const maintenant = useMemo(() => new Date(), []);
   // La frise démarre en janvier 2027 (ou l'année en cours si elle est postérieure) et couvre deux ans
   const origine = useMemo(() => new Date(Math.max(ANNEE_DEPART, maintenant.getFullYear()), 0, 1), [maintenant]);
@@ -223,12 +221,6 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
     allerA(jourDe(debut), 0);
   };
 
-  const choisir = (e: ElementAgenda, zoom = false) => {
-    setChoisi(e);
-    const centre = jourDe(new Date(e.debut)) + 0.5;
-    if (zoom) zoomer("mois", centre);
-    else allerA(centre, 0.5);
-  };
 
   const basculer = (t: TypeAgenda) =>
     setActifs((s) => {
@@ -255,56 +247,10 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
     }).filter((x) => echelle === "mois" || x.d.getDay() === 1);
   }, [echelle, total, origine]);
 
-  const aVenir = evenements
-    .filter((e) => finDe(e) >= maintenant)
-    .sort((a, b) => a.debut.localeCompare(b.debut))
-    .slice(0, 8);
 
   return (
     <>
-      <PageHeader
-        title="Calendrier"
-        description="Les temps forts du réseau : salons, opérations, formations, webinaires et réunions."
-        actions={admin ? <ButtonLink href="/administration/contenus" variant="primary"><CalendarPlus aria-hidden />Ajouter un événement</ButtonLink> : null}
-      />
-
-      {/* À venir */}
-      {aVenir.length ? (
-        <div className="scroll-nav -mx-4 mb-6 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:-mx-8 sm:px-8">
-          {aVenir.map((e, i) => {
-            const d = new Date(e.debut);
-            const j = Math.ceil((d.getTime() - maintenant.getTime()) / JOUR);
-            const actif = choisi?.id === e.id;
-            return (
-              <button
-                key={e.id}
-                type="button"
-                onClick={() => choisir(e, true)}
-                className={cn(
-                  "ruban-carte w-64 shrink-0 snap-start rounded-lg border bg-surface p-4 text-left shadow-card transition-[transform,border-color] hover:-translate-y-0.5",
-                  actif ? "border-transparent ring-2" : "border-line",
-                )}
-                style={{ animationDelay: `${i * 40}ms`, ["--tw-ring-color" as string]: TYPES_AGENDA[e.type].couleur }}
-              >
-                <span className="flex items-baseline justify-between gap-2">
-                  <span className="flex items-center gap-2 text-xs font-semibold" style={{ color: TYPES_AGENDA[e.type].couleur }}>
-                    <span aria-hidden className="size-2 rounded-full" style={{ background: TYPES_AGENDA[e.type].couleur }} />
-                    {TYPES_AGENDA[e.type].label}
-                  </span>
-                  <span className={cn("tabular font-display text-sm font-bold", j <= 7 ? "text-cta-deep" : "text-text")}>{j <= 0 ? "En cours" : j === 1 ? "Demain" : `J-${j}`}</span>
-                </span>
-                <span className="mt-1 block truncate font-semibold text-text">{e.titre}</span>
-                <span className="mt-1 block truncate text-xs text-text-3">
-                  {dateFr(d)}
-                  {e.lieu ? `, ${e.lieu}` : ""}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
-
-      <section className="overflow-hidden rounded-lg border border-line bg-surface shadow-card">
+      <div className="overflow-hidden rounded-md border border-line">
         {/* Barre d'outils */}
         <div className="flex flex-wrap items-center gap-3 border-b border-line px-6 py-4">
           <div className="flex items-center gap-1">
@@ -533,7 +479,7 @@ export function PageCalendrier({ elements, admin }: { elements: ElementAgenda[];
           </div>
           <p className="mt-2 text-xs text-text-3">Glissez la frise ou la fenêtre pour vous déplacer. Cliquez sur un événement pour le détail.</p>
         </div>
-      </section>
+      </div>
 
       {/* Détail */}
       {choisi ? (

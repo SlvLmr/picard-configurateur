@@ -19,7 +19,6 @@ export async function publierAnnonce(f: {
   if (error) return { ok: false, message: error.message };
   revalidatePath("/administration/contenus");
   revalidatePath("/accueil");
-  revalidatePath("/news");
   return { ok: true, message: "Message envoyé" };
 }
 
