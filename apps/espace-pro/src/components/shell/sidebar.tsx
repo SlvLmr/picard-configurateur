@@ -93,7 +93,7 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
         </ul>
         {sections.map((s) => (
           <div key={s.titre}>
-            <p className="px-3 pb-1 text-xs font-bold uppercase italic tracking-wider text-cta" style={{ fontVariationSettings: '"wdth" 112' }}>
+            <p className="truncate whitespace-nowrap px-3 pb-1 text-xs font-bold uppercase tracking-wide text-cta" style={{ fontVariationSettings: '"wdth" 88' }}>
               {s.titre}
             </p>
             <ul className="flex flex-col">
