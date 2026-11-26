@@ -69,3 +69,15 @@ Projet **Commerce**, partagé avec l'outil Commerce existant. Toutes les tables 
 
 ## Aperçu des profils (administrateur)
 Personas disponibles : répartitrice (Claire), commercial (Julien), directeur commercial (Philippe), client IAP Elite (Marc).
+
+## Règle : une logique réutilisable par le web et la future application mobile
+Une application iPhone et Android (React Native, Expo) est prévue pour le terrain. Pour qu'elle ne soit qu'un travail d'interface :
+- **Règles métier et écritures dans la base** : chaque action passe par une fonction Supabase (`ep_…`) qui contrôle le rôle. Les actions serveur Next.js ne font qu'appeler ces fonctions puis rafraîchir l'affichage ; elles ne contiennent pas de règle propre.
+- **Lectures par la base** : tables avec RLS ou fonctions `ep_…`, jamais de calcul de droits côté interface.
+- **Pas de logique dans les composants** : calculs, formats, libellés et types vont dans `src/lib/` (sans dépendance à Next.js), pour être déplacés dans un paquet partagé du monorepo.
+- **Fichiers** : stockage Supabase avec règles d'accès ; liens signés générés par la base ou une fonction partagée.
+- **Notifications** : la base remplit la file `ep_notifications` ; l'expéditeur (aujourd'hui e-mail et SMS par Brevo) pourra ajouter le push mobile sans changer la logique.
+
+## Application installable (PWA)
+- Manifeste : `src/app/manifest.ts` ; icônes : `public/icons/` ; service worker : `public/sw.js` (cache des fichiers statiques uniquement, pages toujours servies en direct) ; page `/hors-ligne`.
+- Sur iPhone : Safari, Partager, « Sur l'écran d'accueil ». Sur Android : Chrome propose « Installer l'application ».

@@ -4,7 +4,7 @@ import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase/config";
 
 const PAGE_CONNEXION = "/connexion";
 /** Pages accessibles sans être connecté. */
-const PAGES_PUBLIQUES = ["/connexion", "/mot-de-passe-oublie", "/rejoindre", "/auth/confirmer"];
+const PAGES_PUBLIQUES = ["/connexion", "/mot-de-passe-oublie", "/rejoindre", "/auth/confirmer", "/hors-ligne", "/manifest.webmanifest", "/sw.js"];
 
 /**
  * Accès réservé : toute page exige une session (identifiant + mot de passe).

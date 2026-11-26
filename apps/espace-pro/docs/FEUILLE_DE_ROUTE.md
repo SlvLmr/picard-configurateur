@@ -17,6 +17,9 @@ Méthode : une rubrique à la fois. Fiche d'une page (fonctions, vue par rôle),
 - **Navision** : confirmer le format de l'export (intitulés des colonnes) et l'endroit où le code lead est saisi sur la commande.
 - **Newsletters** : images hébergées (aujourd'hui par adresse web) et désinscription.
 
+## Plus tard
+- **Application mobile iPhone et Android** (React Native, Expo) pour le terrain : leads avec notifications push, SAV avec photos, messages et agenda, médiathèque hors connexion, tournées avec GPS. Règle déjà appliquée : toute la logique métier reste réutilisable (voir ARCHITECTURE.md). En attendant : l'application installable (PWA).
+
 ## Réglages en attente (côté Sylvain)
 - Clé d'API Brevo dans Vercel (BREVO_API_KEY, BREVO_EXPEDITEUR_EMAIL) pour envoyer les e-mails et SMS.
 - URL de redirection Supabase : https://espace-pro-picard.vercel.app/auth/confirmer (et le domaine psi).
