@@ -59,7 +59,7 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
           onClick={onNavigate}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-1 text-sm font-medium transition-colors",
+            "flex items-center gap-3 rounded-md px-3 py-1 text-[13px] font-medium leading-5 transition-colors",
             active ? "bg-white/20 text-white shadow-sm" : "text-nav-text hover:bg-white/10 hover:text-white",
           )}
         >
