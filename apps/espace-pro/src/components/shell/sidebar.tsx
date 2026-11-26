@@ -108,7 +108,7 @@ export function Sidebar({
         {sections.map((s) => (
           <div key={s.titre}>
             {replie ? <span aria-hidden className="mx-auto mb-2 hidden h-px w-6 lg:block" style={{ background: "color-mix(in srgb, var(--cta) 60%, transparent)" }} /> : null}
-            <p className={cn("truncate whitespace-nowrap px-3 pb-1 text-xs font-bold uppercase tracking-wide text-cta", replie && "lg:sr-only")} style={{ fontVariationSettings: '"wdth" 88' }}>
+            <p className={cn("truncate whitespace-nowrap px-3 pb-1 text-xs font-bold uppercase text-cta", replie && "lg:sr-only")} style={{ fontVariationSettings: '"wdth" 80' }}>
               {s.titre}
             </p>
             <ul className="flex flex-col">

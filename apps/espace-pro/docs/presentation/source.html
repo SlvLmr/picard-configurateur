@@ -1,347 +1,311 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>Espace Pro Picard Serrures</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=block" rel="stylesheet">
-<style>
-  @page { size: A4; margin: 0; }
-  :root { --nuit: #0b2545; --nuit2: #13315c; --or: #e3a92b; --or-pale: #fbf1dc; --encre: #1b2a3f; --gris: #5f6f86; --fond: #f6f1e9; --ligne: #e7dfd2; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Archivo, Arial, sans-serif; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .page { width: 210mm; height: 297mm; position: relative; overflow: hidden; page-break-after: always; background: #fff; padding: 22mm 20mm 18mm; }
-  .page:last-child { page-break-after: auto; }
-  .pied { position: absolute; left: 20mm; right: 20mm; bottom: 10mm; display: flex; justify-content: space-between; font-size: 9pt; color: var(--gris); border-top: 1px solid var(--ligne); padding-top: 3mm; }
-  .sur { font-size: 10pt; font-weight: 700; color: var(--or); letter-spacing: .08em; text-transform: uppercase; font-variation-settings: "wdth" 100; }
-  h1 { font-size: 34pt; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; font-variation-settings: "wdth" 92; }
-  h2 { font-size: 24pt; line-height: 1.1; font-weight: 800; color: var(--nuit); letter-spacing: -.01em; font-variation-settings: "wdth" 95; margin: 2mm 0 5mm; }
-  h3 { font-size: 13pt; font-weight: 700; color: var(--nuit); margin-bottom: 1.5mm; }
-  p { font-size: 10.5pt; line-height: 1.55; }
-  .intro { font-size: 12pt; line-height: 1.55; color: var(--gris); max-width: 160mm; }
-  .grille2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
-  .grille3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; }
-  .carte { border: 1px solid var(--ligne); border-radius: 4mm; padding: 5mm; background: #fff; }
-  .carte p { font-size: 9.8pt; color: #33445c; }
-  .carte.nuit { background: var(--nuit); border-color: var(--nuit); color: #fff; }
-  .carte.nuit h3 { color: var(--or); }
-  .carte.nuit p { color: #d6deea; }
-  .carte.or { background: var(--or-pale); border-color: #f0dcae; }
-  ul.puces { list-style: none; margin-top: 2mm; }
-  ul.puces li { position: relative; padding-left: 5mm; font-size: 9.8pt; line-height: 1.5; margin-bottom: 1.2mm; color: #33445c; }
-  ul.puces li::before { content: ""; position: absolute; left: 0; top: 2.1mm; width: 2mm; height: 2mm; border-radius: 50%; background: var(--or); }
-  .carte.nuit ul.puces li { color: #d6deea; }
-  .pastille { display: inline-block; font-size: 8pt; font-weight: 700; padding: .6mm 2.4mm; border-radius: 99px; background: var(--or-pale); color: #8a5a00; margin-left: 2mm; vertical-align: middle; }
-  .pastille.bientot { background: #e6eefb; color: #1f4f9a; }
-  .icone { width: 10mm; height: 10mm; border-radius: 2.5mm; background: var(--nuit); display: flex; align-items: center; justify-content: center; margin-bottom: 3mm; }
-  .icone svg { width: 5.5mm; height: 5.5mm; stroke: var(--or); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .citation { border-left: 1.5mm solid var(--or); padding: 2mm 0 2mm 5mm; font-size: 14pt; line-height: 1.4; font-weight: 600; color: var(--nuit); margin: 6mm 0; }
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Espace Pro Picard Serrures</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=block" rel="stylesheet"><style>@page { size: A4; margin: 0; }
+:root { --nuit: #0b2545; --nuit2: #13315c; --or: #e3a92b; --or-fonce: #b07d12; --or-pale: #fbf1dc; --encre: #1b2a3f; --gris: #5f6f86; --fond: #f6f1e9; --ligne: #e7dfd2; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Archivo, Arial, sans-serif; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 210mm; height: 297mm; position: relative; overflow: hidden; page-break-after: always; background: #fff; padding: 20mm 18mm 18mm; }
+.page::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 3mm; background: linear-gradient(90deg, var(--nuit), var(--nuit2) 70%, var(--or)); }
+.page:last-child { page-break-after: auto; }
+.couverture::before, .final::before { display: none; }
+.mt { margin-top: 7mm; }
+.ic { width: 100%; height: 100%; }
+.si { width: 4mm; height: 4mm; vertical-align: -0.8mm; margin-right: 1.5mm; }
+.pi { width: 3.2mm; height: 3.2mm; vertical-align: -0.6mm; margin-right: 1mm; }
+.pied { position: absolute; left: 18mm; right: 18mm; bottom: 9mm; display: flex; justify-content: space-between; align-items: center; font-size: 8.5pt; color: var(--gris); border-top: 1px solid var(--ligne); padding-top: 3mm; }
+.pied span:last-child { font-weight: 800; color: var(--nuit); font-size: 10pt; }
+.sur { font-size: 9.5pt; font-weight: 800; color: var(--or-fonce); letter-spacing: .1em; text-transform: uppercase; }
+h1 { font-size: 40pt; line-height: 1.03; font-weight: 800; letter-spacing: -.02em; font-variation-settings: "wdth" 92; }
+h2 { font-size: 25pt; line-height: 1.08; font-weight: 800; color: var(--nuit); letter-spacing: -.015em; font-variation-settings: "wdth" 94; margin: 2.5mm 0 4mm; }
+h3 { font-size: 12pt; font-weight: 750; color: var(--nuit); margin-bottom: 1.4mm; }
+p { font-size: 10pt; line-height: 1.55; }
+.intro { font-size: 11.5pt; line-height: 1.55; color: var(--gris); max-width: 165mm; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4.5mm; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; }
+.tuile { display: inline-flex; width: 10mm; height: 10mm; padding: 2.4mm; border-radius: 2.6mm; background: linear-gradient(145deg, var(--nuit2), var(--nuit)); color: var(--or); box-shadow: 0 1.5mm 3mm rgba(11,37,69,.18); flex-shrink: 0; }
+.carte { border: 1px solid var(--ligne); border-radius: 4mm; padding: 5mm; background: #fff; box-shadow: 0 1mm 3mm rgba(11,37,69,.05); }
+.carte .tuile { margin-bottom: 3mm; }
+.carte p { font-size: 9.6pt; color: #33445c; }
+.carte ul { list-style: none; margin-top: 1.5mm; }
+.carte li { position: relative; padding-left: 4.5mm; font-size: 9.4pt; line-height: 1.45; margin-bottom: 1.1mm; color: #33445c; }
+.carte li::before { content: ""; position: absolute; left: 0; top: 1.9mm; width: 1.8mm; height: 1.8mm; border-radius: 50%; background: var(--or); }
+.carte .col2 { columns: 2; column-gap: 8mm; }
+.carte.large { grid-column: span 2; }
+.carte.nuit { background: linear-gradient(150deg, var(--nuit2), var(--nuit)); border-color: var(--nuit); }
+.carte.nuit .tuile { background: rgba(255,255,255,.1); box-shadow: none; }
+.carte.nuit h3 { color: var(--or); }
+.carte.nuit p, .carte.nuit li { color: #d6deea; }
+.carte.or { background: var(--or-pale); border-color: #f0dcae; box-shadow: none; }
+.citation { position: relative; border-left: 1.5mm solid var(--or); padding: 2mm 0 2mm 5mm; font-size: 13.5pt; line-height: 1.4; font-weight: 700; color: var(--nuit); margin-top: 7mm; }
+.chiffres { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border: 1px solid var(--ligne); border-radius: 4mm; overflow: hidden; }
+.chiffres div { padding: 5mm; border-right: 1px solid var(--ligne); background: var(--fond); }
+.chiffres div:last-child { border-right: 0; }
+.chiffres svg { width: 7mm; height: 7mm; color: var(--or-fonce); display: block; margin-bottom: 2mm; }
+.chiffres b { display: block; font-size: 11.5pt; color: var(--nuit); margin-bottom: 1mm; }
+.chiffres span { font-size: 9.2pt; color: #33445c; line-height: 1.45; }
 
-  /* Couverture */
-  .couverture { background: radial-gradient(160mm 120mm at 85% 10%, rgba(227,169,43,.35), transparent 60%), radial-gradient(140mm 120mm at 0% 100%, rgba(59,130,246,.35), transparent 60%), linear-gradient(160deg, #0b2545, #13315c 55%, #0b1d36); color: #fff; padding: 26mm 22mm; }
-  .couverture .logo { height: 18mm; }
-  .couverture .signature { display: flex; align-items: center; gap: 4mm; margin-top: 5mm; width: 75mm; color: var(--or); font-weight: 700; font-size: 11pt; letter-spacing: .3em; }
-  .couverture .signature span { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--or)); }
-  .couverture .signature span:last-child { background: linear-gradient(90deg, var(--or), transparent); }
-  .couverture h1 { font-size: 44pt; margin-top: 52mm; }
-  .couverture h1 em { font-style: normal; color: var(--or); }
-  .couverture .accroche { font-size: 15pt; line-height: 1.45; color: #d6deea; margin-top: 8mm; max-width: 150mm; }
-  .couverture .trois { position: absolute; left: 22mm; right: 22mm; bottom: 26mm; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; }
-  .couverture .trois div { border-top: 1px solid rgba(255,255,255,.25); padding-top: 4mm; }
-  .couverture .trois b { display: block; font-size: 13pt; color: #fff; margin-bottom: 1mm; }
-  .couverture .trois small { font-size: 9.5pt; color: #b9c6d8; line-height: 1.45; display: block; }
-  .carres { position: absolute; right: 22mm; top: 92mm; width: 62mm; opacity: .18; }
+/* Écrans */
+.ecran { border-radius: 3mm; overflow: hidden; background: #fff; box-shadow: 0 3mm 9mm rgba(11,37,69,.22), 0 0 0 1px rgba(11,37,69,.08); }
+.ecran .barre { height: 6.5mm; background: #eef1f6; display: flex; align-items: center; gap: 1.4mm; padding: 0 3mm; border-bottom: 1px solid #e1e6ee; }
+.ecran .barre i { width: 2.2mm; height: 2.2mm; border-radius: 50%; background: #d0d6e0; display: block; }
+.ecran .barre i:nth-child(1) { background: #ff6058; } .ecran .barre i:nth-child(2) { background: #ffbd2e; } .ecran .barre i:nth-child(3) { background: #28c940; }
+.ecran .barre span { margin-left: 3mm; font-size: 7.5pt; color: var(--gris); background: #fff; border-radius: 99px; padding: .5mm 4mm; }
+.ecran img { display: block; width: 100%; }
+.ecran.grand img { max-height: 135mm; object-fit: cover; object-position: top; }
+.point { border-top: 2px solid var(--or); padding-top: 3mm; }
+.point svg { width: 6mm; height: 6mm; color: var(--nuit); display: block; margin-bottom: 1.5mm; }
+.point b { display: block; font-size: 10.5pt; color: var(--nuit); margin-bottom: .8mm; }
+.point span { font-size: 9pt; color: #33445c; line-height: 1.4; }
+.mosaique { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm 5mm; }
+.mosaique .ecran img { height: 62mm; object-fit: cover; object-position: top left; }
+.legende { margin-top: 3mm; font-size: 9pt; color: #33445c; line-height: 1.45; }
+.legende b { color: var(--nuit); }
 
-  /* Parcours */
-  .parcours { position: relative; margin-top: 4mm; }
-  .etape { display: grid; grid-template-columns: 14mm 1fr; gap: 4mm; padding-bottom: 4.2mm; position: relative; }
-  .etape::before { content: ""; position: absolute; left: 6.5mm; top: 12mm; bottom: 0; width: 1px; background: var(--ligne); }
-  .etape:last-child::before { display: none; }
-  .etape .num { width: 13mm; height: 13mm; border-radius: 50%; background: var(--nuit); color: var(--or); font-weight: 800; font-size: 12pt; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
-  .etape h3 { font-size: 11.5pt; margin: 1.5mm 0 .8mm; }
-  .etape p { font-size: 9.6pt; color: #33445c; line-height: 1.45; }
-  .etape .ou { font-size: 8.5pt; color: var(--gris); font-weight: 600; }
+/* Parcours */
+.parcours { display: flex; flex-direction: column; }
+.etape { display: grid; grid-template-columns: 15mm 1fr; gap: 4mm; padding-bottom: 3.6mm; position: relative; }
+.etape::before { content: ""; position: absolute; left: 7mm; top: 13mm; bottom: 0; width: 2px; background: linear-gradient(var(--or), var(--ligne)); }
+.etape:last-child::before { display: none; }
+.rond { position: relative; width: 14mm; height: 14mm; border-radius: 50%; background: linear-gradient(145deg, var(--nuit2), var(--nuit)); color: var(--or); padding: 3.6mm; box-shadow: 0 1.5mm 3mm rgba(11,37,69,.2); }
+.rond em { position: absolute; right: -1mm; top: -1mm; width: 5.2mm; height: 5.2mm; border-radius: 50%; background: var(--or); color: var(--nuit); font-style: normal; font-weight: 800; font-size: 8pt; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+.etape h3 { font-size: 11.5pt; margin: 1.6mm 0 .6mm; }
+.etape p { font-size: 9.4pt; color: #33445c; line-height: 1.42; }
+.etape .ou { display: inline-block; margin-top: 1mm; font-size: 8pt; color: var(--or-fonce); font-weight: 700; background: var(--or-pale); padding: .4mm 2.4mm; border-radius: 99px; }
 
-  /* Rubriques */
-  .famille { margin-bottom: 5mm; }
-  .famille .titre { font-size: 9.5pt; font-weight: 800; color: var(--or); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2mm; }
-  .rubrique { display: grid; grid-template-columns: 52mm 1fr; gap: 4mm; padding: 2.2mm 0; border-bottom: 1px solid var(--ligne); }
-  .rubrique b { font-size: 10pt; color: var(--nuit); }
-  .rubrique span { font-size: 9.4pt; color: #33445c; line-height: 1.45; }
+/* Rubriques */
+.famille { font-size: 9.5pt; font-weight: 800; color: var(--or-fonce); letter-spacing: .1em; text-transform: uppercase; margin: 5mm 0 2.5mm; display: flex; align-items: center; gap: 3mm; }
+.famille::after { content: ""; flex: 1; height: 1px; background: var(--ligne); }
+.rubs { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 5mm; }
+.rub { display: flex; gap: 3.5mm; align-items: flex-start; padding: 3.2mm; border-radius: 3mm; background: var(--fond); }
+.rub .tuile { width: 9mm; height: 9mm; padding: 2.1mm; }
+.rub b { display: block; font-size: 10.3pt; color: var(--nuit); margin-bottom: .6mm; }
+.rub > div > span { font-size: 8.9pt; color: #33445c; line-height: 1.42; display: block; }
 
-  .bandeau { background: var(--nuit); color: #fff; border-radius: 4mm; padding: 7mm 8mm; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6mm; margin-top: 6mm; }
-  .bandeau b { display: block; color: var(--or); font-size: 12pt; margin-bottom: 1mm; }
-  .bandeau small { font-size: 9.4pt; color: #d6deea; line-height: 1.45; display: block; }
+.bandeau { background: linear-gradient(150deg, var(--nuit2), var(--nuit)); color: #fff; border-radius: 4mm; padding: 6mm 7mm; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6mm; }
+.bandeau svg { width: 6.5mm; height: 6.5mm; color: var(--or); display: block; margin-bottom: 2mm; }
+.bandeau b { display: block; color: var(--or); font-size: 12pt; margin-bottom: 1mm; }
+.bandeau small { font-size: 9.2pt; color: #d6deea; line-height: 1.45; display: block; }
 
-  .final { background: linear-gradient(160deg, #0b2545, #13315c 60%, #0b1d36); color: #fff; }
-  .final h2 { color: #fff; font-size: 30pt; }
-  .final .intro { color: #d6deea; }
-  .final .carte { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.15); }
-  .final .carte h3 { color: var(--or); }
-  .final .carte p { color: #d6deea; }
-  .final .pied { color: #9fb0c6; border-color: rgba(255,255,255,.15); }
-</style>
-</head>
-<body>
+/* Couverture */
+.couverture { background: radial-gradient(150mm 120mm at 90% 0%, rgba(227,169,43,.32), transparent 60%), radial-gradient(150mm 130mm at 0% 100%, rgba(59,130,246,.35), transparent 60%), linear-gradient(160deg, #0b2545, #13315c 55%, #0b1d36); color: #fff; padding: 22mm 20mm; }
+.couverture .logo { height: 16mm; }
+.couverture .signature { display: flex; align-items: center; gap: 4mm; margin-top: 4mm; width: 70mm; color: var(--or); font-weight: 700; font-size: 10.5pt; letter-spacing: .3em; }
+.couverture .signature span { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--or)); }
+.couverture .signature span:last-child { background: linear-gradient(90deg, var(--or), transparent); }
+.couverture h1 { margin-top: 16mm; }
+.couverture h1 em { font-style: normal; color: var(--or); }
+.couverture .accroche { font-size: 12.5pt; line-height: 1.5; color: #d6deea; margin-top: 6mm; max-width: 160mm; }
+.ecran.couv { position: absolute; left: 20mm; right: 20mm; top: 140mm; }
+.ecran.couv img { height: 82mm; object-fit: cover; object-position: top; }
+.couverture .trois { position: absolute; left: 20mm; right: 20mm; bottom: 18mm; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; }
+.couverture .trois div { border-top: 1px solid rgba(255,255,255,.25); padding-top: 3.5mm; }
+.couverture .trois svg { width: 6mm; height: 6mm; color: var(--or); display: block; margin-bottom: 1.5mm; }
+.couverture .trois b { display: block; font-size: 11.5pt; color: #fff; margin-bottom: .8mm; }
+.couverture .trois small { font-size: 9pt; color: #b9c6d8; line-height: 1.4; display: block; }
 
-<!-- 1. Couverture -->
-<section class="page couverture">
+/* Dernière page */
+.final { background: radial-gradient(150mm 120mm at 100% 0%, rgba(227,169,43,.25), transparent 60%), linear-gradient(160deg, #0b2545, #13315c 60%, #0b1d36); color: #fff; }
+.final h2 { color: #fff; font-size: 28pt; }
+.final .sur { color: var(--or); }
+.final .intro { color: #d6deea; }
+.final-g { display: grid; grid-template-columns: 1fr 52mm; gap: 8mm; align-items: start; }
+.final .menu { width: 52mm; border-radius: 3mm; box-shadow: 0 4mm 10mm rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.12); margin-top: 6mm; }
+.liste-f { display: flex; flex-direction: column; gap: 5mm; }
+.liste-f > div { display: flex; gap: 4mm; align-items: flex-start; }
+.liste-f .tuile { background: rgba(255,255,255,.1); box-shadow: none; }
+.liste-f b { display: block; color: var(--or); font-size: 11.5pt; margin-bottom: .8mm; }
+.liste-f span { font-size: 9.6pt; color: #d6deea; line-height: 1.45; }
+.final .citation { color: #fff; font-size: 15pt; margin-top: 12mm; }
+.final .pied { color: #9fb0c6; border-color: rgba(255,255,255,.15); }
+.final .pied span:last-child { color: #fff; }
+
+.vitrine { margin-top: 7mm; display: grid; grid-template-columns: 1.35fr 1fr; gap: 6mm; align-items: center; }
+.vitrine .ecran img { height: 64mm; object-fit: cover; object-position: top; }
+.vitrine h3 { font-size: 13pt; }
+.vitrine p { font-size: 9.8pt; color: #33445c; }
+.vitrine.compacte { margin-top: 5mm; } .vitrine.compacte .ecran img { height: 52mm; }
+</style></head><body><section class="page couverture">
   <img class="logo" src="logo-blanc.svg" alt="Picard Serrures">
   <div class="signature"><span></span>ESPACE PRO<span></span></div>
-  <svg class="carres" viewBox="5 23 43 43"><path fill="#fff" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>
   <h1>Tout l’écosystème Picard,<br><em>dans une seule plateforme.</em></h1>
-  <p class="accroche">Leads, configurateur, SAV, commandes, documentation, opérations, fidélité et pilotage : l’Espace Pro réunit l’ensemble du réseau Picard Serrures autour d’un outil unique, pensé pour vendre plus, servir mieux et dépenser moins.</p>
+  <p class="accroche">Leads, configurateur, SAV, commandes, documentation, opérations, fidélité et pilotage : l’Espace Pro réunit tout le réseau Picard Serrures autour d’un outil unique, pensé pour vendre plus, servir mieux et dépenser moins.</p>
+  <figure class="ecran couv"><div class="barre"><i></i><i></i><i></i><span>espace-pro-picard.vercel.app</span></div><img src="accueil.png" alt=""></figure>
   <div class="trois">
-    <div><b>Développer les ventes</b><small>Chaque demande de client final devient une opportunité suivie jusqu’à la commande.</small></div>
-    <div><b>Fidéliser le réseau</b><small>Un espace qui donne aux installateurs toutes les raisons de choisir Picard, chaque jour.</small></div>
-    <div><b>Optimiser les ressources</b><small>Moins de saisies, moins d’envois, moins d’outils : plus de temps pour le terrain.</small></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg><b>Développer les ventes</b><small>Chaque demande devient une opportunité suivie jusqu’à la commande.</small></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><b>Fidéliser le réseau</b><small>Toutes les raisons de choisir Picard, chaque jour.</small></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"/><path d="M15 6h1v4"/><path d="m6.134 14.768.866-.5 2 3.464"/><circle cx="16" cy="8" r="6"/></svg><b>Optimiser les ressources</b><small>Moins de saisies, d’envois et d’outils.</small></div>
   </div>
-</section>
-
-<!-- 2. Pourquoi -->
-<section class="page">
-  <p class="sur">Pourquoi l’Espace Pro</p>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Pourquoi l’Espace Pro</p>
   <h2>Un réseau plus fort quand tout le monde travaille au même endroit</h2>
-  <p class="intro">Aujourd’hui, l’information circule par e-mails, tableurs, appels et documents éparpillés. Chaque relais coûte du temps, fait perdre des opportunités et brouille l’image de marque. L’Espace Pro remplace cette dispersion par une expérience unique, cohérente et mesurable, du premier contact client jusqu’à la fidélisation.</p>
-
-  <div class="grille2" style="margin-top:8mm">
-    <div class="carte">
-      <div class="icone"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
-      <h3>Réactivité commerciale</h3>
-      <p>Les demandes de devis arrivent qualifiées, au bon installateur, avec un délai de réponse encadré et des relances automatiques. Plus aucun lead ne dort dans une boîte mail.</p>
-    </div>
-    <div class="carte">
-      <div class="icone"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-      <h3>Gain de temps pour tous</h3>
-      <p>Un seul identifiant, un seul outil : les équipes et les clients retrouvent en quelques secondes ce qu’ils cherchaient hier dans cinq outils différents.</p>
-    </div>
-    <div class="carte">
-      <div class="icone"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-8-8"/><path d="M20 4v5h-5"/></svg></div>
-      <h3>Fidélisation durable</h3>
-      <p>Points, boutique, opérations nationales, parrainage, enquêtes de satisfaction : l’installateur vit la marque au quotidien et a de vraies raisons de rester.</p>
-    </div>
-    <div class="carte">
-      <div class="icone"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></div>
-      <h3>Pilotage par la donnée</h3>
-      <p>Chaque action laisse une trace : la direction suit l’activité, la transformation et le retour sur investissement en temps réel, sans attendre les reportings mensuels.</p>
-    </div>
+  <p class="intro">Aujourd’hui, l’information circule par e-mails, tableurs, appels et documents éparpillés. Chaque relais coûte du temps, fait perdre des opportunités et brouille l’image de marque. L’Espace Pro remplace cette dispersion par une expérience unique, cohérente et mesurable.</p>
+  <div class="g2 mt">
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg></span><h3>Réactivité commerciale</h3><p>Les demandes arrivent qualifiées, au bon installateur, avec un délai de réponse encadré et des relances automatiques. Plus aucun lead ne dort dans une boîte mail.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span><h3>Du temps gagné pour tous</h3><p>Un seul identifiant, un seul outil : équipes et clients trouvent en quelques secondes ce qu’ils cherchaient hier dans cinq outils différents.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span><h3>Une fidélisation durable</h3><p>Points, boutique, opérations nationales, parrainage, enquêtes : l’installateur vit la marque au quotidien et a de vraies raisons de rester.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span><h3>Un pilotage par la donnée</h3><p>Chaque action laisse une trace : la direction suit l’activité, la transformation et le retour sur investissement en temps réel.</p></div>
   </div>
-
+  <div class="chiffres mt">
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg><b>Le réseau</b><span>Des leads, des outils de vente, une documentation à jour et un service réactif.</span></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg><b>Les équipes</b><span>Moins de tâches répétitives, des priorités claires, une vision complète du client.</span></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg><b>La direction</b><span>Des indicateurs fiables, des coûts maîtrisés, une stratégie déployée jusqu’au terrain.</span></div>
+  </div>
   <p class="citation">Un outil unique pour le réseau, une expérience premium pour les installateurs, une maîtrise totale pour Picard.</p>
-
-  <div class="grille3">
-    <div class="carte or"><h3>Pour le réseau</h3><p>Des leads, des outils de vente, une documentation toujours à jour et un service réactif.</p></div>
-    <div class="carte or"><h3>Pour les équipes</h3><p>Moins de tâches répétitives, des priorités claires, une vision complète de chaque client.</p></div>
-    <div class="carte or"><h3>Pour la direction</h3><p>Des indicateurs fiables, des coûts maîtrisés et une stratégie déployée jusqu’au terrain.</p></div>
-  </div>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>2</span></div>
-</section>
-
-<!-- 3. Parcours client -->
-<section class="page">
-  <p class="sur">Le parcours client de bout en bout</p>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>02</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8.5a1 1 0 010 7h-11a1 1 0 000 7H15"/><circle cx="18" cy="19" r="3"/><circle cx="6" cy="5" r="3"/></svg> Le parcours client de bout en bout</p>
   <h2>De la demande du particulier à la fidélité de l’installateur</h2>
-  <p class="intro">L’Espace Pro accompagne chaque étape et relie tous les acteurs : le client final, l’installateur, le commercial, le Lead Manager, le SAV et la direction.</p>
-  <div class="parcours" style="margin-top:6mm">
-    <div class="etape"><div class="num">1</div><div><h3>La demande arrive</h3><p>Formulaire du site, configurateur, appel : chaque demande entre dans l’Espace Pro, complète et horodatée.</p><span class="ou">Lead Management</span></div></div>
-    <div class="etape"><div class="num">2</div><div><h3>Elle est qualifiée et orientée</h3><p>Le Lead Manager évalue la température du projet et l’attribue au bon installateur du secteur, ou au commercial si besoin, grâce au zoning.</p><span class="ou">Lead Management, Zoning</span></div></div>
-    <div class="etape"><div class="num">3</div><div><h3>L’installateur est prévenu et accepte</h3><p>E-mail et SMS immédiats, compte à rebours visible : l’installateur accepte en un clic et obtient les coordonnées du client.</p><span class="ou">Gestion des leads</span></div></div>
-    <div class="etape"><div class="num">4</div><div><h3>Il conseille, configure et chiffre</h3><p>Le configurateur de portes, la médiathèque et les argumentaires l’aident à convaincre et à produire un devis juste, rapidement.</p><span class="ou">Configurateur portes, Médiathèque</span></div></div>
-    <div class="etape"><div class="num">5</div><div><h3>La commande est passée et rapprochée</h3><p>La commande est rattachée au lead : Picard mesure enfin la transformation réelle et le chiffre d’affaires généré par chaque canal.</p><span class="ou">Commandes Navision, Commande serrures</span></div></div>
-    <div class="etape"><div class="num">6</div><div><h3>La pose et le service après-vente</h3><p>Une déclaration SAV en quelques minutes, photos à l’appui, et un suivi transparent jusqu’à la résolution.</p><span class="ou">SAV, SAV Management</span></div></div>
-    <div class="etape"><div class="num">7</div><div><h3>La satisfaction est mesurée</h3><p>Enquêtes automatiques auprès du client et de l’installateur : chaque retour devient une piste d’amélioration.</p><span class="ou">Enquêtes et sondages</span></div></div>
-    <div class="etape"><div class="num">8</div><div><h3>La fidélité est récompensée</h3><p>Points, boutique, opérations nationales et parrainage : plus l’installateur travaille avec Picard, plus il y gagne.</p><span class="ou">Boutique, Opérations nationales</span></div></div>
+  <p class="intro">Chaque étape est accompagnée, chaque acteur est relié : client final, installateur, commercial, Lead Manager, SAV et direction.</p>
+  <div class="parcours mt"><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M2 15h10"/><path d="m9 18 3-3-3-3"/></svg><em>1</em></div><div><h3>La demande arrive</h3><p>Formulaire du site, configurateur, appel : chaque demande entre dans l’Espace Pro, complète et horodatée.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Lead Management</span></div></div><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 11 2 2 4-4"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><em>2</em></div><div><h3>Elle est qualifiée et orientée</h3><p>Le Lead Manager évalue la température du projet et l’attribue au bon installateur du secteur grâce au zoning.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Lead Management, Zoning</span></div></div><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg><em>3</em></div><div><h3>L’installateur accepte en un clic</h3><p>E-mail et SMS immédiats, compte à rebours visible, coordonnées du client débloquées à l’acceptation.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Gestion des leads</span></div></div><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg><em>4</em></div><div><h3>Il conseille, configure et chiffre</h3><p>Configurateur, médiathèque et argumentaires pour convaincre et produire un devis juste, rapidement.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Configurateur portes, Médiathèque</span></div></div><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V7"/><path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8"/><path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z"/></svg><em>5</em></div><div><h3>La commande est passée et rapprochée</h3><p>La commande est rattachée au lead : la transformation réelle et le chiffre d’affaires par canal sont mesurés.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Commandes Navision, Commande serrures</span></div></div><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></svg><em>6</em></div><div><h3>La pose et le service après-vente</h3><p>Déclaration SAV en quelques minutes, photos à l’appui, suivi transparent jusqu’à la résolution.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> SAV, SAV Management</span></div></div><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><em>7</em></div><div><h3>La satisfaction est mesurée</h3><p>Enquêtes automatiques auprès du client et de l’installateur : chaque retour devient un levier de progrès.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Enquêtes et sondages</span></div></div><div class="etape"><div class="rond"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5"/><rect x="3" y="7" width="18" height="4" rx="1"/></svg><em>8</em></div><div><h3>La fidélité est récompensée</h3><p>Points, boutique, opérations nationales et parrainage : plus l’installateur travaille avec Picard, plus il y gagne.</p><span class="ou"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Boutique, Opérations nationales</span></div></div></div>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>03</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> L’accueil</p>
+  <h2>Le tableau de bord de chaque professionnel</h2>
+  <p class="intro">Dès la connexion, chacun voit l’essentiel : ses priorités, les messages du réseau, ses indicateurs et l’agenda. Tout ce qui demande une action est mis en avant.</p>
+  <figure class="ecran grand mt"><div class="barre"><i></i><i></i><i></i><span>Accueil</span></div><img src="accueil.png" alt=""></figure>
+  <div class="g4 mt">
+    <div class="point"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg><b>Vos priorités</b><span>Leads à accepter avec compte à rebours, clients à rappeler, devis à relancer.</span></div>
+    <div class="point"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg><b>Le fil Picard</b><span>Le canal officiel de la marque, avec photos, épinglage et filtres.</span></div>
+    <div class="point"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg><b>Vos indicateurs</b><span>Points, leads reçus, taux d’acceptation et temps de réponse.</span></div>
+    <div class="point"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8.5a1 1 0 010 7h-11a1 1 0 000 7H15"/><circle cx="18" cy="19" r="3"/><circle cx="6" cy="5" r="3"/></svg><b>L’agenda du réseau</b><span>Salons, formations et opérations dans une frise interactive.</span></div>
   </div>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>3</span></div>
-</section>
-
-<!-- 4. Pour chaque public -->
-<section class="page">
-  <p class="sur">Une plateforme, cinq expériences</p>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>04</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg> Une plateforme, cinq expériences</p>
   <h2>Chacun voit exactement ce dont il a besoin</h2>
-  <p class="intro">L’Espace Pro s’adapte au rôle de chaque utilisateur : ses rubriques, son accueil, ses priorités. L’administrateur peut voir la plateforme avec les yeux de n’importe quel profil pour l’accompagner au mieux.</p>
-  <div class="grille2" style="margin-top:7mm">
-    <div class="carte nuit">
-      <h3>Installateurs et réseau IAP</h3>
-      <ul class="puces">
-        <li>Des leads qualifiés de leur secteur, notifiés par e-mail et SMS</li>
-        <li>Un accueil qui affiche leurs priorités du jour</li>
-        <li>Configurateur, documentation et kits de communication locale</li>
-        <li>SAV, commandes et reproductions de clés au même endroit</li>
-        <li>Points, boutique et opérations pour être récompensés</li>
-      </ul>
-    </div>
-    <div class="carte">
-      <h3>Commerciaux (ATC)</h3>
-      <ul class="puces">
-        <li>Une vision complète de chaque client : activité, leads, SAV</li>
-        <li>CRM, planning des tournées et préparation des visites</li>
-        <li>Gestion des opérations commerciales sur leur secteur</li>
-        <li>Des sujets de visite concrets : leads en attente, réclamations</li>
-      </ul>
-    </div>
-    <div class="carte">
-      <h3>Lead Manager et marketing</h3>
-      <ul class="puces">
-        <li>Un poste de pilotage des leads : qualification, attribution, carte</li>
-        <li>Campagnes e-mail, enquêtes et visibilité en ligne mesurées</li>
-        <li>Opérations nationales et parrainage créés en quelques clics</li>
-        <li>Statistiques de transformation et de satisfaction</li>
-      </ul>
-    </div>
-    <div class="carte">
-      <h3>SAV et qualité</h3>
-      <ul class="puces">
-        <li>Des demandes complètes dès le départ, photos comprises</li>
-        <li>Une file de traitement claire et des échanges tracés</li>
-        <li>Le pilotage des délais, des défauts et des coûts</li>
-      </ul>
-    </div>
-    <div class="carte or" style="grid-column: span 2">
-      <h3>Direction</h3>
-      <ul class="puces" style="columns:2; column-gap:8mm">
-        <li>Les indicateurs clés de l’activité, en temps réel</li>
-        <li>Le plan stratégique Picard 2030 partagé et suivi</li>
-        <li>Le paramétrage des opérations commerciales</li>
-        <li>Une maîtrise complète des droits et des contenus</li>
-      </ul>
-    </div>
+  <p class="intro">L’Espace Pro s’adapte au rôle de chaque utilisateur : ses rubriques, son accueil, ses priorités. L’administrateur peut voir la plateforme avec les yeux de n’importe quel profil.</p>
+  <div class="g2 mt">
+    <div class="carte nuit"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg></span><h3>Installateurs et réseau IAP</h3><ul>
+      <li>Leads qualifiés du secteur, notifiés par e-mail et SMS</li><li>Un accueil qui affiche les priorités du jour</li>
+      <li>Configurateur, documentation, kits de communication locale</li><li>SAV, commandes et reproductions de clés au même endroit</li>
+      <li>Points, boutique et opérations pour être récompensés</li></ul></div>
+    <div class="carte"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span><h3>Commerciaux (ATC)</h3><ul>
+      <li>Une vision complète de chaque client : activité, leads, SAV</li><li>CRM et planning des tournées</li>
+      <li>Gestion des opérations sur leur secteur</li><li>Des sujets de visite concrets à chaque rendez-vous</li></ul></div>
+    <div class="carte"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg></span><h3>Lead Manager et marketing</h3><ul>
+      <li>Qualification, attribution, carte et zoning des leads</li><li>Campagnes e-mail, enquêtes et visibilité en ligne</li>
+      <li>Opérations nationales et parrainage en quelques clics</li><li>Statistiques de transformation et de satisfaction</li></ul></div>
+    <div class="carte"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span><h3>SAV et qualité</h3><ul>
+      <li>Des demandes complètes dès le départ, photos comprises</li><li>Une file de traitement claire et des échanges tracés</li>
+      <li>Le pilotage des délais, des défauts et des coûts</li></ul></div>
+    <div class="carte or large"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.747 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z"/><path d="m6.158 8.633 1.114 4.456"/><path d="m8 21 3.105-6.21"/><circle cx="12" cy="13" r="2"/></svg></span><h3>Direction</h3><ul class="col2">
+      <li>Les KPI de l’activité en temps réel</li><li>Le plan stratégique Picard 2030 partagé et suivi</li>
+      <li>Le paramétrage des opérations commerciales</li><li>La maîtrise complète des droits et des contenus</li></ul></div>
   </div>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>4</span></div>
-</section>
-
-<!-- 5. Rubriques -->
-<section class="page">
-  <p class="sur">Les rubriques</p>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>05</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Les rubriques</p>
   <h2>Un écosystème complet, au service de tout le réseau</h2>
-  <div class="famille">
-    <p class="titre">Communication et marketing</p>
-    <div class="rubrique" style="padding:3mm 0"><b>Accueil</b><span>Priorités du jour, canal de messages officiel de Picard avec photos, agenda du réseau en frise interactive.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Médiathèque</b><span>Catalogues, notices, vidéos et photos classés par gamme et par produit, avec aperçu instantané et téléchargement.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Gestion des leads</b><span>Les demandes de devis du secteur, à accepter dans le délai, puis suivies jusqu’à la pose.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Boîte à outils local</b><span>Kits et supports pour animer sa communication locale aux couleurs de Picard.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Opérations nationales</b><span>Offres, remboursements et parrainage : participation et suivi des dossiers en ligne.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Boutique</b><span>Les points de fidélité convertis en récompenses, avec validation et suivi des commandes.</span></div>
+  <p class="famille">Communication et marketing</p>
+  <div class="rubs">
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><div><b>Accueil</b><span>Priorités du jour, canal de messages officiel avec photos, agenda du réseau en frise interactive.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg></span><div><b>Médiathèque</b><span>Catalogues, notices, vidéos et photos par gamme et par produit, avec aperçu instantané.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span><div><b>Gestion des leads</b><span>Les demandes de devis du secteur, acceptées dans le délai puis suivies jusqu’à la pose.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></svg></span><div><b>Boîte à outils local</b><span>Kits et supports pour animer sa communication locale aux couleurs de Picard.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></span><div><b>Opérations nationales</b><span>Offres, remboursements et parrainage, avec participation et suivi des dossiers en ligne.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg></span><div><b>Boutique</b><span>Les points de fidélité convertis en récompenses, avec validation et suivi des commandes.</span></div></div>
   </div>
-  <div class="famille">
-    <p class="titre">Technique et commandes</p>
-    <div class="rubrique" style="padding:3mm 0"><b>SAV</b><span>Déclaration guidée, pièces jointes, échanges et suivi en temps réel de chaque demande.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Configurateur portes</b><span>Configurer une porte en quelques minutes et obtenir un chiffrage fiable.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Commande serrures</b><span>Commander serrures, cylindres et pièces avec ses conditions, suivre livraisons et factures, recommander en un clic.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Reproduction de clés</b><span>Demandes de clés protégées dématérialisées, justificatifs joints, suivi jusqu’à l’expédition.</span></div>
+  <p class="famille">Technique et commandes</p>
+  <div class="rubs">
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span><div><b>SAV</b><span>Déclaration guidée, pièces jointes, échanges et suivi en temps réel de chaque demande.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg></span><div><b>Configurateur portes</b><span>Configurer une porte en quelques minutes et obtenir un chiffrage fiable.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></span><div><b>Commande serrures</b><span>Serrures, cylindres et pièces aux conditions du client, livraisons et factures, recommande en un clic.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></span><div><b>Reproduction de clés</b><span>Demandes de clés protégées dématérialisées, justificatifs joints, suivi jusqu’à l’expédition.</span></div></div>
   </div>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>5</span></div>
-</section>
-
-<!-- 5 bis. Rubriques, suite -->
-<section class="page">
-  <p class="sur">Les rubriques</p>
+  <div class="vitrine">
+    <figure class="ecran "><div class="barre"><i></i><i></i><i></i><span>Médiathèque</span></div><img src="apercu.png" alt=""></figure>
+    <div><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></span><h3 style="margin-top:3mm">Un document, un clic</h3><p>Catalogues, notices, photos et vidéos s’ouvrent en aperçu instantané, comme sur un ordinateur : flèches pour passer au suivant, téléchargement en un geste. L’argumentaire est toujours à portée de main, en rendez-vous comme au bureau.</p></div>
+  </div>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>06</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Les rubriques</p>
   <h2>Des outils pour vendre, piloter et animer</h2>
-  <div class="famille">
-    <p class="titre">Outils commerciaux</p>
-    <div class="rubrique" style="padding:3mm 0"><b>CRM</b><span>Fiche client complète, actions, contacts et historique partagés par toute l’équipe.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Planning des tournées</b><span>Préparer et optimiser ses visites, ne rien oublier sur le terrain.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Gestion opérations</b><span>Déployer les opérations chez ses clients, suivre la participation et les résultats.</span></div>
+  <p class="famille">Outils commerciaux</p>
+  <div class="rubs">
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v2"/><path d="M7 21v-2a2 2 0 012-2h6a2 2 0 012 2v2"/><path d="M8 2v2"/><circle cx="12" cy="10" r="3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></span><div><b>CRM</b><span>Fiche client complète, actions, contacts et historique partagés par toute l’équipe.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8.5a1 1 0 010 7h-11a1 1 0 000 7H15"/><circle cx="18" cy="19" r="3"/><circle cx="6" cy="5" r="3"/></svg></span><div><b>Planning des tournées</b><span>Préparer et optimiser ses visites, ne rien oublier sur le terrain.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></svg></span><div><b>Gestion opérations</b><span>Déployer les opérations chez ses clients, suivre la participation et les résultats.</span></div></div>
   </div>
-  <div class="famille">
-    <p class="titre">Outils direction</p>
-    <div class="rubrique" style="padding:3mm 0"><b>Picard 2030</b><span>Le plan stratégique : ambitions, chantiers, responsables et indicateurs partagés.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>KPI activité</b><span>Ventes, activité et performance par secteur, client et période.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Paramétrage opérations</b><span>Concevoir les opérations commerciales et suivre leur avancement sur le terrain.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>SAV Management</b><span>Délais, défauts récurrents, charge des intervenants, satisfaction et coût du SAV.</span></div>
+  <p class="famille">Outils direction</p>
+  <div class="rubs">
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.747 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z"/><path d="m6.158 8.633 1.114 4.456"/><path d="m8 21 3.105-6.21"/><circle cx="12" cy="13" r="2"/></svg></span><div><b>Picard 2030</b><span>Le plan stratégique : ambitions, chantiers, responsables et indicateurs partagés.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg></span><div><b>KPI activité</b><span>Ventes, activité et performance par secteur, client et période.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg></span><div><b>Paramétrage opérations</b><span>Concevoir les opérations commerciales et suivre leur avancement sur le terrain.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></svg></span><div><b>SAV Management</b><span>Délais, défauts récurrents, charge des intervenants, satisfaction et coût du SAV.</span></div></div>
   </div>
-  <div class="famille" style="margin-bottom:0">
-    <p class="titre">Outils marketing</p>
-    <div class="rubrique" style="padding:3mm 0"><b>Lead Management</b><span>Validation, qualification, attribution, carte, zoning, envois et rapprochement avec les commandes.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Visibilité en ligne</b><span>Google Ads, fréquentation du site, référencement naturel et présence dans les moteurs d’IA.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Campagnes e-mail</b><span>Newsletters composées par blocs, aperçu fidèle, envoi ciblé par public.</span></div>
-    <div class="rubrique" style="padding:3mm 0"><b>Enquêtes et sondages</b><span>Questionnaires ciblés, réponses dans l’espace, résultats et score de recommandation.</span></div>
+  <p class="famille">Outils marketing</p>
+  <div class="rubs">
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg></span><div><b>Lead Management</b><span>Validation, qualification, attribution, carte, zoning, envois et rapprochement avec les commandes.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg></span><div><b>Visibilité en ligne</b><span>Google Ads, fréquentation du site, référencement naturel et présence dans les moteurs d’IA.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></span><div><b>Campagnes e-mail</b><span>Newsletters composées par blocs, aperçu fidèle, envoi ciblé par public.</span></div></div>
+    <div class="rub"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span><div><b>Enquêtes et sondages</b><span>Questionnaires ciblés, réponses dans l’espace, résultats et score de recommandation.</span></div></div>
   </div>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>6</span></div>
-</section>
-
-<!-- 6. Coûts et ressources -->
-<section class="page">
-  <p class="sur">Optimisation des coûts et des ressources</p>
+  <div class="vitrine compacte">
+    <figure class="ecran "><div class="barre"><i></i><i></i><i></i><span>Le fil Picard</span></div><img src="visionneuse.png" alt=""></figure>
+    <div><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></svg></span><h3 style="margin-top:3mm">La marque au plus près du réseau</h3><p>Lancements, salons, chantiers remarquables : les messages et les photos partagés par Picard s’affichent en plein écran, à la manière d’une messagerie. Le réseau suit la marque en temps réel.</p></div>
+  </div>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>07</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg> En images</p>
+  <h2>Une expérience moderne, claire et agréable</h2>
+  <p class="intro">Chaque écran a été pensé pour aller à l’essentiel : lisible, rapide, et cohérent d’une rubrique à l’autre.</p>
+  <div class="mosaique mt">
+    <div><figure class="ecran "><div class="barre"><i></i><i></i><i></i><span>Agenda du réseau</span></div><img src="frise.png" alt=""></figure><p class="legende"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8.5a1 1 0 010 7h-11a1 1 0 000 7H15"/><circle cx="18" cy="19" r="3"/><circle cx="6" cy="5" r="3"/></svg> <b>Agenda en frise</b> : salons, opérations et formations, zoom année, trimestre ou mois, code couleur par type.</p></div>
+    <div><figure class="ecran "><div class="barre"><i></i><i></i><i></i><span>Le fil Picard</span></div><img src="messages.png" alt=""></figure><p class="legende"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg> <b>Canal officiel</b> : messages, photos en visionneuse, épinglage, filtres, comme une messagerie.</p></div>
+    <div><figure class="ecran "><div class="barre"><i></i><i></i><i></i><span>Campagnes e-mail</span></div><img src="newsletter.png" alt=""></figure><p class="legende"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg> <b>Campagnes e-mail</b> : rédaction par blocs, insertion des actualités, aperçu fidèle avant envoi.</p></div>
+    <div><figure class="ecran "><div class="barre"><i></i><i></i><i></i><span>Enquêtes et sondages</span></div><img src="questionnaire.png" alt=""></figure><p class="legende"><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> <b>Enquêtes</b> : score de recommandation, notes, choix et commentaires en un coup d’œil.</p></div>
+  </div>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>08</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"/><path d="M15 6h1v4"/><path d="m6.134 14.768.866-.5 2 3.464"/><circle cx="16" cy="8" r="6"/></svg> Optimisation des coûts et des ressources</p>
   <h2>Faire plus avec les mêmes équipes</h2>
   <p class="intro">L’Espace Pro automatise ce qui coûte du temps sans créer de valeur, et concentre les équipes sur ce qui fait vendre : le conseil, la relation et le terrain.</p>
-  <div class="grille2" style="margin-top:7mm">
-    <div class="carte">
-      <h3>Moins de ressaisies</h3>
-      <p>Une information saisie une fois est partagée par tous : le lead, le client, la commande et le SAV sont reliés. Fini les doubles saisies et les fichiers à réconcilier.</p>
-    </div>
-    <div class="carte">
-      <h3>Moins d’appels et d’e-mails</h3>
-      <p>Statuts visibles en ligne, notifications automatiques, réponses SAV centralisées : les relances téléphoniques et les échanges dispersés disparaissent.</p>
-    </div>
-    <div class="carte">
-      <h3>Moins d’impression et d’envois</h3>
-      <p>Catalogues, notices et kits de communication sont en ligne, toujours à jour. Plus de stocks de documents obsolètes ni d’envois postaux.</p>
-    </div>
-    <div class="carte">
-      <h3>Moins d’outils à payer et à maintenir</h3>
-      <p>Une seule plateforme remplace des solutions dispersées : un seul socle à faire évoluer, une seule base de données, un seul accès à gérer.</p>
-    </div>
-    <div class="carte">
-      <h3>Un budget marketing piloté</h3>
-      <p>Chaque lead est suivi jusqu’à la commande : on sait quel canal rapporte, on investit là où le retour est prouvé, et la facturation des leads est paramétrable.</p>
-    </div>
-    <div class="carte">
-      <h3>Des équipes recentrées sur la valeur</h3>
-      <p>Le Lead Manager, les commerciaux et le SAV disposent de files de travail claires et priorisées : moins de temps perdu, plus d’impact par personne.</p>
-    </div>
+  <div class="g2 mt">
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span><h3>Moins de ressaisies</h3><p>Une information saisie une fois est partagée par tous : lead, client, commande et SAV sont reliés. Fini les doubles saisies.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg></span><h3>Moins d’appels et d’e-mails</h3><p>Statuts en ligne, notifications automatiques, échanges SAV centralisés : les relances et les échanges dispersés disparaissent.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 22H7a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v.5"/><path d="m16 19 2 2 4-4"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/></svg></span><h3>Moins d’impression et d’envois</h3><p>Catalogues, notices et kits sont en ligne et toujours à jour. Plus de documents obsolètes ni d’envois postaux.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg></span><h3>Moins d’outils à maintenir</h3><p>Une seule plateforme remplace des solutions dispersées : un socle, une base de données, un accès.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span><h3>Un budget marketing piloté</h3><p>Chaque lead est suivi jusqu’à la commande : on investit là où le retour est prouvé, et la facturation des leads est paramétrable.</p></div>
+    <div class="carte "><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><h3>Des équipes recentrées</h3><p>Lead Manager, commerciaux et SAV disposent de files de travail claires et priorisées : plus d’impact par personne.</p></div>
   </div>
-  <div class="bandeau">
-    <div><b>Mesurer</b><small>Transformation des leads, délais de réponse, satisfaction, chiffre d’affaires rapproché.</small></div>
-    <div><b>Décider</b><small>Des indicateurs fiables pour arbitrer budgets, priorités et ressources.</small></div>
-    <div><b>Améliorer</b><small>Chaque retour client alimente un cycle d’amélioration continue.</small></div>
+  <div class="bandeau mt">
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><b>Mesurer</b><small>Transformation, délais, satisfaction, chiffre d’affaires rapproché.</small></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><b>Décider</b><small>Des indicateurs fiables pour arbitrer budgets et priorités.</small></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg><b>Améliorer</b><small>Chaque retour alimente un cycle d’amélioration continue.</small></div>
   </div>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>7</span></div>
-</section>
-
-<!-- 7. Fidélisation et expérience -->
-<section class="page">
-  <p class="sur">Fidélisation et expérience</p>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>09</span></div>
+</section><section class="page">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg> Fidélisation et expérience</p>
   <h2>Donner au réseau toutes les raisons de choisir Picard</h2>
   <p class="intro">Un installateur fidèle est un installateur bien équipé, bien informé, bien servi et récompensé. L’Espace Pro réunit ces quatre leviers dans une expérience premium, à l’image de la marque.</p>
-  <div class="grille2" style="margin-top:7mm">
-    <div class="carte nuit"><h3>Bien équipé</h3><p>Configurateur, documentation, kits de communication locale et commande en ligne : tout pour vendre Picard plus facilement que la concurrence.</p></div>
-    <div class="carte nuit"><h3>Bien informé</h3><p>Le canal de messages officiel, l’agenda des salons et formations, les nouveautés produits : le réseau vit au rythme de la marque.</p></div>
-    <div class="carte nuit"><h3>Bien servi</h3><p>Leads qualifiés, SAV réactif et transparent, reproduction de clés simplifiée : un service qui fait gagner du temps et de la crédibilité.</p></div>
-    <div class="carte nuit"><h3>Récompensé</h3><p>Points, boutique, opérations nationales, remboursements et parrainage : la fidélité devient concrète et motivante.</p></div>
+  <div class="g2 mt">
+    <div class="carte nuit"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg></span><h3>Bien équipé</h3><p>Configurateur, documentation, kits de communication locale et commande en ligne : tout pour vendre Picard plus facilement.</p></div>
+    <div class="carte nuit"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></svg></span><h3>Bien informé</h3><p>Canal officiel, agenda des salons et formations, nouveautés produits : le réseau vit au rythme de la marque.</p></div>
+    <div class="carte nuit"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>Bien servi</h3><p>Leads qualifiés, SAV réactif et transparent, clés simplifiées : un service qui fait gagner du temps et de la crédibilité.</p></div>
+    <div class="carte nuit"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5"/><rect x="3" y="7" width="18" height="4" rx="1"/></svg></span><h3>Récompensé</h3><p>Points, boutique, opérations nationales, remboursements et parrainage : la fidélité devient concrète.</p></div>
   </div>
-  <div class="grille3" style="margin-top:7mm">
-    <div class="carte or"><h3>Niveaux IAP valorisés</h3><p>Elite, Premium et Officiel bénéficient d’avantages et de contenus adaptés à leur engagement.</p></div>
-    <div class="carte or"><h3>Écoute permanente</h3><p>Enquêtes et score de recommandation : la voix du réseau et des clients pilote les améliorations.</p></div>
-    <div class="carte or"><h3>Image de marque</h3><p>Une expérience moderne et soignée qui positionne Picard comme le partenaire de référence.</p></div>
+  <div class="g3 mt">
+    <div class="carte or"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m16 9-5.5 5.5L8 12"/></svg></span><h3>Niveaux IAP valorisés</h3><p>Elite, Premium et Officiel bénéficient d’avantages et de contenus adaptés.</p></div>
+    <div class="carte or"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span><h3>Écoute permanente</h3><p>Enquêtes et score de recommandation : la voix du réseau pilote les améliorations.</p></div>
+    <div class="carte or"><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20a10 10 0 0010-10 25.9 25.9 0 00-1.04-7.281 1 1 0 00-1.755-.325C15.833 5.5 13 5.5 9.8 6.1A7 7 0 0011 20"/><path d="M2 21a5 5 0 012.911-4.544C7.613 15.212 8.351 15.24 11 13"/></svg></span><h3>Image de marque</h3><p>Une expérience moderne et soignée qui positionne Picard en référence.</p></div>
   </div>
   <p class="citation">Plus l’installateur utilise l’Espace Pro, plus il vend Picard, et plus il est récompensé : un cercle vertueux.</p>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>8</span></div>
-</section>
-
-<!-- 8. Technologie et suite -->
-<section class="page final">
-  <p class="sur">Une base solide pour l’avenir</p>
-  <h2>Moderne, sûr et disponible partout</h2>
-  <p class="intro">L’Espace Pro est construit sur des technologies actuelles et évolutives, avec une exigence de sécurité et de simplicité à chaque écran.</p>
-  <div class="grille2" style="margin-top:8mm">
-    <div class="carte"><h3>Sécurité par rôle</h3><p>Chaque utilisateur ne voit que ses données : les droits sont contrôlés par la base elle-même, et seul l’administrateur paramètre.</p></div>
-    <div class="carte"><h3>Disponible partout</h3><p>Sur ordinateur, tablette et téléphone. L’Espace Pro s’installe déjà sur l’écran d’accueil comme une application.</p></div>
-    <div class="carte"><h3>Pensé pour le terrain</h3><p>Notifications instantanées, photos prises sur chantier, consultation en déplacement : l’Espace Pro accompagne installateurs et commerciaux partout.</p></div>
-    <div class="carte"><h3>Évolutif sans rupture</h3><p>Chaque nouvelle rubrique s’ajoute au même socle : les utilisateurs gagnent des fonctions sans changer d’outil.</p></div>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>10</span></div>
+</section><section class="page final">
+  <div class="final-g">
+    <div>
+      <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg> Une base solide</p>
+      <h2>Moderne, sûr et disponible partout</h2>
+      <p class="intro">Construit sur des technologies actuelles et évolutives, avec une exigence de sécurité et de simplicité à chaque écran.</p>
+      <div class="liste-f mt">
+        <div><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><div><b>Sécurité par rôle</b><span>Chacun ne voit que ses données ; les droits sont contrôlés par la base et seul l’administrateur paramètre.</span></div></div>
+        <div><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span><div><b>Disponible partout</b><span>Ordinateur, tablette et téléphone ; l’Espace Pro s’installe sur l’écran d’accueil comme une application.</span></div></div>
+        <div><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 01-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0112 0"/><path d="M4.474 15h-.197a1 1 0 00-.969.753l-1.097 4.35a1.5 1.5 0 001.444 1.898L20.344 22a1.5 1.5 0 001.446-1.897l-1.098-4.35a1 1 0 00-.969-.753h-.197"/><circle cx="12" cy="8" r="2"/></svg></span><div><b>Pensé pour le terrain</b><span>Notifications instantanées, photos de chantier, consultation en déplacement.</span></div></div>
+        <div><span class="tuile"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg></span><div><b>Évolutif sans rupture</b><span>Chaque nouvelle rubrique s’ajoute au même socle, sans changer d’outil.</span></div></div>
+      </div>
+    </div>
+    <img class="menu" src="menu.png" alt="">
   </div>
-  <div style="margin-top:12mm">
-    <p class="sur">Ce que l’Espace Pro change pour Picard</p>
-    <ul class="puces" style="margin-top:4mm">
-      <li style="color:#d6deea;font-size:11pt">Un parcours client maîtrisé de la demande à la fidélisation</li>
-      <li style="color:#d6deea;font-size:11pt">Un réseau équipé, informé, servi et récompensé au quotidien</li>
-      <li style="color:#d6deea;font-size:11pt">Des commandes, du SAV et des clés gérés sans papier ni relance</li>
-      <li style="color:#d6deea;font-size:11pt">Une stratégie Picard 2030 partagée et suivie jusqu’au terrain</li>
-      <li style="color:#d6deea;font-size:11pt">Des décisions appuyées sur des indicateurs fiables et en temps réel</li>
-    </ul>
-  </div>
-  <p class="citation" style="color:#fff;margin-top:12mm">L’Espace Pro : développez vos ventes, fidélisez votre réseau, pilotez chaque euro.</p>
-  <div class="pied"><span>Espace Pro Picard Serrures</span><span>9</span></div>
-</section>
-
-</body>
-</html>
+  <p class="citation">L’Espace Pro : développez vos ventes, fidélisez votre réseau, pilotez chaque euro.</p>
+  <div class="pied"><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg> Espace Pro Picard Serrures</span><span>11</span></div>
+</section></body></html>
