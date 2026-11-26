@@ -86,7 +86,7 @@ export const SECTIONS_MENU: { titre: string; modules: ModuleId[] }[] = [
   { titre: "Communication et marketing", modules: ["mediatheque", "leads", "marketing", "animations", "boutique"] },
   { titre: "Technique et commandes", modules: ["sav", "configurateur", "commande_serrures", "reproduction_cles"] },
   { titre: "Outils commerciaux", modules: ["crm", "tournees", "gestion_operations"] },
-  { titre: "Outils direction", modules: ["pilotage", "campagnes", "picard_2030"] },
+  { titre: "Outils direction", modules: ["picard_2030", "pilotage", "campagnes"] },
   { titre: "Outils marketing", modules: ["lead_management", "digital", "newsletters", "questionnaires"] },
 ];
 
