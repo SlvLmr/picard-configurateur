@@ -49,7 +49,9 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
   const Entree = ({ id }: { id: ModuleId }) => {
     const m = MODULES[id];
     const Icon = NAV_ICONS[id];
-    const active = pathname === m.href || pathname.startsWith(m.href + "/");
+    const correspond = (href: string) => pathname === href || pathname.startsWith(href + "/");
+    const plusPrecis = modules.some((x) => x !== id && MODULES[x].href.length > m.href.length && MODULES[x].href.startsWith(m.href) && correspond(MODULES[x].href));
+    const active = correspond(m.href) && !plusPrecis;
     return (
       <li>
         <Link
@@ -57,14 +59,14 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
           onClick={onNavigate}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex h-8 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors",
+            "flex items-center gap-3 rounded-md px-3 py-1 text-sm font-medium transition-colors",
             active ? "bg-white/20 text-white shadow-sm" : "text-nav-text hover:bg-white/10 hover:text-white",
           )}
         >
           <Icon className={cn("size-4 shrink-0", active ? "text-white" : "text-nav-muted")} aria-hidden />
           <span className="min-w-0 flex-1 truncate">{m.label}</span>
           {pastille(id) > 0 ? (
-            <span className="tabular flex h-5 min-w-5 items-center justify-center rounded-full bg-cta px-1 text-xs font-bold text-cta-text shadow-cta" aria-label={`${pastille(id)} nouveauté${pastille(id) > 1 ? "s" : ""}`}>
+            <span className="tabular flex h-4 min-w-4 items-center justify-center rounded-full bg-cta px-1 text-xs font-bold leading-none text-cta-text shadow-cta" aria-label={`${pastille(id)} nouveauté${pastille(id) > 1 ? "s" : ""}`}>
               {pastille(id) > 9 ? "9+" : pastille(id)}
             </span>
           ) : null}
@@ -80,41 +82,37 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
         open ? "translate-x-0" : "-translate-x-full",
       )}
     >
-      <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className="mx-3 mb-2 mt-3 flex flex-col items-center gap-3 rounded-md px-3 py-3">
-        <LogoMarque marque={brand} className="h-8" />
+      <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className="mx-3 mb-1 mt-1 flex flex-col items-center gap-1 rounded-md px-3 py-2">
+        <LogoMarque marque={brand} className="h-6" />
         <SignatureEspacePro />
       </Link>
 
-      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-4 overflow-y-auto px-3 pb-4">
-        <ul className="flex flex-col gap-0.5">
+      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-2 overflow-y-auto px-3 pb-2">
+        <ul className="flex flex-col">
           <Entree id="accueil" />
         </ul>
         {sections.map((s) => (
           <div key={s.titre}>
-            <p className="px-3 pb-1 text-xs font-semibold text-nav-muted">{s.titre}</p>
-            <ul className="flex flex-col gap-0.5">
+            <p className="px-3 pb-0.5 text-xs font-semibold text-nav-muted">{s.titre}</p>
+            <ul className="flex flex-col">
               {s.modules.map((id) => (
                 <Entree key={id} id={id} />
               ))}
             </ul>
           </div>
         ))}
-        {autorises.has("administration") ? (
-          <ul className="mt-auto flex flex-col gap-0.5 border-t border-white/10 pt-3">
-            <Entree id="administration" />
-          </ul>
-        ) : null}
+        <div className="mt-auto border-t border-white/10 pt-2">
+          {autorises.has("administration") ? (
+            <ul className="flex flex-col">
+              <Entree id="administration" />
+            </ul>
+          ) : null}
+          <p className="truncate px-3 pt-1 text-xs text-nav-muted">
+            {profil.prenom} {profil.nom}, {ROLE_LABEL[profil.role].toLowerCase()}
+          </p>
+        </div>
       </nav>
 
-      <div className="border-t border-white/10 px-5 py-3">
-        <p className="truncate text-sm font-medium text-white">
-          {profil.prenom} {profil.nom}
-        </p>
-        <p className="text-xs text-nav-muted">Connecté, {ROLE_LABEL[profil.role].toLowerCase()}</p>
-        <Link href="/design-system" onClick={onNavigate} className="mt-2 inline-block text-xs text-nav-muted underline-offset-4 hover:text-white hover:underline">
-          Design system
-        </Link>
-      </div>
     </aside>
   );
 }
