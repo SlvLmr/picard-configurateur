@@ -1,4 +1,4 @@
-import { KeyRound, LockKeyhole, Route as IconeRoute, ClipboardList, MousePointerClick, Mail, Workflow, PartyPopper, ListChecks, ChartLine, Contact, FolderOpen, House, Inbox, LifeBuoy, Megaphone, Ruler, ShoppingBag, UserCog, type LucideIcon } from "lucide-react";
+import { Telescope, KeyRound, LockKeyhole, Route as IconeRoute, ClipboardList, MousePointerClick, Mail, Workflow, PartyPopper, ListChecks, ChartLine, Contact, FolderOpen, House, Inbox, LifeBuoy, Megaphone, Ruler, ShoppingBag, UserCog, type LucideIcon } from "lucide-react";
 import type { ModuleId } from "@/lib/roles";
 
 export const NAV_ICONS: Record<ModuleId, LucideIcon> = {
@@ -20,5 +20,6 @@ export const NAV_ICONS: Record<ModuleId, LucideIcon> = {
   boutique: ShoppingBag,
   sav: LifeBuoy,
   campagnes: ListChecks,
+  picard_2030: Telescope,
   administration: UserCog,
 };

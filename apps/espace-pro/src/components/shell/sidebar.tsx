@@ -59,7 +59,7 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
           onClick={onNavigate}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-1 text-[13px] font-medium leading-5 transition-colors",
+            "flex items-center gap-3 rounded-md px-3 py-0.5 text-[13px] font-medium leading-5 transition-colors",
             active ? "bg-white/20 text-white shadow-sm" : "text-nav-text hover:bg-white/10 hover:text-white",
           )}
         >
@@ -83,17 +83,17 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
       )}
     >
       <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className="mx-3 mb-1 mt-1 flex flex-col items-center gap-1 rounded-md px-3 py-2">
-        <LogoMarque marque={brand} className="h-6" />
-        <SignatureEspacePro />
+        <LogoMarque marque={brand} anime className="h-10" />
+        <SignatureEspacePro taille="lg" />
       </Link>
 
-      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-2 overflow-y-auto px-3 pb-2">
+      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-3 overflow-y-auto px-3 pb-2">
         <ul className="flex flex-col">
           <Entree id="accueil" />
         </ul>
         {sections.map((s) => (
           <div key={s.titre}>
-            <p className="px-3 pb-0.5 text-xs font-semibold text-nav-muted">{s.titre}</p>
+            <p className="px-3 pb-1 text-xs font-semibold text-nav-muted">{s.titre}</p>
             <ul className="flex flex-col">
               {s.modules.map((id) => (
                 <Entree key={id} id={id} />
