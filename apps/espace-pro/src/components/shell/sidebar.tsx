@@ -87,7 +87,7 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
         <SignatureEspacePro taille="lg" />
       </Link>
 
-      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-3 overflow-y-auto px-3 pb-2">
+      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-5 overflow-y-auto px-3 pb-2">
         <ul className="flex flex-col">
           <Entree id="accueil" />
         </ul>
