@@ -9,6 +9,7 @@ export type ModuleId =
   | "leads"
   | "crm"
   | "tournees"
+  | "gestion_operations"
   | "lead_management"
   | "pilotage"
   | "picard_2030"
@@ -47,6 +48,7 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   leads: { label: "Gestion des leads", href: "/leads", phase: 1 },
   crm: { label: "CRM", href: "/crm", phase: 2 },
   tournees: { label: "Planning des tournées", href: "/crm/tournee", phase: 2 },
+  gestion_operations: { label: "Gestion opérations", href: "/gestion-operations", phase: 5 },
   lead_management: { label: "Lead Management", href: "/lead-management", phase: 1 },
   pilotage: { label: "Résultats commerciaux", href: "/pilotage", phase: 2 },
   campagnes: { label: "Suivi des opérations", href: "/campagnes", phase: 2 },
@@ -66,11 +68,11 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
 };
 
 export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
-  admin: ["accueil", "picard_2030", "leads", "crm", "tournees", "lead_management", "newsletters", "digital", "pilotage", "configurateur", "sav", "mediatheque", "questionnaires", "marketing", "animations", "boutique", "administration", "campagnes", "commande_serrures", "reproduction_cles"],
-  codir: ["accueil", "picard_2030", "pilotage", "leads", "crm", "tournees", "lead_management", "newsletters", "digital", "sav", "mediatheque", "questionnaires", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
-  chef_service: ["accueil", "picard_2030", "pilotage", "crm", "tournees", "lead_management", "leads", "sav", "mediatheque", "questionnaires", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
-  chef_marche: ["accueil", "picard_2030", "pilotage", "crm", "tournees", "lead_management", "newsletters", "digital", "leads", "sav", "mediatheque", "questionnaires", "marketing", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
-  atc: ["accueil", "crm", "tournees", "leads", "configurateur", "sav", "mediatheque", "questionnaires", "marketing", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
+  admin: ["accueil", "gestion_operations", "picard_2030", "leads", "crm", "tournees", "lead_management", "newsletters", "digital", "pilotage", "configurateur", "sav", "mediatheque", "questionnaires", "marketing", "animations", "boutique", "administration", "campagnes", "commande_serrures", "reproduction_cles"],
+  codir: ["accueil", "gestion_operations", "picard_2030", "pilotage", "leads", "crm", "tournees", "lead_management", "newsletters", "digital", "sav", "mediatheque", "questionnaires", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
+  chef_service: ["accueil", "gestion_operations", "picard_2030", "pilotage", "crm", "tournees", "lead_management", "leads", "sav", "mediatheque", "questionnaires", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
+  chef_marche: ["accueil", "gestion_operations", "picard_2030", "pilotage", "crm", "tournees", "lead_management", "newsletters", "digital", "leads", "sav", "mediatheque", "questionnaires", "marketing", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
+  atc: ["accueil", "gestion_operations", "crm", "tournees", "leads", "configurateur", "sav", "mediatheque", "questionnaires", "marketing", "animations", "boutique", "campagnes", "commande_serrures", "reproduction_cles"],
   repartiteur: ["accueil", "lead_management", "mediatheque", "questionnaires"],
   client_gerant: ["accueil", "leads", "configurateur", "sav", "mediatheque", "questionnaires", "marketing", "animations", "boutique", "commande_serrures", "reproduction_cles"],
   client_equipe: ["accueil", "leads", "configurateur", "sav", "mediatheque", "questionnaires", "animations", "commande_serrures", "reproduction_cles"],
@@ -83,7 +85,7 @@ export const ROLE_MODULES: Record<RoleId, ModuleId[]> = {
 export const SECTIONS_MENU: { titre: string; modules: ModuleId[] }[] = [
   { titre: "Communication et marketing", modules: ["mediatheque", "leads", "marketing", "animations", "boutique"] },
   { titre: "Technique et commandes", modules: ["sav", "configurateur", "commande_serrures", "reproduction_cles"] },
-  { titre: "Outils commerciaux", modules: ["crm", "tournees"] },
+  { titre: "Outils commerciaux", modules: ["crm", "tournees", "gestion_operations"] },
   { titre: "Outils direction", modules: ["pilotage", "campagnes", "picard_2030"] },
   { titre: "Outils marketing", modules: ["lead_management", "digital", "newsletters", "questionnaires"] },
 ];
