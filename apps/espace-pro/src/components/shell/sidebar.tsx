@@ -93,7 +93,9 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
         </ul>
         {sections.map((s) => (
           <div key={s.titre}>
-            <p className="px-3 pb-1 text-xs font-semibold text-cta">{s.titre}</p>
+            <p className="px-3 pb-1 text-xs font-bold uppercase italic tracking-wider text-cta" style={{ fontVariationSettings: '"wdth" 112' }}>
+              {s.titre}
+            </p>
             <ul className="flex flex-col">
               {s.modules.map((id) => (
                 <Entree key={id} id={id} />
