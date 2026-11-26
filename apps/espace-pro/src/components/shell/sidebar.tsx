@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { CompteursMenu } from "@/lib/data/compteurs";
@@ -12,7 +13,9 @@ import { SignatureEspacePro } from "@/components/marque/logo-espace-pro";
 import { LogoMarque } from "@/components/marque/logo-picard";
 import { NAV_ICONS } from "./nav-icons";
 
-export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open: boolean; onNavigate: () => void; profil: ProfilReel; modules: ModuleId[]; compteurs: CompteursMenu }) {
+export function Sidebar({
+  open, onNavigate, profil, modules, compteurs, replie = false, onBasculer,
+}: { open: boolean; onNavigate: () => void; profil: ProfilReel; modules: ModuleId[]; compteurs: CompteursMenu; replie?: boolean; onBasculer?: () => void }) {
   const pathname = usePathname();
   const { brand } = useSession();
   // Le menu suit le rôle réel : l’administrateur voit tout, quel que soit l’aperçu choisi.
@@ -58,15 +61,18 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
           href={m.href}
           onClick={onNavigate}
           aria-current={active ? "page" : undefined}
+          title={replie ? m.label : undefined}
           className={cn(
+            "relative",
+            replie && "lg:justify-center lg:px-0 lg:py-2",
             "flex items-center gap-3 rounded-md px-3 py-0.5 text-[13px] font-medium leading-5 transition-colors",
             active ? "bg-white/20 text-white shadow-sm" : "text-nav-text hover:bg-white/10 hover:text-white",
           )}
         >
           <Icon className={cn("size-4 shrink-0", active ? "text-white" : "text-nav-muted")} aria-hidden />
-          <span className="min-w-0 flex-1 truncate">{m.label}</span>
+          <span className={cn("min-w-0 flex-1 truncate", replie && "lg:sr-only")}>{m.label}</span>
           {pastille(id) > 0 ? (
-            <span className="tabular flex h-4 min-w-4 items-center justify-center rounded-full bg-cta px-1 text-xs font-bold leading-none text-cta-text shadow-cta" aria-label={`${pastille(id)} nouveauté${pastille(id) > 1 ? "s" : ""}`}>
+            <span className={cn("tabular flex h-4 min-w-4 items-center justify-center rounded-full bg-cta px-1 text-xs font-bold leading-none text-cta-text shadow-cta", replie && "lg:absolute lg:right-2 lg:top-0.5 lg:h-2 lg:min-w-2 lg:p-0 lg:text-[0px]")} aria-label={`${pastille(id)} nouveauté${pastille(id) > 1 ? "s" : ""}`}>
               {pastille(id) > 9 ? "9+" : pastille(id)}
             </span>
           ) : null}
@@ -79,21 +85,30 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
     <aside
       className={cn(
         "fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-nav-gradient text-nav-text transition-transform duration-200 ease-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+        replie && "lg:w-16",
         open ? "translate-x-0" : "-translate-x-full",
       )}
     >
-      <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className="mx-3 mb-1 mt-1 flex flex-col items-center gap-1 rounded-md px-3 py-2">
-        <LogoMarque marque={brand} anime className="h-10" />
-        <SignatureEspacePro taille="lg" />
+      <Link href="/accueil" onClick={onNavigate} aria-label="Espace Pro, accueil" className={cn("mx-3 mb-1 mt-1 flex flex-col items-center gap-1 rounded-md px-3 py-2", replie && "lg:mx-2 lg:px-0 lg:py-3")}>
+        {replie ? (
+          <svg viewBox="5 23 43 43" className="hidden size-8 lg:block" aria-hidden>
+            <path fill="#fff" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z" />
+          </svg>
+        ) : null}
+        <span className={cn("contents", replie && "lg:hidden")}>
+          <LogoMarque marque={brand} anime className="h-10" />
+          <SignatureEspacePro taille="lg" />
+        </span>
       </Link>
 
-      <nav aria-label="Modules" className="scroll-nav flex flex-1 flex-col gap-5 overflow-y-auto px-3 pb-2">
+      <nav aria-label="Modules" className={cn("scroll-nav flex flex-1 flex-col gap-5 overflow-y-auto px-3 pb-2", replie && "lg:gap-3 lg:px-2")}>
         <ul className="flex flex-col">
           <Entree id="accueil" />
         </ul>
         {sections.map((s) => (
           <div key={s.titre}>
-            <p className="truncate whitespace-nowrap px-3 pb-1 text-xs font-bold uppercase tracking-wide text-cta" style={{ fontVariationSettings: '"wdth" 88' }}>
+            {replie ? <span aria-hidden className="mx-auto mb-2 hidden h-px w-6 lg:block" style={{ background: "color-mix(in srgb, var(--cta) 60%, transparent)" }} /> : null}
+            <p className={cn("truncate whitespace-nowrap px-3 pb-1 text-xs font-bold uppercase tracking-wide text-cta", replie && "lg:sr-only")} style={{ fontVariationSettings: '"wdth" 88' }}>
               {s.titre}
             </p>
             <ul className="flex flex-col">
@@ -109,7 +124,19 @@ export function Sidebar({ open, onNavigate, profil, modules, compteurs }: { open
               <Entree id="administration" />
             </ul>
           ) : null}
-          <p className="truncate px-3 pt-1 text-xs text-nav-muted">
+          {onBasculer ? (
+            <button
+              type="button"
+              onClick={onBasculer}
+              title={replie ? "Déplier le menu" : "Replier le menu"}
+              aria-label={replie ? "Déplier le menu" : "Replier le menu"}
+              className={cn("hidden w-full items-center gap-3 rounded-md px-3 py-0.5 text-[13px] font-medium leading-5 text-nav-muted transition-colors hover:bg-white/10 hover:text-white lg:flex", replie && "lg:justify-center lg:px-0 lg:py-2")}
+            >
+              {replie ? <PanelLeftOpen aria-hidden className="size-4 shrink-0" /> : <PanelLeftClose aria-hidden className="size-4 shrink-0" />}
+              <span className={cn(replie && "lg:sr-only")}>Replier le menu</span>
+            </button>
+          ) : null}
+          <p className={cn("truncate px-3 pt-1 text-xs text-nav-muted", replie && "lg:hidden")}>
             {profil.prenom} {profil.nom}, {ROLE_LABEL[profil.role].toLowerCase()}
           </p>
         </div>

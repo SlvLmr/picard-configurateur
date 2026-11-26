@@ -36,6 +36,24 @@ export function AppShell({ children, profil, modules, compteurs, textes }: { chi
     if (persona.id !== PERSONA_PAR_ROLE[profil.role]) setPersona(PERSONA_PAR_ROLE[profil.role]);
   }, [profil.role, persona.id, setPersona]);
   const [search, setSearch] = useState(false);
+  // Menu replié en barre de pictogrammes (grand écran), choix mémorisé dans le navigateur
+  const [replie, setReplie] = useState(false);
+  useEffect(() => {
+    try {
+      setReplie(window.localStorage.getItem("ep-menu-replie") === "1");
+    } catch {
+      /* navigation privée */
+    }
+  }, []);
+  const basculerMenu = () =>
+    setReplie((r) => {
+      try {
+        window.localStorage.setItem("ep-menu-replie", r ? "0" : "1");
+      } catch {
+        /* navigation privée */
+      }
+      return !r;
+    });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -53,8 +71,8 @@ export function AppShell({ children, profil, modules, compteurs, textes }: { chi
       <a href="#contenu" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2">
         Aller au contenu
       </a>
-      <div className="lg:grid lg:grid-cols-[240px_1fr]">
-        <Sidebar open={menu} onNavigate={() => setMenu(false)} profil={profil} modules={modules} compteurs={compteurs} />
+      <div className={replie ? "lg:grid lg:grid-cols-[64px_1fr]" : "lg:grid lg:grid-cols-[240px_1fr]"}>
+        <Sidebar open={menu} onNavigate={() => setMenu(false)} profil={profil} modules={modules} compteurs={compteurs} replie={replie} onBasculer={basculerMenu} />
         {menu ? <div className="fixed inset-0 z-30 bg-[#071a33]/40 lg:hidden" onClick={() => setMenu(false)} aria-hidden /> : null}
         <div className="min-w-0">
           <Topbar onMenu={() => setMenu(true)} onSearch={() => setSearch(true)} profil={profil} />
