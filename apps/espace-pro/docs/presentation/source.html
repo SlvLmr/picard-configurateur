@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Espace Pro Picard Serrures</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=block" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --nuit: #0b2545; --nuit2: #13315c; --or: #e3a92b; --or-pale: #fbf1dc; --encre: #1b2a3f; --gris: #5f6f86; --fond: #f6f1e9; --ligne: #e7dfd2; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Archivo, Arial, sans-serif; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; position: relative; overflow: hidden; page-break-after: always; background: #fff; padding: 22mm 20mm 18mm; }
+  .page:last-child { page-break-after: auto; }
+  .pied { position: absolute; left: 20mm; right: 20mm; bottom: 10mm; display: flex; justify-content: space-between; font-size: 9pt; color: var(--gris); border-top: 1px solid var(--ligne); padding-top: 3mm; }
+  .sur { font-size: 10pt; font-weight: 700; color: var(--or); letter-spacing: .08em; text-transform: uppercase; font-variation-settings: "wdth" 100; }
+  h1 { font-size: 34pt; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; font-variation-settings: "wdth" 92; }
+  h2 { font-size: 24pt; line-height: 1.1; font-weight: 800; color: var(--nuit); letter-spacing: -.01em; font-variation-settings: "wdth" 95; margin: 2mm 0 5mm; }
+  h3 { font-size: 13pt; font-weight: 700; color: var(--nuit); margin-bottom: 1.5mm; }
+  p { font-size: 10.5pt; line-height: 1.55; }
+  .intro { font-size: 12pt; line-height: 1.55; color: var(--gris); max-width: 160mm; }
+  .grille2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .grille3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; }
+  .carte { border: 1px solid var(--ligne); border-radius: 4mm; padding: 5mm; background: #fff; }
+  .carte p { font-size: 9.8pt; color: #33445c; }
+  .carte.nuit { background: var(--nuit); border-color: var(--nuit); color: #fff; }
+  .carte.nuit h3 { color: var(--or); }
+  .carte.nuit p { color: #d6deea; }
+  .carte.or { background: var(--or-pale); border-color: #f0dcae; }
+  ul.puces { list-style: none; margin-top: 2mm; }
+  ul.puces li { position: relative; padding-left: 5mm; font-size: 9.8pt; line-height: 1.5; margin-bottom: 1.2mm; color: #33445c; }
+  ul.puces li::before { content: ""; position: absolute; left: 0; top: 2.1mm; width: 2mm; height: 2mm; border-radius: 50%; background: var(--or); }
+  .carte.nuit ul.puces li { color: #d6deea; }
+  .pastille { display: inline-block; font-size: 8pt; font-weight: 700; padding: .6mm 2.4mm; border-radius: 99px; background: var(--or-pale); color: #8a5a00; margin-left: 2mm; vertical-align: middle; }
+  .pastille.bientot { background: #e6eefb; color: #1f4f9a; }
+  .icone { width: 10mm; height: 10mm; border-radius: 2.5mm; background: var(--nuit); display: flex; align-items: center; justify-content: center; margin-bottom: 3mm; }
+  .icone svg { width: 5.5mm; height: 5.5mm; stroke: var(--or); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .citation { border-left: 1.5mm solid var(--or); padding: 2mm 0 2mm 5mm; font-size: 14pt; line-height: 1.4; font-weight: 600; color: var(--nuit); margin: 6mm 0; }
+
+  /* Couverture */
+  .couverture { background: radial-gradient(160mm 120mm at 85% 10%, rgba(227,169,43,.35), transparent 60%), radial-gradient(140mm 120mm at 0% 100%, rgba(59,130,246,.35), transparent 60%), linear-gradient(160deg, #0b2545, #13315c 55%, #0b1d36); color: #fff; padding: 26mm 22mm; }
+  .couverture .logo { height: 18mm; }
+  .couverture .signature { display: flex; align-items: center; gap: 4mm; margin-top: 5mm; width: 75mm; color: var(--or); font-weight: 700; font-size: 11pt; letter-spacing: .3em; }
+  .couverture .signature span { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--or)); }
+  .couverture .signature span:last-child { background: linear-gradient(90deg, var(--or), transparent); }
+  .couverture h1 { font-size: 44pt; margin-top: 52mm; }
+  .couverture h1 em { font-style: normal; color: var(--or); }
+  .couverture .accroche { font-size: 15pt; line-height: 1.45; color: #d6deea; margin-top: 8mm; max-width: 150mm; }
+  .couverture .trois { position: absolute; left: 22mm; right: 22mm; bottom: 26mm; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; }
+  .couverture .trois div { border-top: 1px solid rgba(255,255,255,.25); padding-top: 4mm; }
+  .couverture .trois b { display: block; font-size: 13pt; color: #fff; margin-bottom: 1mm; }
+  .couverture .trois small { font-size: 9.5pt; color: #b9c6d8; line-height: 1.45; display: block; }
+  .carres { position: absolute; right: 22mm; top: 92mm; width: 62mm; opacity: .18; }
+
+  /* Parcours */
+  .parcours { position: relative; margin-top: 4mm; }
+  .etape { display: grid; grid-template-columns: 14mm 1fr; gap: 4mm; padding-bottom: 4.2mm; position: relative; }
+  .etape::before { content: ""; position: absolute; left: 6.5mm; top: 12mm; bottom: 0; width: 1px; background: var(--ligne); }
+  .etape:last-child::before { display: none; }
+  .etape .num { width: 13mm; height: 13mm; border-radius: 50%; background: var(--nuit); color: var(--or); font-weight: 800; font-size: 12pt; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+  .etape h3 { font-size: 11.5pt; margin: 1.5mm 0 .8mm; }
+  .etape p { font-size: 9.6pt; color: #33445c; line-height: 1.45; }
+  .etape .ou { font-size: 8.5pt; color: var(--gris); font-weight: 600; }
+
+  /* Rubriques */
+  .famille { margin-bottom: 5mm; }
+  .famille .titre { font-size: 9.5pt; font-weight: 800; color: var(--or); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2mm; }
+  .rubrique { display: grid; grid-template-columns: 52mm 1fr; gap: 4mm; padding: 2.2mm 0; border-bottom: 1px solid var(--ligne); }
+  .rubrique b { font-size: 10pt; color: var(--nuit); }
+  .rubrique span { font-size: 9.4pt; color: #33445c; line-height: 1.45; }
+
+  .bandeau { background: var(--nuit); color: #fff; border-radius: 4mm; padding: 7mm 8mm; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6mm; margin-top: 6mm; }
+  .bandeau b { display: block; color: var(--or); font-size: 12pt; margin-bottom: 1mm; }
+  .bandeau small { font-size: 9.4pt; color: #d6deea; line-height: 1.45; display: block; }
+
+  .final { background: linear-gradient(160deg, #0b2545, #13315c 60%, #0b1d36); color: #fff; }
+  .final h2 { color: #fff; font-size: 30pt; }
+  .final .intro { color: #d6deea; }
+  .final .carte { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.15); }
+  .final .carte h3 { color: var(--or); }
+  .final .carte p { color: #d6deea; }
+  .final .pied { color: #9fb0c6; border-color: rgba(255,255,255,.15); }
+</style>
+</head>
+<body>
+
+<!-- 1. Couverture -->
+<section class="page couverture">
+  <img class="logo" src="logo-blanc.svg" alt="Picard Serrures">
+  <div class="signature"><span></span>ESPACE PRO<span></span></div>
+  <svg class="carres" viewBox="5 23 43 43"><path fill="#fff" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>
+  <h1>Tout l’écosystème Picard,<br><em>dans une seule plateforme.</em></h1>
+  <p class="accroche">Leads, configurateur, SAV, commandes, documentation, opérations, fidélité et pilotage : l’Espace Pro réunit l’ensemble du réseau Picard Serrures autour d’un outil unique, pensé pour vendre plus, servir mieux et dépenser moins.</p>
+  <div class="trois">
+    <div><b>Développer les ventes</b><small>Chaque demande de client final devient une opportunité suivie jusqu’à la commande.</small></div>
+    <div><b>Fidéliser le réseau</b><small>Un espace qui donne aux installateurs toutes les raisons de choisir Picard, chaque jour.</small></div>
+    <div><b>Optimiser les ressources</b><small>Moins de saisies, moins d’envois, moins d’outils : plus de temps pour le terrain.</small></div>
+  </div>
+</section>
+
+<!-- 2. Pourquoi -->
+<section class="page">
+  <p class="sur">Pourquoi l’Espace Pro</p>
+  <h2>Un réseau plus fort quand tout le monde travaille au même endroit</h2>
+  <p class="intro">Aujourd’hui, l’information circule par e-mails, tableurs, appels et documents éparpillés. Chaque relais coûte du temps, fait perdre des opportunités et brouille l’image de marque. L’Espace Pro remplace cette dispersion par une expérience unique, cohérente et mesurable, du premier contact client jusqu’à la fidélisation.</p>
+
+  <div class="grille2" style="margin-top:8mm">
+    <div class="carte">
+      <div class="icone"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+      <h3>Réactivité commerciale</h3>
+      <p>Les demandes de devis arrivent qualifiées, au bon installateur, avec un délai de réponse encadré et des relances automatiques. Plus aucun lead ne dort dans une boîte mail.</p>
+    </div>
+    <div class="carte">
+      <div class="icone"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <h3>Gain de temps pour tous</h3>
+      <p>Un seul identifiant, un seul outil : les équipes et les clients retrouvent en quelques secondes ce qu’ils cherchaient hier dans cinq outils différents.</p>
+    </div>
+    <div class="carte">
+      <div class="icone"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-8-8"/><path d="M20 4v5h-5"/></svg></div>
+      <h3>Fidélisation durable</h3>
+      <p>Points, boutique, opérations nationales, parrainage, enquêtes de satisfaction : l’installateur vit la marque au quotidien et a de vraies raisons de rester.</p>
+    </div>
+    <div class="carte">
+      <div class="icone"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></div>
+      <h3>Pilotage par la donnée</h3>
+      <p>Chaque action laisse une trace : la direction suit l’activité, la transformation et le retour sur investissement en temps réel, sans attendre les reportings mensuels.</p>
+    </div>
+  </div>
+
+  <p class="citation">Un outil unique pour le réseau, une expérience premium pour les installateurs, une maîtrise totale pour Picard.</p>
+
+  <div class="grille3">
+    <div class="carte or"><h3>Pour le réseau</h3><p>Des leads, des outils de vente, une documentation toujours à jour et un service réactif.</p></div>
+    <div class="carte or"><h3>Pour les équipes</h3><p>Moins de tâches répétitives, des priorités claires, une vision complète de chaque client.</p></div>
+    <div class="carte or"><h3>Pour la direction</h3><p>Des indicateurs fiables, des coûts maîtrisés et une stratégie déployée jusqu’au terrain.</p></div>
+  </div>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>2</span></div>
+</section>
+
+<!-- 3. Parcours client -->
+<section class="page">
+  <p class="sur">Le parcours client de bout en bout</p>
+  <h2>De la demande du particulier à la fidélité de l’installateur</h2>
+  <p class="intro">L’Espace Pro accompagne chaque étape et relie tous les acteurs : le client final, l’installateur, le commercial, le Lead Manager, le SAV et la direction.</p>
+  <div class="parcours" style="margin-top:6mm">
+    <div class="etape"><div class="num">1</div><div><h3>La demande arrive</h3><p>Formulaire du site, configurateur, appel : chaque demande entre dans l’Espace Pro, complète et horodatée.</p><span class="ou">Lead Management</span></div></div>
+    <div class="etape"><div class="num">2</div><div><h3>Elle est qualifiée et orientée</h3><p>Le Lead Manager évalue la température du projet et l’attribue au bon installateur du secteur, ou au commercial si besoin, grâce au zoning.</p><span class="ou">Lead Management, Zoning</span></div></div>
+    <div class="etape"><div class="num">3</div><div><h3>L’installateur est prévenu et accepte</h3><p>E-mail et SMS immédiats, compte à rebours visible : l’installateur accepte en un clic et obtient les coordonnées du client.</p><span class="ou">Gestion des leads</span></div></div>
+    <div class="etape"><div class="num">4</div><div><h3>Il conseille, configure et chiffre</h3><p>Le configurateur de portes, la médiathèque et les argumentaires l’aident à convaincre et à produire un devis juste, rapidement.</p><span class="ou">Configurateur portes, Médiathèque</span></div></div>
+    <div class="etape"><div class="num">5</div><div><h3>La commande est passée et rapprochée</h3><p>La commande est rattachée au lead : Picard mesure enfin la transformation réelle et le chiffre d’affaires généré par chaque canal.</p><span class="ou">Commandes Navision, Commande serrures</span></div></div>
+    <div class="etape"><div class="num">6</div><div><h3>La pose et le service après-vente</h3><p>Une déclaration SAV en quelques minutes, photos à l’appui, et un suivi transparent jusqu’à la résolution.</p><span class="ou">SAV, SAV Management</span></div></div>
+    <div class="etape"><div class="num">7</div><div><h3>La satisfaction est mesurée</h3><p>Enquêtes automatiques auprès du client et de l’installateur : chaque retour devient une piste d’amélioration.</p><span class="ou">Enquêtes et sondages</span></div></div>
+    <div class="etape"><div class="num">8</div><div><h3>La fidélité est récompensée</h3><p>Points, boutique, opérations nationales et parrainage : plus l’installateur travaille avec Picard, plus il y gagne.</p><span class="ou">Boutique, Opérations nationales</span></div></div>
+  </div>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>3</span></div>
+</section>
+
+<!-- 4. Pour chaque public -->
+<section class="page">
+  <p class="sur">Une plateforme, cinq expériences</p>
+  <h2>Chacun voit exactement ce dont il a besoin</h2>
+  <p class="intro">L’Espace Pro s’adapte au rôle de chaque utilisateur : ses rubriques, son accueil, ses priorités. L’administrateur peut voir la plateforme avec les yeux de n’importe quel profil pour l’accompagner au mieux.</p>
+  <div class="grille2" style="margin-top:7mm">
+    <div class="carte nuit">
+      <h3>Installateurs et réseau IAP</h3>
+      <ul class="puces">
+        <li>Des leads qualifiés de leur secteur, notifiés par e-mail et SMS</li>
+        <li>Un accueil qui affiche leurs priorités du jour</li>
+        <li>Configurateur, documentation et kits de communication locale</li>
+        <li>SAV, commandes et reproductions de clés au même endroit</li>
+        <li>Points, boutique et opérations pour être récompensés</li>
+      </ul>
+    </div>
+    <div class="carte">
+      <h3>Commerciaux (ATC)</h3>
+      <ul class="puces">
+        <li>Une vision complète de chaque client : activité, leads, SAV</li>
+        <li>CRM, planning des tournées et préparation des visites</li>
+        <li>Gestion des opérations commerciales sur leur secteur</li>
+        <li>Des sujets de visite concrets : leads en attente, réclamations</li>
+      </ul>
+    </div>
+    <div class="carte">
+      <h3>Lead Manager et marketing</h3>
+      <ul class="puces">
+        <li>Un poste de pilotage des leads : qualification, attribution, carte</li>
+        <li>Campagnes e-mail, enquêtes et visibilité en ligne mesurées</li>
+        <li>Opérations nationales et parrainage créés en quelques clics</li>
+        <li>Statistiques de transformation et de satisfaction</li>
+      </ul>
+    </div>
+    <div class="carte">
+      <h3>SAV et qualité</h3>
+      <ul class="puces">
+        <li>Des demandes complètes dès le départ, photos comprises</li>
+        <li>Une file de traitement claire et des échanges tracés</li>
+        <li>Le pilotage des délais, des défauts et des coûts</li>
+      </ul>
+    </div>
+    <div class="carte or" style="grid-column: span 2">
+      <h3>Direction</h3>
+      <ul class="puces" style="columns:2; column-gap:8mm">
+        <li>Les indicateurs clés de l’activité, en temps réel</li>
+        <li>Le plan stratégique Picard 2030 partagé et suivi</li>
+        <li>Le paramétrage des opérations commerciales</li>
+        <li>Une maîtrise complète des droits et des contenus</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>4</span></div>
+</section>
+
+<!-- 5. Rubriques -->
+<section class="page">
+  <p class="sur">Les rubriques</p>
+  <h2>Un écosystème complet, au service de tout le réseau</h2>
+  <div class="famille">
+    <p class="titre">Communication et marketing</p>
+    <div class="rubrique" style="padding:3mm 0"><b>Accueil</b><span>Priorités du jour, canal de messages officiel de Picard avec photos, agenda du réseau en frise interactive.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Médiathèque</b><span>Catalogues, notices, vidéos et photos classés par gamme et par produit, avec aperçu instantané et téléchargement.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Gestion des leads</b><span>Les demandes de devis du secteur, à accepter dans le délai, puis suivies jusqu’à la pose.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Boîte à outils local</b><span>Kits et supports pour animer sa communication locale aux couleurs de Picard.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Opérations nationales</b><span>Offres, remboursements et parrainage : participation et suivi des dossiers en ligne.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Boutique</b><span>Les points de fidélité convertis en récompenses, avec validation et suivi des commandes.</span></div>
+  </div>
+  <div class="famille">
+    <p class="titre">Technique et commandes</p>
+    <div class="rubrique" style="padding:3mm 0"><b>SAV</b><span>Déclaration guidée, pièces jointes, échanges et suivi en temps réel de chaque demande.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Configurateur portes</b><span>Configurer une porte en quelques minutes et obtenir un chiffrage fiable.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Commande serrures</b><span>Commander serrures, cylindres et pièces avec ses conditions, suivre livraisons et factures, recommander en un clic.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Reproduction de clés</b><span>Demandes de clés protégées dématérialisées, justificatifs joints, suivi jusqu’à l’expédition.</span></div>
+  </div>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>5</span></div>
+</section>
+
+<!-- 5 bis. Rubriques, suite -->
+<section class="page">
+  <p class="sur">Les rubriques</p>
+  <h2>Des outils pour vendre, piloter et animer</h2>
+  <div class="famille">
+    <p class="titre">Outils commerciaux</p>
+    <div class="rubrique" style="padding:3mm 0"><b>CRM</b><span>Fiche client complète, actions, contacts et historique partagés par toute l’équipe.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Planning des tournées</b><span>Préparer et optimiser ses visites, ne rien oublier sur le terrain.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Gestion opérations</b><span>Déployer les opérations chez ses clients, suivre la participation et les résultats.</span></div>
+  </div>
+  <div class="famille">
+    <p class="titre">Outils direction</p>
+    <div class="rubrique" style="padding:3mm 0"><b>Picard 2030</b><span>Le plan stratégique : ambitions, chantiers, responsables et indicateurs partagés.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>KPI activité</b><span>Ventes, activité et performance par secteur, client et période.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Paramétrage opérations</b><span>Concevoir les opérations commerciales et suivre leur avancement sur le terrain.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>SAV Management</b><span>Délais, défauts récurrents, charge des intervenants, satisfaction et coût du SAV.</span></div>
+  </div>
+  <div class="famille" style="margin-bottom:0">
+    <p class="titre">Outils marketing</p>
+    <div class="rubrique" style="padding:3mm 0"><b>Lead Management</b><span>Validation, qualification, attribution, carte, zoning, envois et rapprochement avec les commandes.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Visibilité en ligne</b><span>Google Ads, fréquentation du site, référencement naturel et présence dans les moteurs d’IA.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Campagnes e-mail</b><span>Newsletters composées par blocs, aperçu fidèle, envoi ciblé par public.</span></div>
+    <div class="rubrique" style="padding:3mm 0"><b>Enquêtes et sondages</b><span>Questionnaires ciblés, réponses dans l’espace, résultats et score de recommandation.</span></div>
+  </div>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>6</span></div>
+</section>
+
+<!-- 6. Coûts et ressources -->
+<section class="page">
+  <p class="sur">Optimisation des coûts et des ressources</p>
+  <h2>Faire plus avec les mêmes équipes</h2>
+  <p class="intro">L’Espace Pro automatise ce qui coûte du temps sans créer de valeur, et concentre les équipes sur ce qui fait vendre : le conseil, la relation et le terrain.</p>
+  <div class="grille2" style="margin-top:7mm">
+    <div class="carte">
+      <h3>Moins de ressaisies</h3>
+      <p>Une information saisie une fois est partagée par tous : le lead, le client, la commande et le SAV sont reliés. Fini les doubles saisies et les fichiers à réconcilier.</p>
+    </div>
+    <div class="carte">
+      <h3>Moins d’appels et d’e-mails</h3>
+      <p>Statuts visibles en ligne, notifications automatiques, réponses SAV centralisées : les relances téléphoniques et les échanges dispersés disparaissent.</p>
+    </div>
+    <div class="carte">
+      <h3>Moins d’impression et d’envois</h3>
+      <p>Catalogues, notices et kits de communication sont en ligne, toujours à jour. Plus de stocks de documents obsolètes ni d’envois postaux.</p>
+    </div>
+    <div class="carte">
+      <h3>Moins d’outils à payer et à maintenir</h3>
+      <p>Une seule plateforme remplace des solutions dispersées : un seul socle à faire évoluer, une seule base de données, un seul accès à gérer.</p>
+    </div>
+    <div class="carte">
+      <h3>Un budget marketing piloté</h3>
+      <p>Chaque lead est suivi jusqu’à la commande : on sait quel canal rapporte, on investit là où le retour est prouvé, et la facturation des leads est paramétrable.</p>
+    </div>
+    <div class="carte">
+      <h3>Des équipes recentrées sur la valeur</h3>
+      <p>Le Lead Manager, les commerciaux et le SAV disposent de files de travail claires et priorisées : moins de temps perdu, plus d’impact par personne.</p>
+    </div>
+  </div>
+  <div class="bandeau">
+    <div><b>Mesurer</b><small>Transformation des leads, délais de réponse, satisfaction, chiffre d’affaires rapproché.</small></div>
+    <div><b>Décider</b><small>Des indicateurs fiables pour arbitrer budgets, priorités et ressources.</small></div>
+    <div><b>Améliorer</b><small>Chaque retour client alimente un cycle d’amélioration continue.</small></div>
+  </div>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>7</span></div>
+</section>
+
+<!-- 7. Fidélisation et expérience -->
+<section class="page">
+  <p class="sur">Fidélisation et expérience</p>
+  <h2>Donner au réseau toutes les raisons de choisir Picard</h2>
+  <p class="intro">Un installateur fidèle est un installateur bien équipé, bien informé, bien servi et récompensé. L’Espace Pro réunit ces quatre leviers dans une expérience premium, à l’image de la marque.</p>
+  <div class="grille2" style="margin-top:7mm">
+    <div class="carte nuit"><h3>Bien équipé</h3><p>Configurateur, documentation, kits de communication locale et commande en ligne : tout pour vendre Picard plus facilement que la concurrence.</p></div>
+    <div class="carte nuit"><h3>Bien informé</h3><p>Le canal de messages officiel, l’agenda des salons et formations, les nouveautés produits : le réseau vit au rythme de la marque.</p></div>
+    <div class="carte nuit"><h3>Bien servi</h3><p>Leads qualifiés, SAV réactif et transparent, reproduction de clés simplifiée : un service qui fait gagner du temps et de la crédibilité.</p></div>
+    <div class="carte nuit"><h3>Récompensé</h3><p>Points, boutique, opérations nationales, remboursements et parrainage : la fidélité devient concrète et motivante.</p></div>
+  </div>
+  <div class="grille3" style="margin-top:7mm">
+    <div class="carte or"><h3>Niveaux IAP valorisés</h3><p>Elite, Premium et Officiel bénéficient d’avantages et de contenus adaptés à leur engagement.</p></div>
+    <div class="carte or"><h3>Écoute permanente</h3><p>Enquêtes et score de recommandation : la voix du réseau et des clients pilote les améliorations.</p></div>
+    <div class="carte or"><h3>Image de marque</h3><p>Une expérience moderne et soignée qui positionne Picard comme le partenaire de référence.</p></div>
+  </div>
+  <p class="citation">Plus l’installateur utilise l’Espace Pro, plus il vend Picard, et plus il est récompensé : un cercle vertueux.</p>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>8</span></div>
+</section>
+
+<!-- 8. Technologie et suite -->
+<section class="page final">
+  <p class="sur">Une base solide pour l’avenir</p>
+  <h2>Moderne, sûr et disponible partout</h2>
+  <p class="intro">L’Espace Pro est construit sur des technologies actuelles et évolutives, avec une exigence de sécurité et de simplicité à chaque écran.</p>
+  <div class="grille2" style="margin-top:8mm">
+    <div class="carte"><h3>Sécurité par rôle</h3><p>Chaque utilisateur ne voit que ses données : les droits sont contrôlés par la base elle-même, et seul l’administrateur paramètre.</p></div>
+    <div class="carte"><h3>Disponible partout</h3><p>Sur ordinateur, tablette et téléphone. L’Espace Pro s’installe déjà sur l’écran d’accueil comme une application.</p></div>
+    <div class="carte"><h3>Pensé pour le terrain</h3><p>Notifications instantanées, photos prises sur chantier, consultation en déplacement : l’Espace Pro accompagne installateurs et commerciaux partout.</p></div>
+    <div class="carte"><h3>Évolutif sans rupture</h3><p>Chaque nouvelle rubrique s’ajoute au même socle : les utilisateurs gagnent des fonctions sans changer d’outil.</p></div>
+  </div>
+  <div style="margin-top:12mm">
+    <p class="sur">Ce que l’Espace Pro change pour Picard</p>
+    <ul class="puces" style="margin-top:4mm">
+      <li style="color:#d6deea;font-size:11pt">Un parcours client maîtrisé de la demande à la fidélisation</li>
+      <li style="color:#d6deea;font-size:11pt">Un réseau équipé, informé, servi et récompensé au quotidien</li>
+      <li style="color:#d6deea;font-size:11pt">Des commandes, du SAV et des clés gérés sans papier ni relance</li>
+      <li style="color:#d6deea;font-size:11pt">Une stratégie Picard 2030 partagée et suivie jusqu’au terrain</li>
+      <li style="color:#d6deea;font-size:11pt">Des décisions appuyées sur des indicateurs fiables et en temps réel</li>
+    </ul>
+  </div>
+  <p class="citation" style="color:#fff;margin-top:12mm">L’Espace Pro : développez vos ventes, fidélisez votre réseau, pilotez chaque euro.</p>
+  <div class="pied"><span>Espace Pro Picard Serrures</span><span>9</span></div>
+</section>
+
+</body>
+</html>
