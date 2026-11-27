@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { accepterLead } from "@/app/(app)/leads/actions";
 import { STATUTS as STATUTS_SAV } from "@/components/sav/libelles";
 import { Carte } from "@/components/accueil/carte";
+import { Nouveautes, type QuestionnaireAFaire } from "@/components/accueil/nouveautes";
 import { CanalMessages } from "@/components/communication/canal-messages";
 import { FriseCalendrier } from "@/components/communication/frise-calendrier";
 import { NiveauBadge } from "@/components/ui/badge";
@@ -197,6 +198,7 @@ export function AccueilClient({
   annonces,
   agenda,
   palier,
+  questionnaires,
 }: {
   profil: ProfilReel | null;
   donnees: DonneesClient;
@@ -204,6 +206,7 @@ export function AccueilClient({
   annonces: Annonce[];
   agenda: ElementAgenda[];
   palier: number;
+  questionnaires: QuestionnaireAFaire[];
 }) {
   const maintenant = new Date();
   const aAccepter = donnees.leads.filter((l) => l.statut === "attribue");
@@ -281,6 +284,8 @@ export function AccueilClient({
           ]}
         />
       </div>
+
+      <Nouveautes questionnaires={questionnaires} annonces={annonces} apercu={donnees.apercu} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         {/* ───────── À traiter ───────── */}

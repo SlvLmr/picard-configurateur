@@ -39,6 +39,7 @@ import { LEADS } from "@/lib/mock/leads";
 import { type RoleId } from "@/lib/roles";
 import { useSession } from "@/lib/session";
 import { AccueilClient, type DonneesClient } from "@/components/accueil/accueil-client";
+import { Nouveautes, type QuestionnaireAFaire } from "@/components/accueil/nouveautes";
 
 type Reel = { leads: LeadReel[]; stats: StatsLeads | null; peutAttribuer: boolean } | null;
 type Vue = "repartition" | "commercial" | "client" | "sav" | "direction";
@@ -68,6 +69,7 @@ export function AccueilParRole({
   signaux,
   palier,
   client,
+  questionnaires,
 }: {
   profil: ProfilReel | null;
   recap: Recap;
@@ -78,6 +80,7 @@ export function AccueilParRole({
   signaux: Signal[];
   palier: number;
   client: DonneesClient | null;
+  questionnaires: QuestionnaireAFaire[];
 }) {
   const { persona } = useSession();
   // L'administrateur prévisualise les autres rôles ; les autres voient leur propre accueil.
@@ -85,7 +88,7 @@ export function AccueilParRole({
   const vue = vueDuRole(role === "admin" ? "codir" : role);
   const r = recap;
   if (vue === "client" && client) {
-    return <AccueilClient profil={profil} donnees={client} recap={recap} annonces={annonces} agenda={agenda} palier={palier} />;
+    return <AccueilClient profil={profil} donnees={client} recap={recap} annonces={annonces} agenda={agenda} palier={palier} questionnaires={questionnaires} />;
   }
 
   const briques: Record<Vue, Brique[]> = {
@@ -155,6 +158,8 @@ export function AccueilParRole({
         }
       />
 
+      <Nouveautes questionnaires={questionnaires} annonces={annonces} />
+
       <section aria-labelledby="priorites" className="flex flex-col gap-4">
         <h2 id="priorites" className="font-display text-lg font-semibold text-text">
           Vos priorités
@@ -180,7 +185,7 @@ export function AccueilParRole({
 function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; reel: Reel; journee: JourneeCommercial | null; signaux: Signal[]; points: number; palier: number }) {
   if (vue === "repartition") {
     return (
-      <Panel className="self-start">
+      <Panel className="flex h-full flex-col">
         <PanelHeader
           title="À valider en priorité"
           description="Les plus anciens d’abord"
@@ -196,12 +201,12 @@ function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; r
     const actions = journee?.actionsEnRetard ?? [];
     const heure = (iso: string | null) => (iso ? new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" }).format(new Date(iso)) : "");
     return (
-      <Panel className="self-start">
+      <Panel className="flex h-full flex-col">
         <PanelHeader title="Ma journée" actions={<Link href="/crm/tournee" className="text-sm font-medium text-accent hover:underline">Ma tournée</Link>} />
         {visites.length === 0 && actions.length === 0 ? (
-          <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucune visite ni action en retard aujourd’hui.</p>
+          <p className="flex flex-1 items-center justify-center border-t border-line px-6 py-8 text-sm text-text-2">Aucune visite ni action en retard aujourd’hui.</p>
         ) : (
-          <ul>
+          <ul className="flex flex-1 flex-col">
             {visites.map((v) => (
               <LigneLien key={v.id} href={`/crm/${v.compteId}`} picto={<span className="tabular inline-flex h-8 items-center rounded-md bg-sunken px-2 text-sm font-semibold text-text">{heure(v.datePrevue)}</span>} titre={v.compteNom ?? "Visite"} detail={v.objet} />
             ))}
@@ -216,7 +221,7 @@ function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; r
 
   if (vue === "client") {
     return (
-      <Panel className="self-start">
+      <Panel className="flex h-full flex-col">
         <PanelHeader title="Prochain palier" description={`Objectif : ${formatNumber(palier)} points`} />
         <PanelBody className="flex flex-col items-center gap-4">
           <Jauge value={Math.min(points, palier)} max={palier} label="Progression vers le prochain palier" valueLabel={`${formatNumber(points)} pts`} sousTitre={points >= palier ? "Palier atteint" : `Encore ${formatNumber(palier - points)} points`} tone="cta" size={220} />
@@ -231,9 +236,9 @@ function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; r
 
   if (vue === "sav") {
     return (
-      <Panel className="self-start">
+      <Panel className="flex h-full flex-col">
         <PanelHeader title="Raccourcis" />
-        <ul>
+        <ul className="flex flex-1 flex-col">
           <LigneLien href="/sav" picto={<Picto icon={LifeBuoy} tone="cta" size="sm" />} titre="File de traitement" detail="Toutes les demandes en cours" />
           <LigneLien href="/mediatheque" picto={<Picto icon={FileText} tone="accent" size="sm" />} titre="Notices et fiches techniques" detail="Dans la Médiathèque" />
         </ul>
@@ -242,13 +247,13 @@ function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; r
   }
 
   return (
-    <Panel className="self-start">
+    <Panel className="flex h-full flex-col">
       <PanelHeader title="Signaux à surveiller" actions={<Link href="/pilotage" className="text-sm font-medium text-accent hover:underline">Pilotage</Link>} />
       {signaux.length === 0 ? (
-        <p className="border-t border-line px-6 py-8 text-sm text-text-2">Aucun signal particulier.</p>
+        <p className="flex flex-1 items-center justify-center border-t border-line px-6 py-8 text-sm text-text-2">Aucun signal particulier.</p>
       ) : (
-        <ul>
-          {signaux.slice(0, 5).map((s) => (
+        <ul className="flex flex-1 flex-col">
+          {signaux.slice(0, 8).map((s) => (
             <LigneLien key={s.titre + s.detail} href="/pilotage" picto={<Picto icon={TriangleAlert} tone={s.niveau} size="sm" />} titre={s.titre} detail={s.detail} />
           ))}
         </ul>
@@ -259,8 +264,8 @@ function BlocRole({ vue, reel, journee, signaux, points, palier }: { vue: Vue; r
 
 function LigneLien({ href, picto, titre, detail }: { href: string; picto: React.ReactNode; titre: string; detail?: string | null }) {
   return (
-    <li className="border-t border-line">
-      <Link href={href} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-sunken">
+    <li className="flex flex-1 border-t border-line">
+      <Link href={href} className="flex flex-1 items-center gap-3 px-6 py-4 transition-colors hover:bg-sunken">
         <span className="shrink-0">{picto}</span>
         <span className="min-w-0 flex-1">
           <span className="block truncate font-semibold text-text">{titre}</span>

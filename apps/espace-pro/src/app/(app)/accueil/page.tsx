@@ -6,6 +6,8 @@ import { journeeCommercial } from "@/lib/data/crm";
 import { leadsAValider, leadsProfessionnel, statsLeads, statsPro } from "@/lib/data/leads";
 import { ressourcesVisibles } from "@/lib/data/mediatheque";
 import { supabaseServeur } from "@/lib/supabase/server";
+import { donneesQuestionnaires } from "@/lib/data/questionnaires";
+import type { QuestionnaireAFaire } from "@/components/accueil/nouveautes";
 import type { DonneesClient } from "@/components/accueil/accueil-client";
 import { isClient } from "@/lib/roles";
 import { peutPiloter, signauxPilotage } from "@/lib/data/pilotage";
@@ -24,7 +26,7 @@ export default async function Page() {
   const interne = estInterne(profil);
   const avecJournee = !!profil && ["atc", "admin", "codir", "chef_service", "chef_marche"].includes(profil.role);
 
-  const [recap, annonces, elements, leads, stats, journee, signaux, params] = await Promise.all([
+  const [recap, annonces, elements, leads, stats, journee, signaux, params, enquetes] = await Promise.all([
     recapAccueil(),
     annoncesActives(),
     agenda(debut, fin).catch(() => []),
@@ -33,7 +35,14 @@ export default async function Page() {
     avecJournee ? journeeCommercial().catch(() => null) : Promise.resolve(null),
     peutPiloter(profil) ? signauxPilotage().catch(() => []) : Promise.resolve([]),
     parametres().catch(() => []),
+    // Questionnaires proposés : réservés au réseau (les équipes internes les conçoivent)
+    interne ? Promise.resolve(null) : donneesQuestionnaires().catch(() => null),
   ]);
+  const questionnaires: QuestionnaireAFaire[] = enquetes
+    ? enquetes.questionnaires
+        .filter((q) => q.statut === "ouvert" && !enquetes.reponses.some((r) => r.questionnaireId === q.id && r.profilId === profil?.id))
+        .map((q) => ({ id: q.id, titre: q.titre, description: q.description, questions: q.questions }))
+    : [];
   const palier = params.find((p) => p.cle === "palier_points")?.valeur ?? 6500;
 
   // Accueil client : ses leads, son SAV, les dernières ressources (l'administrateur en voit un aperçu réel)
@@ -68,6 +77,7 @@ export default async function Page() {
       signaux={signaux}
       palier={palier}
       client={client}
+      questionnaires={questionnaires}
     />
   );
 }
