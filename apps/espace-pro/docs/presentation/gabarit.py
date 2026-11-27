@@ -8,10 +8,39 @@ def ecran(src, titre, cls=""):
 def pied(n): return f'<div class="pied"><span>{ic("layers","pi")} Espace Pro Picard Serrures</span><span>{n:02d}</span></div>'
 def carte(icone, titre, texte, cls=""):
     return f'<div class="carte {cls}">{tuile(icone)}<h3>{titre}</h3><p>{texte}</p></div>'
+ETIQ = {'Médiathèque': 'Remplace Dropbox', 'Gestion des leads': 'Remplace Enet', 'Opérations nationales': 'Remplace les tableurs Excel', 'SAV': 'Remplace Qualios', 'Configurateur portes': 'Remplace MyPricer', 'Reproduction de clés': 'Remplace les e-mails', 'Lead management': 'Remplace Enet', 'Boîte à outils local': 'N', 'Boutique': 'N', 'Commande serrures': 'N', 'CRM': 'N', 'Planning des tournées': 'N', 'Gestion opérations': 'N'}
 def rub(icone, titre, texte):
-    return f'<div class="rub">{tuile(icone)}<div><b>{titre}</b><span>{texte}</span></div></div>'
+    e = ETIQ.get(titre, "")
+    et = "" if not e else (f'<em class="et neuf">{ic("circle-plus","pi")}Nouveau service</em>' if e == "N" else f'<em class="et">{ic("repeat","pi")}{e}</em>')
+    return f'<div class="rub">{tuile(icone)}<div><b>{titre}</b><span>{texte}</span>{et}</div></div>'
 
 CSS = open('style.css').read()
+
+CARRES = '<svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>'
+OUTILS = [("cloud","Dropbox","Documents"),("inbox","Enet","Leads"),("sheet","Excel","Opérations"),("life-buoy","Qualios","SAV"),("ruler","MyPricer","Configurateur"),("mail","E-mails","Clés")]
+_puces = "".join(f'<div class="puce">{ic(o[0])}<b>{o[1]}</b><small>{o[2]}</small></div>' for o in OUTILS)
+_fils = "".join(f'<path d="M0 {8.3+i*16.7:.1f} C 26 {8.3+i*16.7:.1f}, 22 50, 48 50"/>' for i in range(6))
+CONV = f'''<div class="convergence"><div class="puces">{_puces}</div><svg class="fils" viewBox="0 0 48 100" preserveAspectRatio="none">{_fils}</svg><div class="cible">{CARRES}<b>Espace Pro</b><span>Un identifiant, une base de données, tout le réseau.</span><em class="mini">{ic("smartphone","pi")}Appli iPhone et Android</em></div></div>'''
+
+AVANT = [
+ ("folder-open","Médiathèque","outil","cloud","Dropbox"),
+ ("inbox","Gestion des leads","outil","app-window","Enet"),
+ ("megaphone","Boîte à outils local","rien","",""),
+ ("party-popper","Opérations nationales","outil","sheet","Tableurs Excel"),
+ ("shopping-bag","Boutique","rien","",""),
+ ("life-buoy","SAV","outil","app-window","Qualios"),
+ ("ruler","Configurateur portes","outil","app-window","MyPricer"),
+ ("lock-keyhole","Commande serrures","rien","",""),
+ ("key-round","Reproduction de clés","outil","mail","E-mails"),
+ ("contact","CRM","rien","",""),
+ ("route","Planning des tournées","rien","",""),
+ ("flag","Gestion opérations","rien","",""),
+]
+def _ligne(r):
+    av = f'<span class="av outil">{ic(r[3])}{r[4]}</span>' if r[2]=="outil" else f'<span class="av rien">{ic("circle-off")}N’existe pas</span>'
+    return f'<div class="nom">{tuile(r[0])}<b>{r[1]}</b></div>{av}<span class="fl">{ic("arrow-right")}</span>'
+STORES = f'<span class="store">{ic("smartphone")}<span><small>Télécharger sur</small>App Store</span></span><span class="store">{ic("smartphone")}<span><small>Disponible sur</small>Google Play</span></span><span class="store">{ic("monitor")}<span><small>Accès</small>Navigateur web</span></span>'
+AA_LIGNES = "".join(_ligne(r) for r in AVANT)
 pages = []
 
 pages.append(f'''<section class="page couverture">
@@ -19,12 +48,35 @@ pages.append(f'''<section class="page couverture">
   <div class="signature"><span></span>ESPACE PRO<span></span></div>
   <h1>Tout l’écosystème Picard,<br><em>dans une seule plateforme.</em></h1>
   <p class="accroche">Leads, configurateur, SAV, commandes, documentation, opérations, fidélité et pilotage : l’Espace Pro réunit tout le réseau Picard Serrures autour d’un outil unique, pensé pour vendre plus, servir mieux et dépenser moins.</p>
-  {ecran("accueil.png", "espace-pro-picard.vercel.app", "couv")}
+  <div class="stores couv">{STORES}</div>
+  {CONV}
   <div class="trois">
     <div>{ic("trending-up")}<b>Développer les ventes</b><small>Chaque demande devient une opportunité suivie jusqu’à la commande.</small></div>
     <div>{ic("star")}<b>Fidéliser le réseau</b><small>Toutes les raisons de choisir Picard, chaque jour.</small></div>
     <div>{ic("coins")}<b>Optimiser les ressources</b><small>Moins de saisies, d’envois et d’outils.</small></div>
   </div>
+</section>''')
+
+pages.append(f'''<section class="page">
+  <p class="sur">{ic("repeat","si")} Avant, après</p>
+  <h2>Aujourd’hui, des outils éparpillés.<br>Demain, un seul Espace Pro.</h2>
+  <p class="intro">Documents, leads, SAV, configurateur, opérations : chaque sujet vit dans son outil, son tableur ou sa boîte mail, et la moitié des services n’existent pas encore. L’Espace Pro les réunit tous.</p>
+  <div class="aa mt">
+    <div class="tete"><span>Rubrique</span><span>Avant</span><span></span><span class="apres">Après</span></div>
+    <div class="grille">{AA_LIGNES}
+      <div class="bloc">{CARRES}<b>Espace Pro</b><ul>
+        <li>{ic("check")}Un seul identifiant</li><li>{ic("check")}Une seule base de données</li><li>{ic("check")}L’historique repris</li><li>{ic("check")}Des données reliées entre elles</li><li>{ic("check")}Appli sur l’App Store et Google Play</li></ul>
+        <small>Et aussi : Picard 2030, KPI activité, paramétrage des opérations, SAV management, Lead management, Traffic management, campagnes e-mail, enquêtes.</small></div>
+    </div>
+  </div>
+  <div class="gains mt">
+    <div><b>6</b><span>outils et canaux dispersés remplacés</span></div>
+    <div><b>6</b><span>services créés pour le réseau</span></div>
+    <div class="fort"><b>30 à 60 k€</b><span>économisés en abandonnant des outils</span></div>
+    <div><b>{ic("rotate-ccw-clock")}</b><span>tout l’historique récupéré</span></div>
+  </div>
+  <p class="citation">Moins d’outils, moins d’abonnements, moins de ressaisies : et pour la première fois, une vision complète du réseau.</p>
+  {pied(2)}
 </section>''')
 
 pages.append(f'''<section class="page">
@@ -43,16 +95,16 @@ pages.append(f'''<section class="page">
     <div>{ic("briefcase")}<b>La direction</b><span>Des indicateurs fiables, des coûts maîtrisés, une stratégie déployée jusqu’au terrain.</span></div>
   </div>
   <p class="citation">Un outil unique pour le réseau, une expérience premium pour les installateurs, une maîtrise totale pour Picard.</p>
-  {pied(2)}
+  {pied(3)}
 </section>''')
 
 etapes = [
- ("file-input","La demande arrive","Formulaire du site, configurateur, appel : chaque demande entre dans l’Espace Pro, complète et horodatée.","Lead Management"),
- ("user-check","Elle est qualifiée et orientée","Le Lead Manager évalue la température du projet et l’attribue au bon installateur du secteur grâce au zoning.","Lead Management, Zoning"),
+ ("file-input","La demande arrive","Formulaire du site, configurateur, appel : chaque demande entre dans l’Espace Pro, complète et horodatée.","Lead management"),
+ ("user-check","Elle est qualifiée et orientée","Le Lead Manager évalue la température du projet et l’attribue au bon installateur du secteur grâce au zoning.","Lead management, Zoning"),
  ("bell-ring","L’installateur accepte en un clic","E-mail et SMS immédiats, compte à rebours visible, coordonnées du client débloquées à l’acceptation.","Gestion des leads"),
  ("calculator","Il conseille, configure et chiffre","Configurateur, médiathèque et argumentaires pour convaincre et produire un devis juste, rapidement.","Configurateur portes, Médiathèque"),
  ("receipt","La commande est passée et rapprochée","La commande est rattachée au lead : la transformation réelle et le chiffre d’affaires par canal sont mesurés.","Commandes Navision, Commande serrures"),
- ("camera","La pose et le service après-vente","Déclaration SAV en quelques minutes, photos à l’appui, suivi transparent jusqu’à la résolution.","SAV, SAV Management"),
+ ("camera","La pose et le service après-vente","Déclaration SAV en quelques minutes, photos à l’appui, suivi transparent jusqu’à la résolution.","SAV, SAV management"),
  ("star","La satisfaction est mesurée","Enquêtes automatiques auprès du client et de l’installateur : chaque retour devient un levier de progrès.","Enquêtes et sondages"),
  ("gift","La fidélité est récompensée","Points, boutique, opérations nationales et parrainage : plus l’installateur travaille avec Picard, plus il y gagne.","Boutique, Opérations nationales"),
 ]
@@ -62,22 +114,9 @@ pages.append(f'''<section class="page">
   <h2>De la demande du particulier à la fidélité de l’installateur</h2>
   <p class="intro">Chaque étape est accompagnée, chaque acteur est relié : client final, installateur, commercial, Lead Manager, SAV et direction.</p>
   <div class="parcours mt">{etapes_html}</div>
-  {pied(3)}
-</section>''')
-
-pages.append(f'''<section class="page">
-  <p class="sur">{ic("house","si")} L’accueil</p>
-  <h2>Le tableau de bord de chaque professionnel</h2>
-  <p class="intro">Dès la connexion, chacun voit l’essentiel : ses priorités, les messages du réseau, ses indicateurs et l’agenda. Tout ce qui demande une action est mis en avant.</p>
-  {ecran("accueil.png", "Accueil", "grand mt")}
-  <div class="g4 mt">
-    <div class="point">{ic("bell-ring")}<b>Vos priorités</b><span>Leads à accepter avec compte à rebours, clients à rappeler, devis à relancer.</span></div>
-    <div class="point">{ic("send")}<b>Le fil Picard</b><span>Le canal officiel de la marque, avec photos, épinglage et filtres.</span></div>
-    <div class="point">{ic("chart-line")}<b>Vos indicateurs</b><span>Points, leads reçus, taux d’acceptation et temps de réponse.</span></div>
-    <div class="point">{ic("route")}<b>L’agenda du réseau</b><span>Salons, formations et opérations dans une frise interactive.</span></div>
-  </div>
   {pied(4)}
 </section>''')
+
 
 pages.append(f'''<section class="page">
   <p class="sur">{ic("users","si")} Une plateforme, cinq expériences</p>
@@ -92,7 +131,7 @@ pages.append(f'''<section class="page">
       <li>Une vision complète de chaque client : activité, leads, SAV</li><li>CRM et planning des tournées</li>
       <li>Gestion des opérations sur leur secteur</li><li>Des sujets de visite concrets à chaque rendez-vous</li></ul></div>
     <div class="carte">{tuile("workflow")}<h3>Lead Manager et marketing</h3><ul>
-      <li>Qualification, attribution, carte et zoning des leads</li><li>Campagnes e-mail, enquêtes et visibilité en ligne</li>
+      <li>Qualification, attribution, carte et zoning des leads</li><li>Campagnes e-mail, enquêtes et traffic management</li>
       <li>Opérations nationales et parrainage en quelques clics</li><li>Statistiques de transformation et de satisfaction</li></ul></div>
     <div class="carte">{tuile("life-buoy")}<h3>SAV et qualité</h3><ul>
       <li>Des demandes complètes dès le départ, photos comprises</li><li>Une file de traitement claire et des échanges tracés</li>
@@ -123,9 +162,10 @@ pages.append(f'''<section class="page">
     {rub("lock-keyhole","Commande serrures","Serrures, cylindres et pièces aux conditions du client, livraisons et factures, recommande en un clic.")}
     {rub("key-round","Reproduction de clés","Demandes de clés protégées dématérialisées, justificatifs joints, suivi jusqu’à l’expédition.")}
   </div>
-  <div class="vitrine">
-    {ecran("apercu.png","Médiathèque")}
-    <div>{tuile("eye")}<h3 style="margin-top:3mm">Un document, un clic</h3><p>Catalogues, notices, photos et vidéos s’ouvrent en aperçu instantané, comme sur un ordinateur : flèches pour passer au suivant, téléchargement en un geste. L’argumentaire est toujours à portée de main, en rendez-vous comme au bureau.</p></div>
+  <div class="bandeau mt">
+    <div>{ic("search")}<b>Tout trouver</b><small>Documents, offres et informations à jour, au même endroit.</small></div>
+    <div>{ic("shopping-bag")}<b>Tout commander</b><small>Serrures, clés et récompenses sans e-mail ni bon papier.</small></div>
+    <div>{ic("eye")}<b>Tout suivre</b><small>Leads, SAV et dossiers visibles en temps réel.</small></div>
   </div>
   {pied(6)}
 </section>''')
@@ -144,34 +184,23 @@ pages.append(f'''<section class="page">
     {rub("telescope","Picard 2030","Le plan stratégique : ambitions, chantiers, responsables et indicateurs partagés.")}
     {rub("chart-line","KPI activité","Ventes, activité et performance par secteur, client et période.")}
     {rub("list-checks","Paramétrage opérations","Concevoir les opérations commerciales et suivre leur avancement sur le terrain.")}
-    {rub("wrench","SAV Management","Délais, défauts récurrents, charge des intervenants, satisfaction et coût du SAV.")}
+    {rub("wrench","SAV management","Délais, défauts récurrents, charge des intervenants, satisfaction et coût du SAV.")}
   </div>
   <p class="famille">Outils marketing</p>
   <div class="rubs">
-    {rub("workflow","Lead Management","Validation, qualification, attribution, carte, zoning, envois et rapprochement avec les commandes.")}
-    {rub("mouse-pointer-click","Visibilité en ligne","Google Ads, fréquentation du site, référencement naturel et présence dans les moteurs d’IA.")}
+    {rub("workflow","Lead management","Validation, qualification, attribution, carte, zoning, envois et rapprochement avec les commandes.")}
+    {rub("mouse-pointer-click","Traffic management","Google Ads, fréquentation du site, référencement naturel et présence dans les moteurs d’IA.")}
     {rub("mail","Campagnes e-mail","Newsletters composées par blocs, aperçu fidèle, envoi ciblé par public.")}
     {rub("clipboard-list","Enquêtes et sondages","Questionnaires ciblés, réponses dans l’espace, résultats et score de recommandation.")}
   </div>
-  <div class="vitrine compacte">
-    {ecran("visionneuse.png","Le fil Picard")}
-    <div>{tuile("camera")}<h3 style="margin-top:3mm">La marque au plus près du réseau</h3><p>Lancements, salons, chantiers remarquables : les messages et les photos partagés par Picard s’affichent en plein écran, à la manière d’une messagerie. Le réseau suit la marque en temps réel.</p></div>
+  <div class="bandeau mt">
+    <div>{ic("contact")}<b>Le terrain outillé</b><small>CRM, tournées et opérations enfin dans un vrai outil.</small></div>
+    <div>{ic("telescope")}<b>La direction éclairée</b><small>Stratégie, KPI et SAV pilotés depuis la même base.</small></div>
+    <div>{ic("megaphone")}<b>Le marketing mesuré</b><small>Leads, trafic, campagnes et enquêtes reliés aux ventes.</small></div>
   </div>
   {pied(7)}
 </section>''')
 
-pages.append(f'''<section class="page">
-  <p class="sur">{ic("eye","si")} En images</p>
-  <h2>Une expérience moderne, claire et agréable</h2>
-  <p class="intro">Chaque écran a été pensé pour aller à l’essentiel : lisible, rapide, et cohérent d’une rubrique à l’autre.</p>
-  <div class="mosaique mt">
-    <div>{ecran("frise.png","Agenda du réseau")}<p class="legende">{ic("route","pi")} <b>Agenda en frise</b> : salons, opérations et formations, zoom année, trimestre ou mois, code couleur par type.</p></div>
-    <div>{ecran("messages.png","Le fil Picard")}<p class="legende">{ic("send","pi")} <b>Canal officiel</b> : messages, photos en visionneuse, épinglage, filtres, comme une messagerie.</p></div>
-    <div>{ecran("newsletter.png","Campagnes e-mail")}<p class="legende">{ic("mail","pi")} <b>Campagnes e-mail</b> : rédaction par blocs, insertion des actualités, aperçu fidèle avant envoi.</p></div>
-    <div>{ecran("questionnaire.png","Enquêtes et sondages")}<p class="legende">{ic("clipboard-list","pi")} <b>Enquêtes</b> : score de recommandation, notes, choix et commentaires en un coup d’œil.</p></div>
-  </div>
-  {pied(8)}
-</section>''')
 
 pages.append(f'''<section class="page">
   <p class="sur">{ic("coins","si")} Optimisation des coûts et des ressources</p>
@@ -181,7 +210,7 @@ pages.append(f'''<section class="page">
     {carte("refresh-cw","Moins de ressaisies","Une information saisie une fois est partagée par tous : lead, client, commande et SAV sont reliés. Fini les doubles saisies.")}
     {carte("headphones","Moins d’appels et d’e-mails","Statuts en ligne, notifications automatiques, échanges SAV centralisés : les relances et les échanges dispersés disparaissent.")}
     {carte("printer-check","Moins d’impression et d’envois","Catalogues, notices et kits sont en ligne et toujours à jour. Plus de documents obsolètes ni d’envois postaux.")}
-    {carte("layers","Moins d’outils à maintenir","Une seule plateforme remplace des solutions dispersées : un socle, une base de données, un accès.")}
+    {carte("piggy-bank","30 à 60 k€ d’outils en moins","Les abonnements aux outils abandonnés financent l’Espace Pro, et tout l’historique est repris : rien n’est perdu.")}
     {carte("wallet","Un budget marketing piloté","Chaque lead est suivi jusqu’à la commande : on investit là où le retour est prouvé, et la facturation des leads est paramétrable.")}
     {carte("target","Des équipes recentrées","Lead Manager, commerciaux et SAV disposent de files de travail claires et priorisées : plus d’impact par personne.")}
   </div>
@@ -190,7 +219,7 @@ pages.append(f'''<section class="page">
     <div>{ic("target")}<b>Décider</b><small>Des indicateurs fiables pour arbitrer budgets et priorités.</small></div>
     <div>{ic("trending-up")}<b>Améliorer</b><small>Chaque retour alimente un cycle d’amélioration continue.</small></div>
   </div>
-  {pied(9)}
+  {pied(8)}
 </section>''')
 
 pages.append(f'''<section class="page">
@@ -209,7 +238,7 @@ pages.append(f'''<section class="page">
     {carte("leaf","Image de marque","Une expérience moderne et soignée qui positionne Picard en référence.","or")}
   </div>
   <p class="citation">Plus l’installateur utilise l’Espace Pro, plus il vend Picard, et plus il est récompensé : un cercle vertueux.</p>
-  {pied(10)}
+  {pied(9)}
 </section>''')
 
 pages.append(f'''<section class="page final">
@@ -220,15 +249,16 @@ pages.append(f'''<section class="page final">
       <p class="intro">Construit sur des technologies actuelles et évolutives, avec une exigence de sécurité et de simplicité à chaque écran.</p>
       <div class="liste-f mt">
         <div>{tuile("shield-check")}<div><b>Sécurité par rôle</b><span>Chacun ne voit que ses données ; les droits sont contrôlés par la base et seul l’administrateur paramètre.</span></div></div>
-        <div>{tuile("smartphone")}<div><b>Disponible partout</b><span>Ordinateur, tablette et téléphone ; l’Espace Pro s’installe sur l’écran d’accueil comme une application.</span></div></div>
+        <div>{tuile("smartphone")}<div><b>Une vraie application mobile</b><span>Sur l’App Store et Google Play pour iPhone et Android, et sur ordinateur depuis le navigateur. Notifications push, photos et accès hors connexion.</span></div></div>
         <div>{tuile("map-pinned")}<div><b>Pensé pour le terrain</b><span>Notifications instantanées, photos de chantier, consultation en déplacement.</span></div></div>
         <div>{tuile("layers")}<div><b>Évolutif sans rupture</b><span>Chaque nouvelle rubrique s’ajoute au même socle, sans changer d’outil.</span></div></div>
       </div>
     </div>
-    <img class="menu" src="menu.png" alt="">
   </div>
-  <p class="citation">L’Espace Pro : développez vos ventes, fidélisez votre réseau, pilotez chaque euro.</p>
-  {pied(11)}
+  <div class="chiffres-f"><div><b>21</b><span>rubriques</span></div><div><b>5</b><span>profils utilisateurs</span></div><div><b>1</b><span>seul identifiant</span></div><div><b>0</b><span>double saisie</span></div></div>
+  <div class="stores mt">{STORES}</div>
+  <div class="conclusion">{CARRES}<p>Demain, tout le réseau Picard<br><em>dans un seul outil.</em></p><small>Développer les ventes, fidéliser le réseau, piloter chaque euro.</small></div>
+  {pied(10)}
 </section>''')
 
 html = f'''<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Espace Pro Picard Serrures</title>
