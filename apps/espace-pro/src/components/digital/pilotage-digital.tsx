@@ -56,7 +56,7 @@ export function PilotageDigital({ mesures, modifiable }: { mesures: Mesures; mod
   return (
     <>
       <PageHeader
-        title="Pilotage digital"
+        title="Traffic management"
         description="Google Ads, fréquentation du site, référencement naturel et visibilité dans les moteurs d’IA, mois par mois."
         actions={
           modifiable ? (

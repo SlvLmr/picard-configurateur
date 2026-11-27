@@ -123,7 +123,7 @@ export function RapprochementNavision({ commandes, imports, leadsAttribues, modi
     <>
       <Link href="/lead-management" className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
         <ChevronLeft aria-hidden className="size-4" />
-        Lead Management
+        Lead management
       </Link>
       <PageHeader
         title="Commandes Navision"

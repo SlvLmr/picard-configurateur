@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { PageAVenir } from "@/components/ui/page-a-venir";
 
-export const metadata: Metadata = { title: "SAV Management" };
+export const metadata: Metadata = { title: "SAV management" };
 
 export default function Page() {
   return (
     <PageAVenir
-      titre="SAV Management"
+      titre="SAV management"
       description="Piloter le service après-vente : volumes, délais, qualité et coûts, par produit et par secteur."
       fonctions={[
         "Suivre les demandes ouvertes, les délais de prise en charge et de résolution",

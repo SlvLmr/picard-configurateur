@@ -13,10 +13,10 @@ export default async function Page() {
   const profil = await profilCourant();
   // Les leads non acceptés dans le délai reviennent au Lead Manager
   await expirerLeads();
-  // Le Lead Manager travaille dans Lead Management
+  // Le Lead Manager travaille dans Lead management
   if (profil?.role === "repartiteur") redirect("/lead-management");
   if (estInterne(profil)) {
-    // Vue simple des leads du réseau, en lecture (l'outil complet est dans Lead Management)
+    // Vue simple des leads du réseau, en lecture (l'outil complet est dans Lead management)
     const leads = await leadsProfessionnel();
     return <LeadsPro leads={leads} lectureSeule stats={null} releve={[]} peutCreer={false} />;
   }

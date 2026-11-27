@@ -5,7 +5,7 @@ import { entonnoirLeads, expirerLeads, leadsGestion, notificationsRecentes, stat
 import { estInterne, peutAttribuer, profilCourant } from "@/lib/data/session";
 import { envoiConfigure } from "@/lib/notifications";
 
-export const metadata: Metadata = { title: "Lead Management" };
+export const metadata: Metadata = { title: "Lead management" };
 export const dynamic = "force-dynamic";
 
 /** Outil interne du Lead Manager : validation, qualification, attribution, carte, envois et statistiques du réseau. */
