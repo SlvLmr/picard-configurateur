@@ -62,7 +62,7 @@ export const MODULES: Record<ModuleId, { label: string; href: string; phase: num
   newsletters: { label: "Campagnes e-mail", href: "/newsletters", phase: 3 },
   questionnaires: { label: "Enquêtes et sondages", href: "/questionnaires", phase: 3 },
   marketing: { label: "Boîte à outils local", href: "/marketing", phase: 4 },
-  digital: { label: "Traffic management", href: "/digital", phase: 3 },
+  digital: { label: "Métriques & Analytics", href: "/digital", phase: 3 },
   animations: { label: "Opérations nationales", href: "/animations", phase: 3 },
   boutique: { label: "Boutique", href: "/boutique", phase: 3 },
   sav: { label: "SAV", href: "/sav", phase: 2 },

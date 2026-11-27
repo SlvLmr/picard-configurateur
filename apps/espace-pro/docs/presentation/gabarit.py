@@ -66,7 +66,7 @@ pages.append(f'''<section class="page">
     <div class="grille">{AA_LIGNES}
       <div class="bloc">{CARRES}<b>Espace Pro</b><ul>
         <li>{ic("check")}Un seul identifiant</li><li>{ic("check")}Une seule base de données</li><li>{ic("check")}L’historique repris</li><li>{ic("check")}Des données reliées entre elles</li><li>{ic("check")}Appli sur l’App Store et Google Play</li></ul>
-        <small>Et aussi : Picard 2030, KPI activité, paramétrage des opérations, SAV management, Lead management, Traffic management, campagnes e-mail, enquêtes.</small></div>
+        <small>Et aussi : Picard 2030, KPI activité, paramétrage des opérations, SAV management, Lead management, Métriques &amp; Analytics, campagnes e-mail, enquêtes.</small></div>
     </div>
   </div>
   <div class="gains mt">
@@ -131,7 +131,7 @@ pages.append(f'''<section class="page">
       <li>Une vision complète de chaque client : activité, leads, SAV</li><li>CRM et planning des tournées</li>
       <li>Gestion des opérations sur leur secteur</li><li>Des sujets de visite concrets à chaque rendez-vous</li></ul></div>
     <div class="carte">{tuile("workflow")}<h3>Lead Manager et marketing</h3><ul>
-      <li>Qualification, attribution, carte et zoning des leads</li><li>Campagnes e-mail, enquêtes et traffic management</li>
+      <li>Qualification, attribution, carte et zoning des leads</li><li>Campagnes e-mail, enquêtes, Métriques &amp; Analytics</li>
       <li>Opérations nationales et parrainage en quelques clics</li><li>Statistiques de transformation et de satisfaction</li></ul></div>
     <div class="carte">{tuile("life-buoy")}<h3>SAV et qualité</h3><ul>
       <li>Des demandes complètes dès le départ, photos comprises</li><li>Une file de traitement claire et des échanges tracés</li>
@@ -189,7 +189,7 @@ pages.append(f'''<section class="page">
   <p class="famille">Outils marketing</p>
   <div class="rubs">
     {rub("workflow","Lead management","Validation, qualification, attribution, carte, zoning, envois et rapprochement avec les commandes.")}
-    {rub("mouse-pointer-click","Traffic management","Google Ads, fréquentation du site, référencement naturel et présence dans les moteurs d’IA.")}
+    {rub("mouse-pointer-click","Métriques &amp; Analytics","Google Ads, fréquentation du site, référencement naturel et présence dans les moteurs d’IA.")}
     {rub("mail","Campagnes e-mail","Newsletters composées par blocs, aperçu fidèle, envoi ciblé par public.")}
     {rub("clipboard-list","Enquêtes et sondages","Questionnaires ciblés, réponses dans l’espace, résultats et score de recommandation.")}
   </div>
