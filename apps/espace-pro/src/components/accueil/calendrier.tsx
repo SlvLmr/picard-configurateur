@@ -10,9 +10,14 @@ import type { ElementAgenda, TypeAgenda } from "@/lib/data/accueil";
 
 /** Code couleur des événements : une teinte par type, lisible en clair comme en sombre */
 export const TYPES_AGENDA: Record<TypeAgenda, { label: string; couleur: string }> = {
-  salon: { label: "Salon", couleur: "#7c5cff" },
+  salon: { label: "Salon et foire", couleur: "#23977a" },
+  campagne: { label: "Campagne", couleur: "#2f4fa8" },
+  digital: { label: "Digital", couleur: "#ef7a1e" },
+  ressource: { label: "Ressource", couleur: "#6b7a90" },
+  pos: { label: "POS IAP et Fen", couleur: "#c99a2e" },
+  reseau: { label: "Réseau IAP", couleur: "#3f86dc" },
   formation: { label: "Formation", couleur: "#0ea5a0" },
-  webinaire: { label: "Webinaire", couleur: "#3b82f6" },
+  webinaire: { label: "Webinaire", couleur: "#7c5cff" },
   operation: { label: "Opération", couleur: "#f2643d" },
   reunion: { label: "Réunion", couleur: "#d9468f" },
   visite: { label: "Visite", couleur: "var(--bleu-400)" },

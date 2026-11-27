@@ -1,0 +1,42 @@
+-- Agenda du réseau : couloirs du plan marketing 2027 et événements de l'année
+alter table public.ep_evenements drop constraint ep_evenements_type_check;
+alter table public.ep_evenements add constraint ep_evenements_type_check
+  check (type in ('salon', 'campagne', 'digital', 'ressource', 'pos', 'reseau', 'formation', 'operation', 'webinaire', 'reunion'));
+
+insert into public.ep_evenements (titre, type, debut, fin, description, lieu, roles) values
+  ('Carrefour de l''Eau', 'salon', timestamptz '2027-01-27 09:00 Europe/Paris', timestamptz '2027-01-28 18:00 Europe/Paris', null, 'Rennes', '{}'::public.ep_role[]),
+  ('Batibouw', 'salon', timestamptz '2027-02-12 09:00 Europe/Paris', timestamptz '2027-02-21 18:00 Europe/Paris', null, 'Bruxelles', '{}'::public.ep_role[]),
+  ('Habitat Bordeaux', 'salon', timestamptz '2027-03-05 09:00 Europe/Paris', timestamptz '2027-03-07 18:00 Europe/Paris', null, 'Bordeaux', '{}'::public.ep_role[]),
+  ('Franchise Expo', 'salon', timestamptz '2027-03-13 09:00 Europe/Paris', timestamptz '2027-03-15 18:00 Europe/Paris', null, 'Paris', '{}'::public.ep_role[]),
+  ('Foire de Lyon', 'salon', timestamptz '2027-03-27 09:00 Europe/Paris', timestamptz '2027-04-05 18:00 Europe/Paris', null, 'Lyon', '{}'::public.ep_role[]),
+  ('Foire de Paris', 'salon', timestamptz '2027-04-30 09:00 Europe/Paris', timestamptz '2027-05-10 18:00 Europe/Paris', null, 'Paris', '{}'::public.ep_role[]),
+  ('Salon Île de la Réunion', 'salon', timestamptz '2027-05-01 09:00 Europe/Paris', timestamptz '2027-05-09 18:00 Europe/Paris', null, 'La Réunion', '{}'::public.ep_role[]),
+  ('Salon APS ou MetalExpo', 'salon', timestamptz '2027-09-15 09:00 Europe/Paris', timestamptz '2027-09-30 18:00 Europe/Paris', 'Salon à confirmer entre APS et MetalExpo, dates à confirmer.', null, '{}'::public.ep_role[]),
+  ('Foire de Chalon', 'salon', timestamptz '2027-09-03 09:00 Europe/Paris', timestamptz '2027-09-13 18:00 Europe/Paris', 'Dates à confirmer.', null, '{}'::public.ep_role[]),
+  ('Artibat', 'salon', timestamptz '2027-10-20 09:00 Europe/Paris', timestamptz '2027-10-22 18:00 Europe/Paris', null, 'Rennes', '{}'::public.ep_role[]),
+  ('Data Center World Paris', 'salon', timestamptz '2027-11-17 09:00 Europe/Paris', timestamptz '2027-11-18 18:00 Europe/Paris', 'Dates à confirmer.', 'Paris', '{}'::public.ep_role[]),
+  ('Habitat Lille', 'salon', timestamptz '2027-11-05 09:00 Europe/Paris', timestamptz '2027-11-08 18:00 Europe/Paris', 'Dates à confirmer.', 'Lille', '{}'::public.ep_role[]),
+  ('Campagne nationale', 'campagne', timestamptz '2027-02-02 09:00 Europe/Paris', timestamptz '2027-03-29 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Campagne nationale et relais local', 'campagne', timestamptz '2027-05-27 09:00 Europe/Paris', timestamptz '2027-06-30 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Campagne nationale et relais local', 'campagne', timestamptz '2027-09-22 09:00 Europe/Paris', timestamptz '2027-10-27 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Campagnes YouTube et Meta', 'digital', timestamptz '2027-02-02 09:00 Europe/Paris', timestamptz '2027-04-13 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Campagnes YouTube et Meta', 'digital', timestamptz '2027-05-10 09:00 Europe/Paris', timestamptz '2027-07-19 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Campagnes YouTube et Meta', 'digital', timestamptz '2027-09-02 09:00 Europe/Paris', timestamptz '2027-11-11 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Campagnes Adwords', 'digital', timestamptz '2027-01-01 09:00 Europe/Paris', timestamptz '2027-12-31 18:00 Europe/Paris', 'Présence continue toute l''année.', null, '{}'::public.ep_role[]),
+  ('Reflet Confort', 'ressource', timestamptz '2027-01-06 09:00 Europe/Paris', timestamptz '2027-02-14 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Configurateur particuliers', 'ressource', timestamptz '2027-02-07 09:00 Europe/Paris', timestamptz '2027-03-18 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Configurateur pros', 'ressource', timestamptz '2027-06-12 09:00 Europe/Paris', timestamptz '2027-07-21 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Tarifs', 'pos', timestamptz '2027-01-02 09:00 Europe/Paris', timestamptz '2027-01-30 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Reflet Confort', 'pos', timestamptz '2027-01-02 09:00 Europe/Paris', timestamptz '2027-01-30 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Agréments', 'pos', timestamptz '2027-02-01 09:00 Europe/Paris', timestamptz '2027-02-28 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Kits campagne', 'pos', timestamptz '2027-05-05 09:00 Europe/Paris', timestamptz '2027-06-02 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Kits campagne', 'pos', timestamptz '2027-08-30 09:00 Europe/Paris', timestamptz '2027-09-27 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Calendriers de l''Avent', 'pos', timestamptz '2027-11-03 09:00 Europe/Paris', timestamptz '2027-11-30 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Nouveau contrat IAP', 'reseau', timestamptz '2027-01-04 09:00 Europe/Paris', timestamptz '2027-01-29 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Formation lancement', 'reseau', timestamptz '2027-02-01 09:00 Europe/Paris', timestamptz '2027-02-26 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Plans Top 50', 'reseau', timestamptz '2027-03-01 09:00 Europe/Paris', timestamptz '2027-03-31 18:00 Europe/Paris', null, null, array['admin','codir','chef_service','chef_marche','atc','repartiteur','sav','bureau_etudes','qualite']::public.ep_role[]),
+  ('Comité Partenaires', 'reseau', timestamptz '2027-04-01 09:00 Europe/Paris', timestamptz '2027-04-30 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Ambassadeurs', 'reseau', timestamptz '2027-05-03 09:00 Europe/Paris', timestamptz '2027-05-28 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Rassemblement IAP', 'reseau', timestamptz '2027-06-01 09:00 Europe/Paris', timestamptz '2027-06-30 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Rassemblement IAP', 'reseau', timestamptz '2027-09-01 09:00 Europe/Paris', timestamptz '2027-09-30 18:00 Europe/Paris', null, null, '{}'::public.ep_role[]),
+  ('Recrutement ciblé zones blanches', 'reseau', timestamptz '2027-01-04 09:00 Europe/Paris', timestamptz '2027-12-17 18:00 Europe/Paris', 'Objectif : 15 nouveaux IAP en 2027.', null, array['admin','codir','chef_service','chef_marche','atc','repartiteur','sav','bureau_etudes','qualite']::public.ep_role[]);

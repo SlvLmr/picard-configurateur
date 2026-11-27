@@ -20,11 +20,12 @@ import { ANNEE_DEPART, ANNEES } from "@/lib/periode-calendrier";
  */
 
 const LIGNES: { type: TypeAgenda; label: string }[] = [
-  { type: "salon", label: "Salons" },
-  { type: "operation", label: "Opérations" },
-  { type: "formation", label: "Formations" },
-  { type: "webinaire", label: "Webinaires" },
-  { type: "reunion", label: "Réunions" },
+  { type: "salon", label: "Salons et foires" },
+  { type: "campagne", label: "Campagnes" },
+  { type: "digital", label: "Digital" },
+  { type: "ressource", label: "Ressources" },
+  { type: "pos", label: "POS IAP et Fen" },
+  { type: "reseau", label: "Réseau IAP" },
 ];
 const TYPES_FRISE = new Set(LIGNES.map((l) => l.type));
 

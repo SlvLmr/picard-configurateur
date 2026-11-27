@@ -16,7 +16,7 @@ import { useToast } from "@/components/ui/toast";
 import type { Annonce, ElementAgenda } from "@/lib/data/accueil";
 
 const OPTIONS_CIBLES = (Object.keys(CIBLES) as Cible[]).map((k) => ({ value: k, label: CIBLES[k].label }));
-const TYPES_EVENEMENT = (["salon", "formation", "webinaire", "operation", "reunion"] as const).map((t) => ({
+const TYPES_EVENEMENT = (["salon", "campagne", "digital", "ressource", "pos", "reseau"] as const).map((t) => ({
   value: t,
   label: TYPES_AGENDA[t].label,
   prefixe: <span aria-hidden className="block size-2 rounded-full" style={{ background: TYPES_AGENDA[t].couleur }} />,

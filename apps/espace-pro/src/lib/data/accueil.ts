@@ -35,7 +35,9 @@ export type Annonce = {
   creeLe: string;
 };
 
-export type TypeAgenda = "salon" | "formation" | "operation" | "webinaire" | "reunion" | "visite" | "echeance";
+export type TypeAgenda =
+  | "salon" | "campagne" | "digital" | "ressource" | "pos" | "reseau"
+  | "formation" | "operation" | "webinaire" | "reunion" | "visite" | "echeance";
 
 export type ElementAgenda = {
   id: string;

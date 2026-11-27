@@ -12,7 +12,7 @@ import { Field, Input } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast";
 import { CIBLES, type Cible } from "@/lib/cibles";
 
-const TYPES = (["salon", "operation", "formation", "webinaire", "reunion"] as const).map((t) => ({
+const TYPES = (["salon", "campagne", "digital", "ressource", "pos", "reseau"] as const).map((t) => ({
   value: t,
   label: TYPES_AGENDA[t].label,
   prefixe: <span aria-hidden className="block size-2 rounded-full" style={{ background: TYPES_AGENDA[t].couleur }} />,
