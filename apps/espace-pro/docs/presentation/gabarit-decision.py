@@ -101,7 +101,7 @@ pages.append(f'''<section class="page">
       <li>Des données dispersées, des départs de collaborateurs qui emportent l’historique</li>
       <li>Une expérience installateur en retrait de l’image premium de la marque</li></ul></div>
     <div class="carte nuit">{tuile("rocket")}<h3>Avec l’Espace Pro</h3><ul>
-      <li>Un coût d’outillage maîtrisé et en baisse dès la deuxième année</li>
+      <li>Un coût d’outillage réduit à environ 1 k€ par an</li>
       <li>Chaque lead suivi jusqu’au chiffre d’affaires, par canal et par secteur</li>
       <li>Un SAV plus rapide, et moins de demandes grâce au dépannage guidé</li>
       <li>Une donnée unique, propriété de Picard, exploitable pour décider</li>
@@ -286,15 +286,15 @@ pages.append(f'''<section class="page">
   </div>
   <table class="couts mt"><thead><tr><th>Fonctionnement annuel</th><th>Aujourd’hui</th><th>Avec l’Espace Pro</th></tr></thead><tbody>
     <tr><td>Abonnements Dropbox, Enet, Qualios, MyPricer</td><td>30 à 60 k€</td><td>0 €</td></tr>
-    <tr><td>Hébergement, base de données, stockage</td><td>inclus ci-dessus</td><td>2 à 4 k€</td></tr>
-    <tr><td>E-mails et SMS (selon volumes)</td><td>variable</td><td>1 à 4 k€</td></tr>
-    <tr><td>Publication de l’appli sur les stores</td><td>non</td><td>moins de 0,2 k€</td></tr>
-    <tr><td>Maintenance et évolutions</td><td>dispersée</td><td>10 à 20 k€</td></tr>
-    <tr class="tot"><td>Total annuel</td><td>30 à 60 k€</td><td>13 à 28 k€</td></tr>
+    <tr><td>Hébergement, base de données, stockage</td><td>inclus ci-dessus</td><td>0,5 à 1 k€</td></tr>
+    <tr><td>E-mails et SMS (selon volumes)</td><td>variable</td><td>0,1 à 0,4 k€</td></tr>
+    <tr><td>Publication de l’appli sur les stores</td><td>non</td><td>0,1 k€</td></tr>
+    <tr><td>Maintenance et évolutions</td><td>dispersée</td><td>en interne</td></tr>
+    <tr class="tot"><td>Total annuel</td><td>30 à 60 k€</td><td>≈ 1 k€</td></tr>
   </tbody></table>
   <div class="barres mt">
     <div class="ln"><span>Aujourd’hui</span><div class="tr"><i class="ajd" style="width:50%"></i><i class="ajd2" style="width:50%"></i></div><b>30 à 60 k€ par an</b></div>
-    <div class="ln"><span>Espace Pro</span><div class="tr"><i class="ep" style="width:21.7%"></i><i class="ep2" style="width:25%"></i></div><b>13 à 28 k€ par an</b></div>
+    <div class="ln"><span>Espace Pro</span><div class="tr"><i class="ep" style="width:1.2%"></i><i class="ep2" style="width:1.3%"></i></div><b>≈ 1 k€ par an</b></div>
   </div>
   <p class="note">Le coût de l’approche proposée couvre le temps projet, l’accompagnement technique, la reprise des données et la formation. Le budget détaillé sera présenté à l’issue du cadrage.</p>
   {pied(11)}
@@ -304,19 +304,19 @@ pages.append(f'''<section class="page">
 pages.append(f'''<section class="page">
   {entete("hand-coins","Gains et retour sur investissement","Un projet qui se finance en grande partie par ses économies","Trois sources de valeur, de la plus certaine à la plus importante. Les montants ci-dessous sont des exemples à recalculer avec les chiffres réels de Picard.")}
   <div class="gains3 mt">
-    <div class="gx"><span class="niv">Certain</span>{ic("piggy-bank")}<b>Abonnements arrêtés</b><div class="m">15 à 32 k€</div><small>par an : 30 à 60 k€ d’abonnements, moins 13 à 28 k€ de fonctionnement</small></div>
+    <div class="gx"><span class="niv">Certain</span>{ic("piggy-bank")}<b>Abonnements arrêtés</b><div class="m">29 à 59 k€</div><small>par an : 30 à 60 k€ d’abonnements, moins environ 1 k€ de fonctionnement</small></div>
     <div class="gx"><span class="niv">Probable</span>{ic("clock")}<b>Temps gagné</b><div class="m">≈ 2 000 h</div><small>par an : exemple de 30 collaborateurs gagnant 1 h 30 par semaine sur les ressaisies, relances et recherches</small></div>
     <div class="gx fort"><span class="niv">Levier principal</span>{ic("trending-up")}<b>Ventes</b><div class="m">+ 150 k€</div><small>de CA : exemple de 2 000 leads par an, 3 points de transformation en plus, panier moyen de 2 500 €</small></div>
   </div>
   <div class="roi mt">
-    <div><b>Retour sur investissement</b><p>Sur les seules économies d’abonnements, l’investissement est couvert en un peu plus de trois ans. En valorisant le temps gagné, il l’est au cours de la deuxième année, avant même l’effet sur les ventes.</p></div>
+    <div><b>Retour sur investissement</b><p>Sur les seules économies d’abonnements, l’investissement est couvert en deux ans. En valorisant le temps gagné, il l’est dès la première année pleine, avant même l’effet sur les ventes.</p></div>
     <div class="qual"><b>Et ce qui ne se chiffre pas</b><ul>
       <li>{ic("check")}Une donnée unique, propriété de Picard</li><li>{ic("check")}Une image de marque modernisée</li>
       <li>{ic("check")}Un réseau plus fidèle, plus facile à recruter</li><li>{ic("check")}Une base pour les projets futurs</li></ul></div>
   </div>
   <table class="couts trois-ans mt"><thead><tr><th>Solde cumulé, scénario médian</th><th>Année 1</th><th>Année 2</th><th>Année 3</th></tr></thead><tbody>
-    <tr><td>Abonnements seuls (65 k€ investis, 23 k€ économisés par an, demi-année en année 1)</td><td class="neg">− 54 k€</td><td class="neg">− 31 k€</td><td class="neg">− 8 k€</td></tr>
-    <tr><td>Avec le temps gagné valorisé à 35 € de l’heure (moitié en année 1)</td><td class="neg">− 19 k€</td><td class="pos">+ 75 k€</td><td class="pos">+ 168 k€</td></tr>
+    <tr><td>Abonnements seuls (65 k€ investis, 44 k€ économisés par an, demi-année en année 1)</td><td class="neg">− 43 k€</td><td class="pos">+ 1 k€</td><td class="pos">+ 45 k€</td></tr>
+    <tr><td>Avec le temps gagné valorisé à 35 € de l’heure (moitié en année 1)</td><td class="neg">− 8 k€</td><td class="pos">+ 106 k€</td><td class="pos">+ 220 k€</td></tr>
   </tbody></table>
   <p class="note">Hors effet sur les ventes. Hypothèses à remplacer par les chiffres réels de Picard lors du cadrage.</p>
   {pied(12)}

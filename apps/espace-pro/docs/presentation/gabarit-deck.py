@@ -74,7 +74,7 @@ S.append(f'''<section class="slide">
   <div class="leviers">
     <div>{tuile("trending-up")}<b>Vendre plus</b><p>Chaque lead attribué en minutes et suivi jusqu’à la commande.</p><span class="tag">100 % des leads tracés</span></div>
     <div>{tuile("stethoscope")}<b>Servir mieux</b><p>Dépannage guidé avant SAV, demandes complètes, suivi transparent.</p><span class="tag">Moins de SAV, plus vite</span></div>
-    <div>{tuile("piggy-bank")}<b>Dépenser moins</b><p>Abonnements arrêtés, plus de ressaisies, plus d’envois papier.</p><span class="tag">Coûts d’outils divisés par 2</span></div>
+    <div>{tuile("piggy-bank")}<b>Dépenser moins</b><p>Abonnements arrêtés, plus de ressaisies, plus d’envois papier.</p><span class="tag">Coûts d’outils : −95 %</span></div>
     <div>{tuile("chart-line")}<b>Piloter</b><p>Ventes, SAV, marketing et stratégie lus en temps réel.</p><span class="tag">Une seule source de vérité</span></div>
   </div>
   <p class="punch">Et un réseau qui a enfin toutes les raisons de choisir Picard, chaque jour.</p>
@@ -135,18 +135,45 @@ S.append(f'''<section class="slide">
   {pied(8)}
 </section>''')
 
+
+# 9 bis. Comparatif
+EXT = [
+ ("app-window","Dropbox, Enet, Qualios, MyPricer","Outils actuels","30 à 60 k€"),
+ ("contact","HubSpot Sales Hub","CRM et tournées, 10 utilisateurs","11 à 15 k€"),
+ ("mail","HubSpot Marketing Hub","Newsletters, enquêtes, analytics","10 à 12 k€"),
+ ("store","Extranet du marché","Portail installateurs et médiathèque","5 à 10 k€"),
+ ("gift","Plateforme de fidélité","Points, boutique, récompenses","5 à 10 k€"),
+ ("workflow","Connecteurs entre outils","Zapier, Make, développements","2 à 5 k€"),
+]
+ext = "".join(f'<div class="li">{tuile(e[0])}<div><b>{e[1]}</b><span>{e[2]}</span></div><em>{e[3]}</em></div>' for e in EXT)
+S.append(f'''<section class="slide">
+  {sur("scale","Le comparatif")}
+  <h2>Assembler des prestataires, <em>ou un seul outil ?</em></h2>
+  <div class="duel">
+    <div class="ext"><p class="t">{ic("layers","pi")}Prestataires spécialisés</p>{ext}
+      <div class="tot"><b>63 à 112 k€</b><span>par an, plus 15 à 30 k€ de mise en place</span></div>
+      <div class="kp"><span>9 outils</span><span>9 identifiants</span><span>Données non reliées</span><span>3 à 6 mois</span></div></div>
+    <div class="vs">VS</div>
+    <div class="ep">{CARRES}<p class="t">Espace Pro</p><b>≈ 1 k€</b><span>par an d’hébergement, base de données et envois</span>
+      <div class="kp"><span>1 outil</span><span>1 identifiant</span><span>Tout est relié</span><span>30 jours</span></div>
+      <div class="eco"><b>60 à 110 k€</b> économisés chaque année</div></div>
+  </div>
+  <p class="note sombre">Tarifs publics indicatifs, ordres de grandeur à confirmer.</p>
+  {pied(9)}
+</section>''')
+
 # 9. Les chiffres
 S.append(f'''<section class="slide nuit">
   {sur("coins","Les chiffres")}
   <h2>Ce que l’Espace Pro <em>rapporte.</em></h2>
   <div class="gros">
     <div><b>30</b><em>jours</em><span>pour être opérationnel</span></div>
-    <div><b>−50 %</b><em>de coûts d’outils</em><span>13 à 28 k€ par an au lieu de 30 à 60 k€</span></div>
+    <div><b>−95 %</b><em>de coûts d’outils</em><span>environ 1 k€ par an au lieu de 30 à 60 k€</span></div>
     <div><b>2 000 h</b><em>libérées par an</em><span>ressaisies, relances et recherches en moins</span></div>
     <div class="or"><b>+150 k€</b><em>de chiffre d’affaires</em><span>avec 3 points de transformation en plus sur les leads</span></div>
   </div>
   <p class="note">Ordres de grandeur, à confirmer avec les chiffres réels de Picard.</p>
-  {pied(9, True)}
+  {pied(10, True)}
 </section>''')
 
 # 10. Et ensuite
@@ -162,7 +189,7 @@ S.append(f'''<section class="slide">
     <div>{tuile("chart-pie")}<b>Données au service de la gamme</b></div>
   </div>
   <p class="punch">Chaque installateur connecté rend l’outil plus utile, et Picard plus fort.</p>
-  {pied(10)}
+  {pied(11)}
 </section>''')
 
 # 11. Décision
@@ -175,7 +202,7 @@ S.append(f'''<section class="slide nuit fin">
     <div><em>3</em><b>Démarrer</b><span>lundi</span></div>
   </div>
   <div class="signature-fin">{CARRES}<b>Espace Pro</b><span>Vendre plus. Servir mieux. Dépenser moins.</span></div>
-  {pied(11, True)}
+  {pied(12, True)}
 </section>''')
 
 html = f'''<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Espace Pro Picard Serrures</title>

@@ -167,3 +167,30 @@ h2 em { color: var(--or-fonce); } .nuit h2 em { color: var(--or); }
 .maint div, .gros div, .chiffres4 div { min-height: 56mm; }
 .leviers div { min-height: 62mm; }
 .ensuite div { justify-content: flex-start; padding-top: 10mm; min-height: 50mm; }
+
+/* Comparatif */
+.duel { display: grid; grid-template-columns: 1.45fr 14mm 1fr; gap: 0; margin-top: auto; margin-bottom: auto; align-items: stretch; }
+.duel .t { font-size: 9pt; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2.5mm; }
+.duel .ext { border-radius: 5mm; background: #fdf3f1; border: 1px solid #f1d3ce; padding: 5mm 6mm; }
+.duel .ext .t { color: var(--rouge); }
+.duel .li { display: grid; grid-template-columns: 8mm 1fr auto; gap: 3mm; align-items: center; padding: 1.3mm 0; border-bottom: 1px dashed #efcfc9; }
+.duel .li .tuile { width: 8mm; height: 8mm; padding: 1.8mm; border-radius: 2.2mm; box-shadow: none; background: linear-gradient(145deg, #c2483a, #8f2f25); color: #fff; }
+.duel .li b { display: block; font-size: 9.6pt; color: var(--nuit); }
+.duel .li span { display: block; font-size: 7.8pt; color: var(--gris); }
+.duel .li em { font-style: normal; font-size: 10pt; font-weight: 800; color: var(--rouge); white-space: nowrap; }
+.duel .tot { display: flex; align-items: baseline; gap: 3mm; margin-top: 3mm; }
+.duel .tot b { font-size: 22pt; font-weight: 800; color: var(--rouge); white-space: nowrap; }
+.duel .tot span { font-size: 8.6pt; color: #7a3a32; }
+.duel .kp { display: flex; flex-wrap: wrap; gap: 1.6mm; margin-top: 2.5mm; }
+.duel .kp span { font-size: 8pt; font-weight: 700; border-radius: 99px; padding: .7mm 2.6mm; background: #f6d9d4; color: #8f2f25; }
+.duel .vs { align-self: center; justify-self: center; width: 11mm; height: 11mm; border-radius: 50%; background: var(--nuit); color: var(--or); font-weight: 800; font-size: 9pt; display: flex; align-items: center; justify-content: center; }
+.duel .ep { border-radius: 5mm; background: radial-gradient(70mm 60mm at 100% 0%, rgba(227,169,43,.3), transparent 60%), linear-gradient(160deg, var(--nuit2), var(--nuit)); color: #fff; padding: 6mm; display: flex; flex-direction: column; }
+.duel .ep .carres { width: 13mm; height: 13mm; color: var(--or); }
+.duel .ep .t { color: var(--or); margin-top: 3mm; }
+.duel .ep > b { font-size: 46pt; font-weight: 800; color: var(--or); line-height: 1; letter-spacing: -.02em; }
+.duel .ep > span { font-size: 9.6pt; color: #d6deea; margin-top: 2mm; }
+.duel .ep .kp span { background: rgba(255,255,255,.1); color: #fff; }
+.duel .ep .eco { margin-top: auto; border-radius: 3mm; background: var(--or); color: var(--nuit); font-size: 11pt; font-weight: 700; padding: 3mm 4mm; }
+.duel .ep .eco b { font-weight: 800; }
+.note.sombre { color: var(--gris); bottom: 19mm; }
+.duel { margin-top: 7mm; }
