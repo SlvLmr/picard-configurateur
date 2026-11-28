@@ -1,0 +1,276 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Espace Pro Picard Serrures</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=block" rel="stylesheet"><style>@page { size: 297mm 167mm; margin: 0; }
+:root { --nuit: #0b2545; --nuit2: #13315c; --or: #e3a92b; --or-fonce: #b07d12; --or-pale: #fbf1dc; --encre: #1b2a3f; --gris: #5f6f86; --fond: #f6f1e9; --ligne: #e7dfd2; --rouge: #c2483a; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Archivo, Arial, sans-serif; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.ic { width: 100%; height: 100%; }
+.si { width: 4mm; height: 4mm; vertical-align: -.8mm; margin-right: 1.6mm; }
+.pi { width: 3.4mm; height: 3.4mm; vertical-align: -.6mm; margin-right: 1.2mm; }
+
+.slide { width: 297mm; height: 167mm; position: relative; overflow: hidden; page-break-after: always; background: #fff; padding: 14mm 18mm 16mm; }
+.slide:last-child { page-break-after: auto; }
+.slide::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2.4mm; background: linear-gradient(90deg, var(--nuit), var(--nuit2) 70%, var(--or)); }
+.nuit { background: radial-gradient(160mm 120mm at 95% 0%, rgba(227,169,43,.26), transparent 60%), radial-gradient(150mm 120mm at 0% 100%, rgba(59,130,246,.3), transparent 60%), linear-gradient(160deg, #0b2545, #13315c 55%, #0b1d36); color: #fff; }
+.nuit::before { display: none; }
+
+.sur { font-size: 9pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--or-fonce); }
+.nuit .sur { color: var(--or); }
+h1 { font-size: 44pt; line-height: 1.02; font-weight: 800; letter-spacing: -.02em; font-variation-settings: "wdth" 92; }
+h1 em, h2 em { font-style: normal; color: var(--or); }
+h2 { font-size: 27pt; line-height: 1.08; font-weight: 800; color: var(--nuit); letter-spacing: -.015em; font-variation-settings: "wdth" 94; margin-top: 2mm; }
+.nuit h2 { color: #fff; }
+h2 em { color: var(--or-fonce); } .nuit h2 em { color: var(--or); }
+.punch { position: absolute; left: 18mm; right: 18mm; bottom: 19mm; border-left: 1.5mm solid var(--or); padding: 1mm 0 1mm 5mm; font-size: 14pt; font-weight: 750; color: var(--nuit); line-height: 1.3; }
+.note { position: absolute; left: 18mm; bottom: 18mm; font-size: 8.5pt; color: #9fb0c6; }
+
+.pied { position: absolute; left: 18mm; right: 18mm; bottom: 6mm; display: flex; justify-content: space-between; align-items: center; font-size: 7.8pt; color: var(--gris); }
+.pied span:first-child { display: flex; align-items: center; gap: 2mm; }
+.pied .carres { width: 3.4mm; height: 3.4mm; color: var(--or); }
+.pied span:last-child { font-weight: 800; color: var(--nuit); font-size: 9pt; }
+.pied.clair { color: #9fb0c6; } .pied.clair span:last-child { color: #fff; }
+
+.tuile { display: inline-flex; width: 11mm; height: 11mm; padding: 2.6mm; border-radius: 3mm; background: linear-gradient(145deg, var(--nuit2), var(--nuit)); color: var(--or); box-shadow: 0 1.5mm 3mm rgba(11,37,69,.18); flex-shrink: 0; }
+
+/* Couverture */
+.couverture { display: grid; grid-template-columns: 1.35fr 1fr; gap: 10mm; align-items: center; padding: 16mm 20mm; }
+.couverture .logo { height: 13mm; }
+.couverture h1 { margin-top: 12mm; }
+.couverture .accroche { margin-top: 7mm; font-size: 12pt; line-height: 1.5; color: #d6deea; max-width: 150mm; }
+.mega { aspect-ratio: 1; border-radius: 9mm; background: linear-gradient(150deg, rgba(227,169,43,.22), rgba(255,255,255,.05)); border: 1px solid rgba(227,169,43,.5); box-shadow: 0 6mm 18mm rgba(0,0,0,.35); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10mm; }
+.mega .carres { width: 36mm; height: 36mm; color: var(--or); }
+.mega b { font-size: 26pt; font-weight: 800; margin-top: 7mm; }
+.mega span { font-size: 9.5pt; color: #b9c6d8; margin-top: 2mm; }
+
+/* Constat */
+.chiffres4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; margin-top: 10mm; }
+.chiffres4 div { border-radius: 5mm; background: var(--fond); padding: 7mm 6mm; }
+.chiffres4 b { display: block; font-size: 46pt; font-weight: 800; line-height: .95; color: var(--nuit); letter-spacing: -.02em; }
+.chiffres4 span { display: block; font-size: 12pt; font-weight: 750; color: var(--nuit); margin-top: 3mm; }
+.chiffres4 small { display: block; font-size: 8.8pt; color: var(--gris); margin-top: 2mm; line-height: 1.4; }
+.chiffres4 .rouge { background: linear-gradient(150deg, #d35a4b, var(--rouge)); }
+.chiffres4 .rouge b { font-size: 31pt; line-height: 1.45; } .chiffres4 .rouge b, .chiffres4 .rouge span { color: #fff; } .chiffres4 .rouge small { color: #fbe0dc; }
+
+/* Solution */
+.conv { position: absolute; left: 18mm; right: 18mm; top: 46mm; height: 92mm; display: grid; grid-template-columns: 48mm 1fr 62mm 46mm; gap: 0; align-items: center; }
+.puces { display: flex; flex-direction: column; justify-content: space-between; height: 86mm; }
+.puce { height: 11mm; display: flex; align-items: center; gap: 3mm; padding: 0 4mm; border-radius: 3mm; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); text-decoration: line-through; text-decoration-color: rgba(227,169,43,.7); }
+.puce svg { width: 5mm; height: 5mm; color: #9fb0c6; }
+.puce b { font-size: 12pt; color: #fff; }
+.fils { width: 100%; height: 86mm; fill: none; stroke: var(--or); stroke-width: .5; stroke-dasharray: 1.4 1.2; }
+.cible { height: 70mm; border-radius: 6mm; background: linear-gradient(150deg, rgba(227,169,43,.24), rgba(255,255,255,.06)); border: 1px solid rgba(227,169,43,.6); box-shadow: 0 5mm 14mm rgba(0,0,0,.3); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6mm; }
+.cible .carres { width: 20mm; height: 20mm; color: var(--or); }
+.cible b { font-size: 21pt; font-weight: 800; margin-top: 5mm; }
+.cible span { font-size: 9pt; color: #d6deea; margin-top: 2mm; line-height: 1.4; }
+.plus { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; padding-left: 7mm; }
+.plus div { border-radius: 3.5mm; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); padding: 4mm; }
+.plus b { display: block; font-size: 24pt; font-weight: 800; color: var(--or); line-height: 1; }
+.plus span { font-size: 9pt; color: #d6deea; }
+
+/* Rubriques */
+.familles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4mm; margin-top: 8mm; }
+.fam p { font-size: 8pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--or-fonce); padding-bottom: 2mm; border-bottom: 2px solid var(--or); margin-bottom: 2.5mm; min-height: 11mm; display: flex; align-items: flex-end; }
+.fam .r { display: flex; align-items: center; gap: 2.4mm; padding: 1.8mm 0; }
+.fam .tuile { width: 8mm; height: 8mm; padding: 1.8mm; border-radius: 2.2mm; box-shadow: none; }
+.fam .r b { font-size: 9.6pt; color: var(--nuit); line-height: 1.2; }
+.fam .r em { margin-left: auto; font-style: normal; font-size: 6.8pt; font-weight: 800; color: var(--or-fonce); background: var(--or-pale); border-radius: 99px; padding: .4mm 1.8mm; white-space: nowrap; }
+
+/* Leviers */
+.leviers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; margin-top: 9mm; }
+.leviers div { border-radius: 5mm; border: 1px solid var(--ligne); padding: 6mm; background: #fff; box-shadow: 0 1mm 3mm rgba(11,37,69,.05); display: flex; flex-direction: column; }
+.leviers b { display: block; font-size: 15pt; font-weight: 800; color: var(--nuit); margin-top: 4mm; }
+.leviers p { font-size: 9.6pt; line-height: 1.45; color: #33445c; margin-top: 2mm; flex: 1; }
+.leviers .tag { margin-top: 4mm; align-self: flex-start; font-size: 8.4pt; font-weight: 800; color: var(--nuit); background: var(--or); border-radius: 99px; padding: 1mm 3mm; }
+
+/* 30 jours */
+.frise30 { display: grid; grid-template-columns: repeat(4, 1fr) 46mm; gap: 3mm; margin-top: 10mm; align-items: stretch; }
+.frise30 .s { border-radius: 4mm; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); padding: 5mm; position: relative; }
+.frise30 .s::after { content: ""; position: absolute; right: -3mm; top: 50%; width: 3mm; height: 1px; background: var(--or); }
+.frise30 em { font-style: normal; font-size: 22pt; font-weight: 800; color: var(--or); line-height: 1; }
+.frise30 .s b { display: block; font-size: 12pt; margin-top: 2mm; }
+.frise30 .s span { display: block; font-size: 8.8pt; color: #b9c6d8; margin-top: 1.5mm; line-height: 1.4; }
+.j30 { border-radius: 4mm; background: linear-gradient(150deg, #f6c75a, var(--or)); color: var(--nuit); padding: 5mm; display: flex; flex-direction: column; justify-content: center; }
+.j30 svg { width: 8mm; height: 8mm; }
+.j30 b { font-size: 18pt; font-weight: 800; margin-top: 2mm; }
+.j30 span { font-size: 9.5pt; font-weight: 700; }
+.pourquoi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; margin-top: 8mm; }
+.pourquoi div { display: grid; grid-template-columns: 8mm 1fr; column-gap: 3mm; align-items: center; }
+.pourquoi svg { width: 7mm; height: 7mm; color: var(--or); grid-row: span 2; }
+.pourquoi b { font-size: 11pt; }
+.pourquoi span { font-size: 9pt; color: #b9c6d8; }
+
+/* Sécurité */
+.secu { display: grid; grid-template-columns: 56mm 1fr; gap: 7mm; margin-top: 8mm; align-items: stretch; }
+.bouclier { border-radius: 6mm; background: linear-gradient(160deg, var(--nuit2), var(--nuit)); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6mm; }
+.bouclier svg { width: 24mm; height: 24mm; color: var(--or); }
+.bouclier b { font-size: 26pt; font-weight: 800; margin-top: 3mm; }
+.bouclier span { font-size: 9.5pt; color: #d6deea; }
+.grille-secu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+.grille-secu div { border-radius: 4mm; background: var(--fond); padding: 4.5mm; display: grid; grid-template-columns: 11mm 1fr; column-gap: 3mm; align-items: center; }
+.grille-secu .tuile { grid-row: span 2; }
+.grille-secu b { font-size: 11pt; color: var(--nuit); }
+.grille-secu span { font-size: 8.6pt; color: #33445c; line-height: 1.35; }
+.rgpd { position: absolute; left: 18mm; right: 18mm; bottom: 16mm; display: flex; flex-wrap: wrap; gap: 2.5mm; }
+.rgpd span { font-size: 9pt; font-weight: 700; color: var(--nuit); background: var(--or-pale); border-radius: 99px; padding: 1.4mm 3.6mm; }
+.rgpd svg { color: var(--or-fonce); }
+
+/* Maintenance */
+.maint { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; margin-top: 9mm; }
+.maint div { border-radius: 5mm; background: var(--fond); padding: 6mm; }
+.maint b { display: block; font-size: 14pt; font-weight: 800; color: var(--nuit); margin-top: 4mm; }
+.maint p { font-size: 9.6pt; color: #33445c; margin-top: 2mm; line-height: 1.45; }
+
+/* Chiffres */
+.gros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; margin-top: 10mm; }
+.gros div { border-radius: 5mm; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); padding: 7mm 6mm; }
+.gros b { display: block; font-size: 38pt; font-weight: 800; color: var(--or); line-height: 1; letter-spacing: -.02em; }
+.gros em { display: block; font-style: normal; font-size: 12pt; font-weight: 750; margin-top: 3mm; }
+.gros span { display: block; font-size: 8.8pt; color: #b9c6d8; margin-top: 2mm; line-height: 1.4; }
+.gros .or { background: linear-gradient(150deg, #f6c75a, var(--or)); border-color: transparent; }
+.gros .or b, .gros .or em { color: var(--nuit); } .gros .or span { color: #3a3015; }
+
+/* Et ensuite */
+.ensuite { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4mm; margin-top: 12mm; }
+.ensuite div { border-radius: 5mm; background: var(--fond); padding: 6mm 4mm; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4mm; }
+.ensuite .tuile { width: 14mm; height: 14mm; padding: 3.4mm; }
+.ensuite b { font-size: 10.5pt; color: var(--nuit); line-height: 1.25; }
+
+/* Décision */
+.fin h2 { font-size: 30pt; }
+.etapes { display: flex; gap: 5mm; margin-top: 10mm; }
+.etapes div { flex: 1; border-radius: 5mm; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); padding: 5mm 6mm; display: grid; grid-template-columns: 12mm 1fr; column-gap: 3mm; align-items: center; }
+.etapes em { grid-row: span 2; font-style: normal; width: 12mm; height: 12mm; border-radius: 50%; background: var(--or); color: var(--nuit); font-weight: 800; font-size: 15pt; display: flex; align-items: center; justify-content: center; }
+.etapes b { font-size: 15pt; }
+.etapes span { font-size: 10pt; color: #b9c6d8; }
+.signature-fin { position: absolute; left: 18mm; bottom: 18mm; display: flex; align-items: center; gap: 4mm; }
+.signature-fin .carres { width: 11mm; height: 11mm; color: var(--or); }
+.signature-fin b { font-size: 16pt; font-weight: 800; }
+.signature-fin span { font-size: 11pt; color: #d6deea; margin-left: 2mm; }
+
+/* Équilibre vertical : le bloc principal occupe le centre de la page */
+.slide:not(.couverture) { display: flex; flex-direction: column; padding-bottom: 32mm; }
+.chiffres4, .leviers, .maint, .gros, .ensuite, .familles, .secu, .etapes { margin-top: auto !important; margin-bottom: auto; }
+.frise30 { margin-top: auto !important; }
+.pourquoi { margin-bottom: auto; margin-top: 9mm; }
+.chiffres4 div, .gros div { min-height: 66mm; }
+.leviers div, .maint div { min-height: 70mm; }
+.ensuite div { min-height: 52mm; justify-content: center; }
+.secu { min-height: 72mm; }
+.grille-secu div { padding: 5.5mm; }
+.chiffres4 .rouge b { font-size: 30pt; line-height: 1.55; white-space: nowrap; }
+.gros b { white-space: nowrap; }
+.gros .or b { font-size: 32pt; line-height: 1.19; }
+.etapes div { padding: 7mm 6mm; }
+.etapes { margin-bottom: auto; }
+.fin { padding-bottom: 40mm; }
+.familles .r { padding: 2.4mm 0; }
+.rgpd { bottom: 17mm; }
+.slide:has(.rgpd) { padding-bottom: 38mm; }
+.maint div, .gros div, .chiffres4 div { min-height: 56mm; }
+.leviers div { min-height: 62mm; }
+.ensuite div { justify-content: flex-start; padding-top: 10mm; min-height: 50mm; }
+</style></head><body><section class="slide nuit couverture">
+  <div class="gauche">
+    <img class="logo" src="logo-blanc.svg" alt="Picard Serrures">
+    <h1>Un seul outil.<br>Tout le réseau.<br><em>En 30 jours.</em></h1>
+    <p class="accroche">L’Espace Pro réunit leads, SAV, configurateur, commandes, documentation, fidélité et pilotage dans une seule plateforme sécurisée, aux couleurs de Picard.</p>
+  </div>
+  <div class="droite"><div class="mega"><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg><b>Espace Pro</b><span>Présentation à la direction et aux actionnaires</span></div></div>
+</section><section class="slide">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Le constat</p>
+  <h2>Aujourd’hui, le réseau travaille <em>en morceaux.</em></h2>
+  <div class="chiffres4">
+    <div><b>6</b><span>outils et canaux dispersés</span><small>Dropbox, Enet, Qualios, MyPricer, Excel, e-mails</small></div>
+    <div><b>6</b><span>services qui n’existent pas</span><small>Boutique, CRM, tournées, commandes, kits, opérations</small></div>
+    <div><b>0</b><span>donnée reliée</span><small>Un lead ne rejoint jamais sa commande</small></div>
+    <div class="rouge"><b>30 à 60 k€</b><span>d’abonnements par an</span><small>Pour des outils qui ne se parlent pas</small></div>
+  </div>
+  <p class="punch">Résultat : des ressaisies, des opportunités perdues, une direction qui pilote à l’aveugle.</p>
+  <div class="pied"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>02</span></div>
+</section><section class="slide nuit">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>La solution</p>
+  <h2>Six outils remplacés par <em>un seul.</em></h2>
+  <div class="conv"><div class="puces"><div class="puce"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg><b>Dropbox</b></div><div class="puce"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg><b>Enet</b></div><div class="puce"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg><b>Excel</b></div><div class="puce"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg><b>Qualios</b></div><div class="puce"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg><b>MyPricer</b></div><div class="puce"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg><b>E-mails</b></div></div><svg class="fils" viewBox="0 0 48 100" preserveAspectRatio="none"><path d="M0 8.3 C 26 8.3, 22 50, 48 50"/><path d="M0 25.0 C 26 25.0, 22 50, 48 50"/><path d="M0 41.7 C 26 41.7, 22 50, 48 50"/><path d="M0 58.4 C 26 58.4, 22 50, 48 50"/><path d="M0 75.1 C 26 75.1, 22 50, 48 50"/><path d="M0 91.8 C 26 91.8, 22 50, 48 50"/></svg>
+    <div class="cible"><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg><b>Espace Pro</b><span>1 identifiant, 1 base de données, 22 rubriques</span></div>
+    <div class="plus"><div><b>22</b><span>rubriques</span></div><div><b>5</b><span>profils</span></div><div><b>1</b><span>identifiant</span></div><div><b>0</b><span>ressaisie</span></div></div>
+  </div>
+  <div class="pied clair"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>03</span></div>
+</section><section class="slide">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>Le périmètre</p>
+  <h2>Tout l’écosystème Picard, <em>au même endroit.</em></h2>
+  <div class="familles"><div class="fam"><p>Communication et marketing</p><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><b>Accueil</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg></span><b>Médiathèque</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span><b>Gestion des leads</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></svg></span><b>Boîte à outils local</b><em>Nouveau</em></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></span><b>Opérations nationales</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg></span><b>Boutique fidélité</b><em>Nouveau</em></div></div><div class="fam"><p>Technique et commandes</p><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span><b>SAV</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg></span><b>Dépannage</b><em>Nouveau</em></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg></span><b>Configurateur portes</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></span><b>Commande serrures</b><em>Nouveau</em></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></span><b>Reproduction de clés</b></div></div><div class="fam"><p>Outils commerciaux</p><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v2"/><path d="M7 21v-2a2 2 0 012-2h6a2 2 0 012 2v2"/><path d="M8 2v2"/><circle cx="12" cy="10" r="3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></span><b>CRM</b><em>Nouveau</em></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8.5a1 1 0 010 7h-11a1 1 0 000 7H15"/><circle cx="18" cy="19" r="3"/><circle cx="6" cy="5" r="3"/></svg></span><b>Planning des tournées</b><em>Nouveau</em></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></svg></span><b>Gestion opérations</b><em>Nouveau</em></div></div><div class="fam"><p>Outils direction</p><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.747 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z"/><path d="m6.158 8.633 1.114 4.456"/><path d="m8 21 3.105-6.21"/><circle cx="12" cy="13" r="2"/></svg></span><b>Picard 2030</b><em>Nouveau</em></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg></span><b>KPI activité</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg></span><b>Paramétrage opérations</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></svg></span><b>SAV management</b></div></div><div class="fam"><p>Outils marketing</p><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg></span><b>Lead management</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg></span><b>Métriques &amp; Analytics</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></span><b>Campagnes e-mail</b></div><div class="r"><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span><b>Enquêtes et sondages</b></div></div></div>
+  <div class="pied"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>04</span></div>
+</section><section class="slide">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Ce que ça change</p>
+  <h2>Quatre leviers, <em>un seul outil.</em></h2>
+  <div class="leviers">
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg></span><b>Vendre plus</b><p>Chaque lead attribué en minutes et suivi jusqu’à la commande.</p><span class="tag">100 % des leads tracés</span></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg></span><b>Servir mieux</b><p>Dépannage guidé avant SAV, demandes complètes, suivi transparent.</p><span class="tag">Moins de SAV, plus vite</span></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/><path d="M16 10h.01"/><path d="M2 8v1a2 2 0 0 0 2 2h1"/></svg></span><b>Dépenser moins</b><p>Abonnements arrêtés, plus de ressaisies, plus d’envois papier.</p><span class="tag">Coûts d’outils divisés par 2</span></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg></span><b>Piloter</b><p>Ventes, SAV, marketing et stratégie lus en temps réel.</p><span class="tag">Une seule source de vérité</span></div>
+  </div>
+  <p class="punch">Et un réseau qui a enfin toutes les raisons de choisir Picard, chaque jour.</p>
+  <div class="pied"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>05</span></div>
+</section><section class="slide nuit">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg>Rapidité d’exécution</p>
+  <h2>Prêt en <em>2 à 4 semaines.</em> Pas en 18 mois.</h2>
+  <div class="frise30"><div class="s"><em>S1</em><b>Socle et accès</b><span>Comptes, droits, charte, sécurité, reprise des contacts</span></div><div class="s"><em>S2</em><b>Vendre et servir</b><span>Leads, SAV, dépannage, médiathèque</span></div><div class="s"><em>S3</em><b>Commander et fidéliser</b><span>Configurateur, commandes, clés, opérations, boutique</span></div><div class="s"><em>S4</em><b>Piloter et lancer</b><span>CRM, tournées, direction, reprise de l’historique, formation</span></div><div class="j30"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg><b>Jour 30</b><span>Tout le réseau en ligne</span></div></div>
+  <div class="pourquoi">
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg><b>Socle déjà construit</b><span>Un prototype fonctionne déjà.</span></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg><b>Développement accéléré par l’IA</b><span>Des jours là où il fallait des mois.</span></div>
+    <div><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 15-5.5 5.5L9 18"/><path d="M5.516 16.07A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 3.501 7.327"/></svg><b>Technologies éprouvées</b><span>Rien à installer, rien à héberger soi-même.</span></div>
+  </div>
+  <div class="pied clair"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>06</span></div>
+</section><section class="slide">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Sécurité et RGPD</p>
+  <h2>La sécurité n’est pas une option. <em>Elle est native.</em></h2>
+  <div class="secu"><div class="bouclier"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><b>RGPD</b><span>conforme dès la conception</span></div><div class="grille-secu"><div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.686 15A14.5 14.5 0 0 1 12 22a14.5 14.5 0 0 1 0-20 10 10 0 1 0 9.542 13"/><path d="M2 12h8.5"/><path d="M20 6V4a2 2 0 1 0-4 0v2"/><rect width="8" height="5" x="14" y="6" rx="1"/></svg></span><b>Hébergé en Europe</b><span>Données stockées dans l’Union européenne</span></div><div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></span><b>Chiffré de bout en bout</b><span>Échanges chiffrés, données chiffrées au repos</span></div><div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21a8 8 0 0 1 13.292-6"/><circle cx="10" cy="8" r="5"/><path d="m16 19 2 2 4-4"/></svg></span><b>Chacun ses données</b><span>Droits par rôle contrôlés au cœur de la base</span></div><div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 21 9.6-9.6"/><path d="m7.5 15.5 2.3 2.3a1 1 0 0 1 0 1.4l-2.1 2.1a1 1 0 0 1-1.4 0L4 19"/><circle cx="15.5" cy="7.5" r="5.5"/></svg></span><b>Accès sécurisés</b><span>Connexion par lien unique, double authentification possible</span></div><div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m16 6-4 4-4-4"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 18h.01"/><path d="M10 18h.01"/></svg></span><b>Sauvegardé chaque jour</b><span>Restauration possible à tout moment</span></div><div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg></span><b>Tout est tracé</b><span>Journal des connexions et des actions sensibles</span></div></div></div>
+  <div class="rgpd">
+    <span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Données propriété de Picard</span><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Collecte limitée au nécessaire</span><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Droit d’accès et d’effacement</span><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Registre des traitements</span><span><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Contrats de sous-traitance conformes</span>
+  </div>
+  <div class="pied"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>07</span></div>
+</section><section class="slide">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.852 14.772-.383.923"/><path d="M13.148 14.772a3 3 0 1 0-2.296-5.544l-.383-.923"/><path d="m13.148 9.228.383-.923"/><path d="m13.53 15.696-.382-.924a3 3 0 1 1-2.296-5.544"/><path d="m14.772 10.852.923-.383"/><path d="m14.772 13.148.923.383"/><path d="M4.5 10H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-.5"/><path d="M4.5 14H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-.5"/><path d="M6 18h.01"/><path d="M6 6h.01"/><path d="m9.228 10.852-.923-.383"/><path d="m9.228 13.148-.923.383"/></svg>Maintenance</p>
+  <h2>Toujours à jour. <em>Sans effort.</em></h2>
+  <div class="maint">
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 15-5.5 5.5L9 18"/><path d="M5.516 16.07A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 3.501 7.327"/></svg></span><b>Zéro serveur</b><p>Hébergement géré : pas d’infrastructure à administrer.</p></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span><b>Mises à jour invisibles</b><p>Déployées en quelques minutes, sans coupure pour le réseau.</p></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg></span><b>Surveillé en continu</b><p>Disponibilité, performances et alertes de sécurité suivies.</p></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg></span><b>Évolutions en jours</b><p>Une nouvelle rubrique s’ajoute au socle, sans tout refaire.</p></div>
+  </div>
+  <p class="punch">Un outil qui évolue au rythme de Picard, pas au rythme d’un éditeur.</p>
+  <div class="pied"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>08</span></div>
+</section><section class="slide nuit">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"/><path d="M15 6h1v4"/><path d="m6.134 14.768.866-.5 2 3.464"/><circle cx="16" cy="8" r="6"/></svg>Les chiffres</p>
+  <h2>Ce que l’Espace Pro <em>rapporte.</em></h2>
+  <div class="gros">
+    <div><b>30</b><em>jours</em><span>pour être opérationnel</span></div>
+    <div><b>−50 %</b><em>de coûts d’outils</em><span>13 à 28 k€ par an au lieu de 30 à 60 k€</span></div>
+    <div><b>2 000 h</b><em>libérées par an</em><span>ressaisies, relances et recherches en moins</span></div>
+    <div class="or"><b>+150 k€</b><em>de chiffre d’affaires</em><span>avec 3 points de transformation en plus sur les leads</span></div>
+  </div>
+  <p class="note">Ordres de grandeur, à confirmer avec les chiffres réels de Picard.</p>
+  <div class="pied clair"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>09</span></div>
+</section><section class="slide">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg>Et ensuite</p>
+  <h2>Une plateforme qui <em>prend de la valeur.</em></h2>
+  <div class="ensuite">
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span><b>Appli iPhone et Android</b></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/><path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.929 4.929.707.707"/><path d="M12 12v6"/></svg></span><b>Urgences des particuliers</b></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13h4"/><path d="M12 18h6a2 2 0 012 2v1"/><path d="M12 8h8"/><path d="M12 9a4.17 4.17 0 01-3 4"/><path d="M16 8V5a2 2 0 012-2"/><path d="M6 18a4 4 0 01-2-7.465"/><path d="M6.004 5.125a4 4 0 00-2.526 5.77"/><path d="M6.294 6.294A3 3 0 1112 5v13a4 4 0 11-7.967-.518"/><circle cx="16" cy="13" r="0.5" fill="currentColor"/><circle cx="18" cy="3" r="0.5" fill="currentColor"/><circle cx="20" cy="21" r="0.5" fill="currentColor"/><circle cx="20" cy="8" r="0.5" fill="currentColor"/></svg></span><b>Assistant technique IA</b></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></svg></span><b>Leads facturés</b></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span><b>Ouverture aux distributeurs</b></div>
+    <div><span class="tuile "><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/></svg></span><b>Données au service de la gamme</b></div>
+  </div>
+  <p class="punch">Chaque installateur connecté rend l’outil plus utile, et Picard plus fort.</p>
+  <div class="pied"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>10</span></div>
+</section><section class="slide nuit fin">
+  <p class="sur"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 13-8.381 8.38a1 1 0 0 1-3.001-3l8.384-8.381"/><path d="m16 16 6-6"/><path d="m21.5 10.5-8-8"/><path d="m8 8 6-6"/><path d="m8.5 7.5 8 8"/></svg>Décision</p>
+  <h2>Un feu vert aujourd’hui.<br><em>Le réseau en ligne dans 30 jours.</em></h2>
+  <div class="etapes">
+    <div><em>1</em><b>Valider</b><span>le lancement</span></div>
+    <div><em>2</em><b>Nommer</b><span>un référent métier</span></div>
+    <div><em>3</em><b>Démarrer</b><span>lundi</span></div>
+  </div>
+  <div class="signature-fin"><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg><b>Espace Pro</b><span>Vendre plus. Servir mieux. Dépenser moins.</span></div>
+  <div class="pied clair"><span><svg class="carres" viewBox="5 23 43 43"><path fill="currentColor" d="M5.19 23.15H26.4v21.22H5.19zM32.09 23.15h15.53v15.53H32.09zM5.19 50.05h15.53v15.53H5.19zM26.4 44.36h21.21v21.22H26.4z"/></svg>Espace Pro Picard Serrures</span><span>11</span></div>
+</section></body></html>
